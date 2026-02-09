@@ -1,3 +1,7 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  # アプリのトップページ（/）を homesコントローラの topアクションに設定
+  root to: 'homes#top' 
+  
+  # aboutページのURLを /about に設定
+  get 'about' => 'homes#about'
 end

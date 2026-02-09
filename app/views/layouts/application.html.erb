@@ -11,6 +11,15 @@
   </head>
 
   <body>
-    <%= yield %>
+   <header>
+    <nav>
+     <h2>Yorisoi</h2>
+     <ul>
+       <li><%= link_to 'About', about_path %></li>
+       <li><%= link_to '新規登録', '#' %></li>
+       <li><%= link_to 'ログイン', '#' %></li>
+     </ul>
+    </nav>
+   </header>
   </body>
 </html>
