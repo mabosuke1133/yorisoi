@@ -12,6 +12,15 @@
 
   <body>
     <header>
+     <p class="notice"><%= notice %></p>
+     <p class="alert"><%= alert %></p>
+
+     <% if notice %>
+      <p class="notice" style="color: green;"><%= notice %></p>
+     <% end %>
+     <% if alert %>
+      <p class="alert" style="color: red;"><%= alert %></p>
+     <% end %>
       <nav>
         <h2>Yorisoi</h2>
         <ul>
