@@ -6,4 +6,7 @@ Rails.application.routes.draw do
   
   # aboutページのURLを /about に設定
   get 'about' => 'homes#about'
+
+  resources :posts
+  
 end
