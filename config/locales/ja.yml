@@ -1,0 +1,25 @@
+ja:
+  errors:
+    messages:
+      not_saved:
+        one: "エラーが発生したため %{resource} は保存されませんでした。"
+        other: "%{count} 件のエラーが発生したため %{resource} は保存されませんでした。"
+  devise:
+    failure:
+      already_authenticated: "すでにログインしています。"
+      unauthenticated: "ログインまたは登録が必要です。"
+      invalid: "%{authentication_keys} またはパスワードが違います。"
+      not_found_in_database: "%{authentication_keys} またはパスワードが違います。"
+      last_attempt: "あと1回ログインに失敗するとアカウントがロックされます。"
+      locked: "アカウントがロックされています。"
+      timeout: "セッションがタイムアウトしました。もう一度ログインしてください。"
+      unconfirmed: "メールアドレスの確認が必要です。"
+      inactive: "アカウントが有効化されていません。"
+    sessions:
+      signed_in: "ログインしました。"
+      signed_out: "ログアウトしました。"
+      already_signed_out: "ログアウトしました。"
+    registrations:
+      signed_up: "アカウント登録が完了しました。"
+      updated: "アカウント情報を変更しました。"
+      destroyed: "アカウントを削除しました。"
