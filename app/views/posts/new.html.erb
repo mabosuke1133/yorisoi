@@ -1,2 +1,24 @@
-<h1>Posts#new</h1>
-<p>Find me in app/views/posts/new.html.erb</p>
+<h1>新規投稿</h1>
+
+<%= form_with model: @post, local: true do |f| %>
+  <div>
+    <%= f.label :title, "タイトル" %><br>
+    <%= f.text_field :title %>
+  </div>
+
+  <div>
+    <%= f.label :body, "本文" %><br>
+    <%= f.text_area :body %>
+  </div>
+
+  <div>
+    <%= f.label :emotion_level, "今の感情レベル（1: どん底 〜 5: 絶好調）" %><br>
+    <%= f.select :emotion_level, [1, 2, 3, 4, 5], include_blank: "選択してください" %>
+  </div>
+
+  <div>
+    <%= f.submit "投稿する" %>
+  </div>
+<% end %>
+
+<%= link_to '戻る', posts_path %>
