@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'posts/index'
+  get 'posts/show'
+  get 'posts/edit'
+  get 'posts/new'
   devise_for :admins
   devise_for :users
   # アプリのトップページ（/）を homesコントローラの topアクションに設定
