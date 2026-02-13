@@ -1,0 +1,21 @@
+<h1>マイページ</h1>
+
+<p>氏名：<%= @user.name %></p> <p>メールアドレス：<%= @user.email %></p>
+
+<%= link_to "プロフィール編集", edit_user_registration_path %>
+
+<hr>
+
+<h2>自分の投稿一覧</h2>
+<% @posts.each do |post| %>
+  <div>
+    <p><%= post.created_at.strftime('%Y/%m/%d') %>：<%= link_to post.title, post_path(post) %></p>
+  </div>
+<% end %>
+
+<hr>
+
+<%= link_to "退会する", user_registration_path, 
+            method: :delete, 
+            data: { confirm: "本当に退会しますか？（これまでの投稿もすべて削除されます）" },
+            style: "color: red;" %>
