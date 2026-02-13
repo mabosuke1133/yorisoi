@@ -1,2 +1,35 @@
-<h1>Posts#edit</h1>
-<p>Find me in app/views/posts/edit.html.erb</p>
+<h1>投稿の編集</h1>
+
+<% if @post.errors.any? %>
+  <div id="error_explanation" style="color: red;">
+    <h3><%= @post.errors.count %>件のエラーが発生しました:</h3>
+    <ul>
+      <% @post.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @post, local: true do |f| %>
+  <div>
+    <%= f.label :title, "タイトル" %><br>
+    <%= f.text_field :title %>
+  </div>
+
+  <div>
+    <%= f.label :body, "本文" %><br>
+    <%= f.text_area :body %>
+  </div>
+
+  <div>
+    <%= f.label :emotion_level, "今の感情レベル" %><br>
+    <%= f.select :emotion_level, [1, 2, 3, 4, 5] %>
+  </div>
+
+  <div>
+    <%= f.submit "更新する" %>
+  </div>
+<% end %>
+
+<%= link_to 'キャンセル', post_path(@post) %>
