@@ -12,26 +12,25 @@
 
   <body>
     <header>
-     <p class="notice"><%= notice %></p>
-     <p class="alert"><%= alert %></p>
+      <% if notice %>
+        <p class="notice" style="color: green;"><%= notice %></p>
+      <% end %>
+      <% if alert %>
+        <p class="alert" style="color: red;"><%= alert %></p>
+      <% end %>
 
-     <% if notice %>
-      <p class="notice" style="color: green;"><%= notice %></p>
-     <% end %>
-     <% if alert %>
-      <p class="alert" style="color: red;"><%= alert %></p>
-     <% end %>
       <nav>
         <h2>Yorisoi</h2>
         <ul>
           <% if admin_signed_in? %>
             <li>管理者メニュー</li>
-            <li><%= link_to 'ログアウト', destroy_admin_session_path, method: :delete %></li>
+            <li><%= link_to 'ログアウト', destroy_admin_session_path %></li>
           
           <% elsif user_signed_in? %>
+            <li><%= link_to '新規投稿', new_post_path %></li>
             <li><%= link_to 'タイムライン', posts_path %></li>
             <li><%= link_to 'マイページ', user_path(current_user) %></li>
-            <li><%= link_to 'ログアウト', destroy_user_session_path, method: :delete %></li>
+            <li><%= link_to 'ログアウト', destroy_user_session_path %></li>
           
           <% else %>
             <li><%= link_to 'About', about_path %></li>
@@ -43,7 +42,9 @@
       </nav>
     </header>
 
-    <%= yield %>
+    <main>
+      <%= yield %>
+    </main>
     
   </body>
 </html>

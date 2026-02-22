@@ -1,4 +1,18 @@
 ja:
+  activerecord:
+    models:
+      post: "投稿"
+      user: "ユーザー"
+    attributes:
+      post:
+        title: "タイトル"
+        body: "本文"
+        emotion_level: "感情レベル"
+        image: "画像"
+    errors:
+      messages:
+        blank: "を入力してください"
+
   errors:
     messages:
       not_saved:

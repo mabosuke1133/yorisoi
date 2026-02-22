@@ -1,4 +1,5 @@
 class Post < ApplicationRecord
+  has_one_attached :image
   # ユーザーと投稿を紐付ける
   belongs_to :user
 
@@ -6,4 +7,5 @@ class Post < ApplicationRecord
   validates :title, presence: true
   validates :body, presence: true
   validates :emotion_level, presence: true
+  validates :image, presence: true
 end
