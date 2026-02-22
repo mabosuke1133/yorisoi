@@ -12,11 +12,6 @@
 <% end %>
 
 <%= form_with model: @post, local: true do |f| %>
-  <%# フォームの中身（タイトルや本文の入力欄） %>
-  ...
-<% end %>
-
-<%= form_with model: @post, local: true do |f| %>
   <div>
     <%= f.label :title, "タイトル" %><br>
     <%= f.text_field :title %>
@@ -25,6 +20,11 @@
   <div>
     <%= f.label :body, "本文" %><br>
     <%= f.text_area :body %>
+  </div>
+
+  <div>
+    <%= f.label :image, "画像（任意）" %><br>
+    <%= f.file_field :image, accept: "image/*" %>
   </div>
 
   <div>
@@ -37,4 +37,5 @@
   </div>
 <% end %>
 
-<%= link_to '戻る', posts_path %>
+<hr>
+<%= link_to '一覧に戻る', posts_path %>

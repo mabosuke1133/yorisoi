@@ -57,6 +57,6 @@ class PostsController < ApplicationController
 
   # 悪意のあるデータ操作を防ぐ「ストロングパラメーター」
   def post_params
-    params.require(:post).permit(:title, :body, :emotion_level)
+    params.require(:post).permit(:title, :body, :emotion_level, :image)
   end
 end
