@@ -1,0 +1,12 @@
+<h1>投稿の削除確認</h1>
+<p>本当にこの投稿を削除しますか？</p>
+
+<div style="border: 1px solid #ccc; padding: 10px;">
+  <p><strong>タイトル:</strong> <%= @post.title %></p>
+  <p><strong>本文:</strong> <%= @post.body %></p>
+</div>
+
+<hr>
+<%# ここで初めて、本当の削除URLへ飛ばす %>
+<%= link_to 'はい、削除します', destroy_post_path(@post), style: "color: red;" %> |
+<%= link_to 'キャンセル', post_path(@post) %>

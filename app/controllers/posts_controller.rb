@@ -42,6 +42,10 @@ class PostsController < ApplicationController
    end
   end
 
+  def confirm
+  @post = Post.find(params[:id])
+  end
+
   def destroy
     @post = Post.find(params[:id])
     # 本人確認（要件10の削除制限も兼ねる）
