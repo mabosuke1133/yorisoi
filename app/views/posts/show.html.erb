@@ -25,9 +25,7 @@
   <%= link_to '編集する', edit_post_path(@post) %> |
   
   <%# ログアウトの時と同じく、もし削除が動かない場合は method: :delete を外す調整が必要になるかもしれません %>
-  <%= link_to '削除する', post_path(@post), 
-              method: :delete, 
-              data: { confirm: '本当に削除しますか？' } %> |
+  <%= link_to '削除する', destroy_post_path(@post) %> |
 <% end %>
 
 <%= link_to '一覧に戻る', posts_path %>
