@@ -7,5 +7,4 @@ class Post < ApplicationRecord
   validates :title, presence: true
   validates :body, presence: true
   validates :emotion_level, presence: true
-  validates :image, presence: true
 end

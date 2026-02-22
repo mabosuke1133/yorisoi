@@ -3,6 +3,7 @@
 <table>
   <thead>
     <tr>
+      <th>画像</th> <%# 列をひとつ追加 %>
       <th>感情レベル</th>
       <th>タイトル</th>
       <th>投稿者</th>
@@ -12,9 +13,18 @@
   <tbody>
     <% @posts.each do |post| %>
       <tr>
+        <td>
+          <%# 画像が紐付いているかチェック %>
+          <% if post.image.attached? %>
+            <%= image_tag post.image, size: "100x100" %>
+          <% else %>
+            <span>画像なし</span>
+          <% end %>
+        </td>
         <td>レベル: <%= post.emotion_level %></td>
         <td><%= post.title %></td>
-        <td><%= post.user.email %></td> <td><%= link_to '詳細を見る', post_path(post) %></td>
+        <td><%= post.user.email %></td>
+        <td><%= link_to '詳細を見る', post_path(post) %></td>
       </tr>
     <% end %>
   </tbody>
