@@ -1,5 +1,6 @@
 <h2>プロフィール編集</h2>
 
+<%# 1. プロフィール更新用のフォーム (ここから) %>
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
@@ -8,38 +9,23 @@
     <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
   </div>
 
-  <div class="field">
-    <%= f.label :password, "新しいパスワード" %> <br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em>最少 <%= @minimum_password_length %> 文字以上</em>
-    <% end %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation, "新しいパスワード（確認用）" %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :current_password, "現在のパスワード" %> 
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-  </div>
+  <%# ... (パスワードなどのフィールドは省略せずに入れてください) ... %>
 
   <div class="actions">
     <%= f.submit "更新する" %>
   </div>
-<% end %>
+<% end %> 
+<%# ↑ ここで一度フォームを完全に終わらせるのが超重要！ %>
 
 <hr>
 
-<h3>退会について</h3>
-<div>
-  <%= link_to "退会する", registration_path(resource_name), 
+<h3>アカウント退会</h3>
+
+<p>
+  <%= button_to "退会する", registration_path(resource_name), 
       method: :delete, 
       data: { confirm: "本当に退会しますか？" }, 
       class: "btn btn-danger" %>
-</div>
+</p>
 
 <%= link_to "戻る", :back %>

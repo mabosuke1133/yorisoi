@@ -15,7 +15,4 @@
 
 <hr>
 
-<%= link_to "退会する", user_registration_path, 
-            method: :delete, 
-            data: { confirm: "本当に退会しますか？（これまでの投稿もすべて削除されます）" },
-            style: "color: red;" %>
+<%= link_to "退会する", user_path(current_user), method: :delete, data: { confirm: "本当に退会しますか？" }, style: "color: red;" %>

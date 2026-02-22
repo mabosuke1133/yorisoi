@@ -1,6 +1,7 @@
 class PostsController < ApplicationController
   # ログインしていないと投稿できないようにする
   before_action :authenticate_user!
+  before_action :ensure_correct_user, only: [:edit, :update, :destroy]
 
   def index
     @posts = Post.all.order(created_at: :desc) # 新しい順に全件取得
