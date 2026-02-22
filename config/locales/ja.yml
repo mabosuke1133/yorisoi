@@ -9,6 +9,11 @@ ja:
         body: "本文"
         emotion_level: "感情レベル"
         image: "画像"
+      user:
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認用）"
+        current_password: "現在のパスワード"
     errors:
       messages:
         blank: "を入力してください"
@@ -18,6 +23,7 @@ ja:
       not_saved:
         one: "エラーが発生したため %{resource} は保存されませんでした。"
         other: "%{count} 件のエラーが発生したため %{resource} は保存されませんでした。"
+
   devise:
     failure:
       already_authenticated: "すでにログインしています。"
