@@ -1,15 +1,30 @@
 <h1>投稿詳細</h1>
 
+<%# 画像があれば表示、なければ「画像なし」と出す（または何も出さない） %>
+<div class="post-image">
+  <% if @post.image.attached? %>
+    <%= image_tag @post.image, size: "400x400" %>
+  <% else %>
+    <p>（画像はありません）</p>
+  <% end %>
+</div>
+
 <p><strong>タイトル:</strong> <%= @post.title %></p>
 <p><strong>今の感情レベル:</strong> <%= @post.emotion_level %></p>
 <p><strong>本文:</strong> <%= @post.body %></p>
-<p><strong>投稿者:</strong> <%= @post.user.email %></p>
+
+<%# --- ここを修正：メールアドレスをリンクにする --- %>
+<p><strong>投稿者:</strong> 
+  <%= link_to @post.user.email, user_path(@post.user) %>
+</p>
+<%# ------------------------------------------ %>
 
 <hr>
 
 <% if @post.user == current_user %>
   <%= link_to '編集する', edit_post_path(@post) %> |
   
+  <%# ログアウトの時と同じく、もし削除が動かない場合は method: :delete を外す調整が必要になるかもしれません %>
   <%= link_to '削除する', post_path(@post), 
               method: :delete, 
               data: { confirm: '本当に削除しますか？' } %> |
