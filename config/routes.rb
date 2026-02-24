@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'searches/search'
   root to: 'homes#top'
   get 'about' => 'homes#about'
   
@@ -11,6 +12,7 @@ Rails.application.routes.draw do
 
   resources :posts
   get 'posts/:id/confirm' => 'posts#confirm', as: 'confirm_post'
+  get "search" => "searches#search"
 
   # postsの削除はDELETEで実装することをおすすめします
   # resources :posts, only: [:destroy] などを使うのが良いです

@@ -11,6 +11,7 @@
   </head>
 
   <body>
+    <p>lorem ipsum</p>
     <header>
       <% if notice %>
         <p class="notice" style="color: green;"><%= notice %></p>
@@ -39,6 +40,28 @@
             <li><%= link_to '管理者ログイン', new_admin_session_path %></li>
           <% end %>
         </ul>
+
+        <%# --- 💡 検索窓の追加場所 --- %>
+        <% if user_signed_in? %>
+          <div class="search_form" style="margin-top: 10px; padding: 10px; border-top: 1px solid #ccc;">
+            <%= form_with url: search_path, local: true, method: :get do |f| %>
+              <%= f.text_field :word, placeholder: "検索ワードを入力" %>
+              
+              <%= f.select :range, options_for_select([['ユーザー', 'User'], ['投稿', 'Post']]) %>
+              
+              <%= f.select :search, options_for_select([
+                ["完全一致","perfect_match"], 
+                ["前方一致","forward_match"],  
+                ["後方一致","backward_match"], 
+                ["部分一致","partial_match"]
+              ]) %>
+              
+              <%= f.submit "検索", class: "btn btn-info" %>
+            <% end %>
+          </div>
+        <% end %>
+        <%# -------------------------- %>
+
       </nav>
     </header>
 
