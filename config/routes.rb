@@ -10,12 +10,15 @@ Rails.application.routes.draw do
 
   resources :users, only: [:show, :destroy] 
 
-  resources :posts
-  get 'posts/:id/confirm' => 'posts#confirm', as: 'confirm_post'
+  resources :posts do
+    # コメントは投稿に紐付くため、中に書く（ネスト）
+    resources :post_comments, only: [:create, :destroy]
+    
+    # 元々あった確認画面もここに入れるとスッキリする
+    member do
+      get 'confirm'
+    end
+  end
+
   get "search" => "searches#search"
-
-  # postsの削除はDELETEで実装することをおすすめします
-  # resources :posts, only: [:destroy] などを使うのが良いです
-
-  # get 'posts/:id/sakujo' => 'posts#destroy', as: 'destroy_post' # これは非推奨
 end

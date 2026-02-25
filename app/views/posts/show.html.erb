@@ -13,17 +13,52 @@
 <p><strong>今の感情レベル:</strong> <%= @post.emotion_level %></p>
 <p><strong>本文:</strong> <%= @post.body %></p>
 
-<%# --- ここを修正：メールアドレスをリンクにする --- %>
+<%# --- 投稿者情報の表示 --- %>
 <p><strong>投稿者:</strong> 
   <%= link_to @post.user.email, user_path(@post.user) %>
 </p>
-<%# ------------------------------------------ %>
 
 <hr>
 
+<%# --- 投稿主のみに表示するボタン --- %>
 <% if @post.user == current_user %>
   <%= link_to '編集する', edit_post_path(@post) %> |
   <%= link_to '削除する', confirm_post_path(@post) %> |
 <% end %>
 
 <%= link_to '一覧に戻る', posts_path %>
+
+<hr style="margin-top: 40px; border-top: 2px solid #333;">
+
+<%# --- 💡 コメント一覧の表示 --- %>
+<div class="comments-section">
+  <h4>コメント一覧（<%= @post.post_comments.count %>件）</h4>
+  
+  <% @post.post_comments.each do |post_comment| %>
+    <div class="comment-item" style="border-bottom: 1px solid #eee; margin-bottom: 15px; padding-bottom: 10px;">
+      <p style="margin-bottom: 5px;">
+        <strong><%= link_to post_comment.user.email, user_path(post_comment.user) %></strong>
+        <span style="color: #888; font-size: 0.8em;">(<%= post_comment.created_at.strftime('%Y/%m/%d %H:%M') %>)</span>
+      </p>
+      <p style="margin-bottom: 10px;"><%= post_comment.comment %></p>
+      
+      <%# 💡 ログインユーザー本人のコメントのみ削除ボタンを表示 %>
+      <% if post_comment.user == current_user %>
+        <%= link_to "削除する", post_post_comment_path(@post, post_comment), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "btn btn-danger", style: "color: red; font-size: 0.9em;" %>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<hr>
+
+<%# --- 💡 コメントフォームの表示 --- %>
+<div class="new-comment">
+  <%= form_with model: [@post, PostComment.new], local: true do |f| %>
+    <div class="form-group" style="margin-bottom: 10px;">
+      <%= f.label :comment, "寄り添いのコメントを送る" %><br>
+      <%= f.text_area :comment, rows: '3', placeholder: "ここにコメントを入力してください", class: "form-control", style: "width: 100%; max-width: 500px;" %>
+    </div>
+    <%= f.submit "送信する", class: "btn btn-success" %>
+  <% end %>
+</div>

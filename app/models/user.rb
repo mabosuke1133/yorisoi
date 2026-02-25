@@ -8,6 +8,7 @@ class User < ApplicationRecord
 
   # dependent: :destroy をつけることで、退会時に投稿も一緒に消えます
   has_many :posts, dependent: :destroy
+  has_many :post_comments, dependent: :destroy
 
   # 検索用メソッド
   def self.looks(search, word)

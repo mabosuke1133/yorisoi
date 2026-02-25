@@ -8,6 +8,8 @@ class Post < ApplicationRecord
   validates :body, presence: true
   validates :emotion_level, presence: true
 
+  has_many :post_comments, dependent: :destroy
+
   # 検索用メソッド
   def self.looks(search, word)
     if search == "perfect_match"
