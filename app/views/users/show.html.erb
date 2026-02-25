@@ -9,7 +9,12 @@
 <h2>自分の投稿一覧</h2>
 <% @posts.each do |post| %>
   <div>
-    <p><%= post.created_at.strftime('%Y/%m/%d') %>：<%= link_to post.title, post_path(post) %></p>
+    <p>
+      <%= post.created_at.strftime('%Y/%m/%d') %>：
+      <%= link_to post.title, post_path(post) %>
+      <%# --- 💡 各投稿へのコメント数 --- %>
+      （コメント数：<%= post.post_comments.count %>）
+    </p>
   </div>
 <% end %>
 

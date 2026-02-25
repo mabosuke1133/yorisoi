@@ -24,6 +24,7 @@
         <td>レベル: <%= post.emotion_level %></td>
         <td><%= post.title %></td>
         <td><%= post.user.email %></td>
+        <td><%= post.post_comments.count %></td>
         <td><%= link_to '詳細を見る', post_path(post) %></td>
       </tr>
     <% end %>
