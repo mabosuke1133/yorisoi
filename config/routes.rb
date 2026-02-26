@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  namespace :admin do
+    resources :users, only: [:index, :show, :destroy]
+  end
+  
   get 'searches/search'
   root to: 'homes#top'
   get 'about' => 'homes#about'

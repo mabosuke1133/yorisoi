@@ -49,3 +49,7 @@ Post.find_or_create_by!(title: "いつもの喫茶店") do |post|
 end
 
 puts "「yorisoi」の世界に3人と3つの思い出が誕生しました！"
+
+Admin.find_or_create_by!(email: 'admin@example.com') do |admin|
+  admin.password = 'password'
+end

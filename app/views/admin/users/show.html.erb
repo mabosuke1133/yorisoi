@@ -1,0 +1,12 @@
+<h1>管理者用：ユーザー詳細</h1>
+
+<p>氏名：<%= @user.name %></p>
+<p>メールアドレス：<%= @user.email %></p>
+
+<hr>
+
+<%# 管理者が退会処理を行えるボタン %>
+<%= link_to "このユーザーを退会させる", admin_user_path(@user), method: :delete, data: { confirm: "本当にこのユーザーを退会させますか？" }, class: "btn btn-danger", style: "color: red;" %>
+
+<hr>
+<%= link_to "一覧に戻る", admin_users_path %>

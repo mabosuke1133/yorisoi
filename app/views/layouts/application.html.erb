@@ -24,12 +24,16 @@
         <h2>Yorisoi</h2>
         <ul>
           <% if admin_signed_in? %>
-            <li>管理者メニュー</li>
-            <li><%= link_to 'ログアウト', destroy_admin_session_path %></li>
+           <span>管理者としてログイン中</span>
+           <ul>
+            <li><%= link_to 'ユーザー一覧', admin_users_path %></li>
+            <li><%= link_to '投稿一覧', posts_path %></li> <%# 管理者も投稿は見れるように %>
+            <li><%= link_to 'ログアウト', destroy_admin_session_path, method: :delete %></li>
+           </ul>
           
           <% elsif user_signed_in? %>
             <li><%= link_to '新規投稿', new_post_path %></li>
-            <li><%= link_to 'タイムライン', posts_path %></li>
+            <li><%= link_to '投稿一覧', posts_path %></li>
             <li><%= link_to 'マイページ', user_path(current_user) %></li>
             <li><%= link_to 'ログアウト', destroy_user_session_path %></li>
           
