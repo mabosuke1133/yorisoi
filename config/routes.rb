@@ -1,8 +1,16 @@
 Rails.application.routes.draw do
   namespace :admin do
-    resources :users, only: [:index, :show, :destroy]
+    get 'posts/index'
+    get 'posts/show'
   end
-  
+  namespace :admin do
+    resources :users, only: [:index, :show, :destroy]
+    # 💡 管理者は投稿の一覧・詳細・削除ができる
+    resources :posts, only: [:index, :show, :destroy] do
+      # 💡 管理者は投稿に紐付くコメントを削除できる
+      resources :post_comments, only: [:destroy]
+  end
+
   get 'searches/search'
   root to: 'homes#top'
   get 'about' => 'homes#about'

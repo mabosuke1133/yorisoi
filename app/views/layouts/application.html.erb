@@ -27,8 +27,9 @@
            <span>管理者としてログイン中</span>
            <ul>
             <li><%= link_to 'ユーザー一覧', admin_users_path %></li>
-            <li><%= link_to '投稿一覧', posts_path %></li> <%# 管理者も投稿は見れるように %>
+            <li><%= link_to '投稿一覧', posts_path %></li>
             <li><%= link_to 'ログアウト', destroy_admin_session_path, method: :delete %></li>
+            <li><%= link_to '投稿管理', admin_posts_path %></li>
            </ul>
           
           <% elsif user_signed_in? %>

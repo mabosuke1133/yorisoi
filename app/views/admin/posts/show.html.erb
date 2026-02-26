@@ -1,0 +1,22 @@
+<h1>投稿詳細（管理用）</h1>
+
+<div class="card mb-4">
+  <div class="card-body">
+    <h5 class="card-title"><%= @post.title %></h5>
+    <p class="card-text"><%= @post.body %></p>
+    <%= link_to "この投稿自体を削除する", admin_post_path(@post), method: :delete, data: { confirm: "本当に削除しますか？" }, class: "btn btn-danger" %>
+  </div>
+</div>
+
+<hr>
+
+<h3>コメント管理</h3>
+<% @post.post_comments.each do |comment| %>
+  <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 5px;">
+    <p><strong><%= comment.user.email %></strong>: <%= comment.comment %></p>
+    <%# 💡 管理者は「誰の」コメントでも削除可能 %>
+    <%= link_to "不適切なコメントとして削除", admin_post_post_comment_path(@post, comment), method: :delete, data: { confirm: "削除しますか？" }, style: "color: red;" %>
+  </div>
+<% end %>
+
+<%= link_to "戻る", admin_posts_path %>
