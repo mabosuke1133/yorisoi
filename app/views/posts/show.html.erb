@@ -1,64 +1,78 @@
-<h1>投稿詳細</h1>
-
-<%# 画像があれば表示、なければ「画像なし」と出す（または何も出さない） %>
-<div class="post-image">
-  <% if @post.image.attached? %>
-    <%= image_tag @post.image, size: "400x400" %>
-  <% else %>
-    <p>（画像はありません）</p>
-  <% end %>
-</div>
-
-<p><strong>タイトル:</strong> <%= @post.title %></p>
-<p><strong>今の感情レベル:</strong> <%= @post.emotion_level %></p>
-<p><strong>本文:</strong> <%= @post.body %></p>
-
-<%# --- 投稿者情報の表示 --- %>
-<p><strong>投稿者:</strong> 
-  <%= link_to @post.user.email, user_path(@post.user) %>
-</p>
-
-<hr>
-
-<%# --- 投稿主のみに表示するボタン --- %>
-<% if @post.user == current_user %>
-  <%= link_to '編集する', edit_post_path(@post) %> |
-  <%= link_to '削除する', confirm_post_path(@post) %> |
-<% end %>
-
-<%= link_to '一覧に戻る', posts_path %>
-
-<hr style="margin-top: 40px; border-top: 2px solid #333;">
-
-<%# --- 💡 コメント一覧の表示 --- %>
-<div class="comments-section">
-  <h4>コメント一覧（<%= @post.post_comments.count %>件）</h4>
-  
-  <% @post.post_comments.each do |post_comment| %>
-    <div class="comment-item" style="border-bottom: 1px solid #eee; margin-bottom: 15px; padding-bottom: 10px;">
-      <p style="margin-bottom: 5px;">
-        <strong><%= link_to post_comment.user.email, user_path(post_comment.user) %></strong>
-        <span style="color: #888; font-size: 0.8em;">(<%= post_comment.created_at.strftime('%Y/%m/%d %H:%M') %>)</span>
-      </p>
-      <p style="margin-bottom: 10px;"><%= post_comment.comment %></p>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
       
-      <%# 💡 ログインユーザー本人のコメントのみ削除ボタンを表示 %>
-      <% if post_comment.user == current_user %>
-        <%= link_to "削除する", post_post_comment_path(@post, post_comment), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "btn btn-danger", style: "color: red; font-size: 0.9em;" %>
-      <% end %>
-    </div>
-  <% end %>
-</div>
+      <%# --- 投稿メイン部分 --- %>
+      <div class="card shadow-sm border-0 rounded-lg overflow-hidden mb-4">
+        <% if @post.image.attached? %>
+          <%= image_tag @post.image, class: "card-img-top", style: "height: 400px; object-fit: cover;" %>
+        <% end %>
+        
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1 class="h3 font-weight-bold mb-0"><%= @post.title %></h1>
+            <span class="badge badge-info p-2">感情レベル: <%= @post.emotion_level %></span>
+          </div>
 
-<hr>
+          <p class="text-muted mb-4" style="line-height: 1.8;">
+            <%= @post.body %>
+          </p>
 
-<%# --- 💡 コメントフォームの表示 --- %>
-<div class="new-comment">
-  <%= form_with model: [@post, PostComment.new], local: true do |f| %>
-    <div class="form-group" style="margin-bottom: 10px;">
-      <%= f.label :comment, "寄り添いのコメントを送る" %><br>
-      <%= f.text_area :comment, rows: '3', placeholder: "ここにコメントを入力してください", class: "form-control", style: "width: 100%; max-width: 500px;" %>
+          <div class="d-flex justify-content-between align-items-center border-top pt-3">
+            <div class="text-muted small">
+              投稿者: <%= link_to @post.user.name, user_path(@post.user), class: "font-weight-bold text-success" %>
+            </div>
+            
+            <div>
+              <% if @post.user == current_user %>
+                <%= link_to '編集', edit_post_path(@post), class: "btn btn-outline-secondary btn-sm" %>
+                <%= link_to '削除', confirm_post_path(@post), class: "btn btn-outline-danger btn-sm" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <%= link_to '← タイムラインに戻る', posts_path, class: "text-muted mb-5 d-block" %>
+
+      <hr class="my-5">
+
+      <%# --- コメント一覧部分 --- %>
+      <h4 class="mb-4"><i class="far fa-comments text-success"></i> 寄り添いメッセージ（<%= @post.post_comments.count %>件）</h4>
+      
+      <div class="comments-section mb-5">
+        <% @post.post_comments.each do |post_comment| %>
+          <%# 💡「緑のライン」のデザインです！ %>
+          <div class="p-3 mb-3 bg-white rounded-lg shadow-sm" style="border-left: 5px solid #88b04b;">
+            <p class="mb-2"><%= post_comment.comment %></p>
+            
+            <div class="d-flex justify-content-between align-items-center">
+              <small class="text-muted">
+                <strong><%= link_to post_comment.user.name, user_path(post_comment.user), class: "text-success" %></strong> さん 
+                <span class="ml-2"><%= post_comment.created_at.strftime('%Y/%m/%d %H:%M') %></span>
+              </small>
+
+              <% if post_comment.user == current_user %>
+                <%= link_to "削除", post_post_comment_path(@post, post_comment), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "text-danger small" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <%# --- コメント投稿フォーム --- %>
+      <div class="new-comment bg-light p-4 rounded-lg shadow-sm mb-5">
+        <%= form_with model: [@post, PostComment.new], local: true do |f| %>
+          <div class="form-group">
+            <%= f.label :comment, "寄り添いのコメントを送る", class: "font-weight-bold" %>
+            <%= f.text_area :comment, rows: '3', placeholder: "ここにコメントを入力してください", class: "form-control border-0 shadow-sm" %>
+          </div>
+          <div class="text-right">
+            <%= f.submit "送信する", class: "btn btn-success px-4 rounded-pill shadow-sm" %>
+          </div>
+        <% end %>
+      </div>
+
     </div>
-    <%= f.submit "送信する", class: "btn btn-success" %>
-  <% end %>
+  </div>
 </div>

@@ -6,71 +6,73 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <%# Bootstrapの導入 %>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
-  <body>
-    <p>lorem ipsum</p>
+  <%# 管理者ログイン時だけ背景色を少し変える工夫 %>
+  <body class="<%= 'bg-light' if admin_signed_in? %>">
+
     <header>
-      <% if notice %>
-        <p class="notice" style="color: green;"><%= notice %></p>
-      <% end %>
-      <% if alert %>
-        <p class="alert" style="color: red;"><%= alert %></p>
-      <% end %>
-
-      <nav>
-        <h2>Yorisoi</h2>
-        <ul>
-          <% if admin_signed_in? %>
-           <span>管理者としてログイン中</span>
-           <ul>
-            <li><%= link_to 'ユーザー一覧', admin_users_path %></li>
-            <li><%= link_to '投稿一覧', posts_path %></li>
-            <li><%= link_to 'ログアウト', destroy_admin_session_path, method: :delete %></li>
-            <li><%= link_to '投稿管理', admin_posts_path %></li>
-           </ul>
+      <%# ナビゲーションバー：bg-white（白）とshadow-sm（軽い影）で清潔感を出す %>
+      <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+        <div class="container">
+          <%# ロゴ部分：text-successで「寄り添い」らしい緑色に %>
+          <%= link_to 'Yorisoi', root_path, class: 'navbar-brand font-weight-bold text-success' %>
           
-          <% elsif user_signed_in? %>
-            <li><%= link_to '新規投稿', new_post_path %></li>
-            <li><%= link_to '投稿一覧', posts_path %></li>
-            <li><%= link_to 'マイページ', user_path(current_user) %></li>
-            <li><%= link_to 'ログアウト', destroy_user_session_path %></li>
-          
-          <% else %>
-            <li><%= link_to 'About', about_path %></li>
-            <li><%= link_to '新規登録', new_user_registration_path %></li>
-            <li><%= link_to 'ログイン', new_user_session_path %></li>
-            <li><%= link_to '管理者ログイン', new_admin_session_path %></li>
-          <% end %>
-        </ul>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto align-items-center">
+              <% if admin_signed_in? %>
+                <li class="nav-item border-right pr-2 mr-2"><span class="badge badge-dark">管理者モード</span></li>
+                <li class="nav-item"><%= link_to 'ユーザー一覧', admin_users_path, class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to '投稿管理', admin_posts_path, class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to 'ログアウト', destroy_admin_session_path, method: :delete, class: 'nav-link' %></li>
 
-        <%# --- 💡 検索窓の追加場所 --- %>
+              <% elsif user_signed_in? %>
+                <li class="nav-item"><%= link_to '投稿一覧', posts_path, class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to '新規投稿', new_post_path, class: 'nav-link btn btn-outline-success btn-sm mx-2' %></li>
+                <li class="nav-item"><%= link_to 'マイページ', user_path(current_user), class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to 'ログアウト', destroy_user_session_path, method: :delete, class: 'nav-link' %></li>
+              
+              <% else %>
+                <li class="nav-item"><%= link_to 'About', about_path, class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to '新規登録', new_user_registration_path, class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to 'ログイン', new_user_session_path, class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to '管理者用', new_admin_session_path, class: 'nav-link small text-muted' %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <%# フラッシュメッセージ：Bootstrapのalertクラスを適用 %>
+      <div class="container">
+        <% if notice %>
+          <div class="alert alert-success"><%= notice %></div>
+        <% end %>
+        <% if alert %>
+          <div class="alert alert-danger"><%= alert %></div>
+        <% end %>
+
+        <%# 🔍 検索フォーム：インライン形式にしてスッキリさせる %>
         <% if user_signed_in? %>
-          <div class="search_form" style="margin-top: 10px; padding: 10px; border-top: 1px solid #ccc;">
-            <%= form_with url: search_path, local: true, method: :get do |f| %>
-              <%= f.text_field :word, placeholder: "検索ワードを入力" %>
-              
-              <%= f.select :range, options_for_select([['ユーザー', 'User'], ['投稿', 'Post']]) %>
-              
-              <%= f.select :search, options_for_select([
-                ["完全一致","perfect_match"], 
-                ["前方一致","forward_match"],  
-                ["後方一致","backward_match"], 
-                ["部分一致","partial_match"]
-              ]) %>
-              
+          <div class="search_form mb-4 p-3 bg-white rounded shadow-sm">
+            <%= form_with url: search_path, local: true, method: :get, class: 'form-inline justify-content-center' do |f| %>
+              <%= f.text_field :word, placeholder: "検索ワードを入力", class: 'form-control mr-2' %>
+              <%= f.select :range, options_for_select([['ユーザー', 'User'], ['投稿', 'Post']]), {}, class: 'form-control mr-2' %>
+              <%= f.select :search, options_for_select([["完全一致","perfect_match"], ["前方一致","forward_match"], ["後方一致","backward_match"], ["部分一致","partial_match"]]), {}, class: 'form-control mr-2' %>
               <%= f.submit "検索", class: "btn btn-info" %>
             <% end %>
           </div>
         <% end %>
-        <%# -------------------------- %>
-
-      </nav>
+      </div>
     </header>
 
-    <main>
+    <%# メインコンテンツ：containerで囲むことで左右に適切な余白ができる %>
+    <main class="container mb-5">
       <%= yield %>
     </main>
     
