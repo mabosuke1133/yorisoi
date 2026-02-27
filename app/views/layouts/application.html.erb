@@ -29,13 +29,13 @@
                 <li class="nav-item border-right pr-2 mr-2"><span class="badge badge-dark">管理者モード</span></li>
                 <li class="nav-item"><%= link_to 'ユーザー一覧', admin_users_path, class: 'nav-link' %></li>
                 <li class="nav-item"><%= link_to '投稿管理', admin_posts_path, class: 'nav-link' %></li>
-                <li class="nav-item"><%= link_to 'ログアウト', destroy_admin_session_path, method: :delete, class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to 'ログアウト', destroy_admin_session_path, class: 'nav-link' %></li>
 
               <% elsif user_signed_in? %>
                 <li class="nav-item"><%= link_to '投稿一覧', posts_path, class: 'nav-link' %></li>
                 <li class="nav-item"><%= link_to '新規投稿', new_post_path, class: 'nav-link btn btn-outline-success btn-sm mx-2' %></li>
                 <li class="nav-item"><%= link_to 'マイページ', user_path(current_user), class: 'nav-link' %></li>
-                <li class="nav-item"><%= link_to 'ログアウト', destroy_user_session_path, method: :delete, class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to 'ログアウト', destroy_user_session_path, class: 'nav-link' %></li>
               
               <% else %>
                 <li class="nav-item"><%= link_to 'About', about_path, class: 'nav-link' %></li>

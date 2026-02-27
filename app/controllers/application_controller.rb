@@ -1,12 +1,12 @@
 class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
-  
-  # 💡 ログイン後の遷移先を分岐させる
+
+  # 🟢 ログインした後の遷移先
   def after_sign_in_path_for(resource)
     if resource.is_a?(Admin)
-      admin_users_path # 管理者はユーザー一覧へ
+      admin_users_path # 管理者はログイン後、ユーザー一覧（管理画面）へ
     else
-      posts_path # 一般ユーザーは投稿一覧へ
+      posts_path       # 一般ユーザーはログイン後、投稿一覧（タイムライン）へ
     end
   end
 
@@ -21,17 +21,14 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # 💡 ログアウト後の遷移先を管理者とユーザーで分ける
+  # 🔴 ログアウトした後の遷移先
   def after_sign_out_path_for(resource_or_scope)
     if resource_or_scope == :admin
       # 管理者がログアウトしたら管理者用ログイン画面へ
       new_admin_session_path
-    elsif resource_or_scope == :user
-      # 一般ユーザーが退会・ログアウトしたら新規登録画面へ
-      reset_session 
-      new_user_registration_path
     else
-      root_path
+      # 一般ユーザーがログアウトしたら、ログイン画面へ
+      new_user_session_path
     end
   end
-end 
+end

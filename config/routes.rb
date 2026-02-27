@@ -9,10 +9,12 @@ Rails.application.routes.draw do
     resources :posts, only: [:index, :show, :destroy] do
       # 💡 管理者は投稿に紐付くコメントを削除できる
       resources :post_comments, only: [:destroy]
+    end
   end
 
-  get 'searches/search'
   root to: 'homes#top'
+  get 'searches/search'
+  get "search" => "searches#search"
   get 'about' => 'homes#about'
   
   devise_for :users
@@ -31,6 +33,4 @@ Rails.application.routes.draw do
       get 'confirm'
     end
   end
-
-  get "search" => "searches#search"
 end
