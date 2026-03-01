@@ -17,10 +17,9 @@
   <body class="<%= 'bg-light' if admin_signed_in? %>">
 
     <header>
-      <%# ナビゲーションバー：bg-white（白）とshadow-sm（軽い影）で清潔感を出す %>
+      <%# ナビゲーションバー %>
       <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
         <div class="container">
-          <%# ロゴ部分：text-successで「寄り添い」らしい緑色に %>
           <%= link_to 'Yorisoi', root_path, class: 'navbar-brand font-weight-bold text-success' %>
           
           <div class="collapse navbar-collapse" id="navbarNav">
@@ -48,30 +47,24 @@
         </div>
       </nav>
 
-      <%# フラッシュメッセージ：Bootstrapのalertクラスを適用 %>
+      <%# フラッシュメッセージ %>
       <div class="container">
         <% if notice %>
-          <div class="alert alert-success"><%= notice %></div>
+          <div class="alert alert-success alert-dismissible fade show">
+            <%= notice %>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
         <% end %>
         <% if alert %>
-          <div class="alert alert-danger"><%= alert %></div>
-        <% end %>
-
-        <%# 🔍 検索フォーム：インライン形式にしてスッキリさせる %>
-        <% if user_signed_in? %>
-          <div class="search_form mb-4 p-3 bg-white rounded shadow-sm">
-            <%= form_with url: search_path, local: true, method: :get, class: 'form-inline justify-content-center' do |f| %>
-              <%= f.text_field :word, placeholder: "検索ワードを入力", class: 'form-control mr-2' %>
-              <%= f.select :range, options_for_select([['ユーザー', 'User'], ['投稿', 'Post']]), {}, class: 'form-control mr-2' %>
-              <%= f.select :search, options_for_select([["完全一致","perfect_match"], ["前方一致","forward_match"], ["後方一致","backward_match"], ["部分一致","partial_match"]]), {}, class: 'form-control mr-2' %>
-              <%= f.submit "検索", class: "btn btn-info" %>
-            <% end %>
+          <div class="alert alert-danger alert-dismissible fade show">
+            <%= alert %>
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
           </div>
         <% end %>
       </div>
     </header>
 
-    <%# メインコンテンツ：containerで囲むことで左右に適切な余白ができる %>
+    <%# メインコンテンツ %>
     <main class="container mb-5">
       <%= yield %>
     </main>
