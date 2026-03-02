@@ -17,8 +17,15 @@ Rails.application.routes.draw do
   get "search" => "searches#search"
   get 'about' => 'homes#about'
   
-  devise_for :users
-  devise_for :admins
+  devise_for :users, controllers: {
+    sessions:      'users/sessions',
+    registrations: 'users/registrations'
+  }
+  devise_for :admins, controllers: {
+    sessions:      'admins/sessions',
+    registrations: 'admins/registrations',
+    passwords:     'admins/passwords'
+  }
 
   get '/users' => redirect('/users/sign_up')
 

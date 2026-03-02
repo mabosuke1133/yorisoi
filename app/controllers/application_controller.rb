@@ -13,10 +13,15 @@ class ApplicationController < ActionController::Base
   protected
 
   def configure_permitted_parameters
-    # 新規登録時にnameを許容
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
-    # 情報更新時にnameを許容
-    devise_parameter_sanitizer.permit(:account_update, keys: [:name])
+    # もし操作しているのが「管理者(Admin)」モデルなら
+    if resource_name == :admin
+      devise_parameter_sanitizer.permit(:sign_up, keys: [:invitation_code])
+      
+    # もし操作しているのが「一般ユーザー(User)」モデルなら
+    elsif resource_name == :user
+      devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
+      devise_parameter_sanitizer.permit(:account_update, keys: [:name])
+    end
   end
 
   private
