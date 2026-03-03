@@ -15,3 +15,9 @@ body {
 .shadow-sm {
   box-shadow: 0 .125rem .25rem rgba(0,0,0,.05) !important;
 }
+
+/* 全ての入力欄に、最初からうっすら枠線を出す設定 */
+.form-control {
+  border: 1px solid #ced4da !important; /* 標準的な薄いグレーの枠線 */
+  background-color: #fff !important;   /* 背景を白で固定 */
+}
