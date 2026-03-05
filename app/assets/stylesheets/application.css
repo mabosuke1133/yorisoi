@@ -21,3 +21,24 @@ body {
   border: 1px solid #ced4da !important; /* 標準的な薄いグレーの枠線 */
   background-color: #fff !important;   /* 背景を白で固定 */
 }
+
+/* ナビゲーションリンクのカスタマイズ */
+.navbar-nav .nav-link {
+  padding: 8px 16px !important; /* 少しクリックしやすく余白を広げる */
+  border-radius: 50px;          /* 丸みのあるデザイン */
+  transition: all 0.3s ease;   /* 変化をふんわりさせる */
+  color: #28a745 !important;    /* 通常時は緑（text-successに近い色） */
+}
+
+/* 💡 マウスを合わせたときの動き */
+.navbar-nav .nav-link:hover {
+  background-color: #28a745;    /* 背景を緑に */
+  color: #ffffff !important;    /* 文字を白に */
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2); /* 軽く浮かせる */
+}
+
+/* 新規投稿ボタン（元々枠があるもの）の微調整 */
+.navbar-nav .btn-outline-success:hover {
+  background-color: #218838;    /* ホバー時は少し濃い緑に */
+  color: white !important;
+}
