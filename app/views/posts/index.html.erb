@@ -5,7 +5,7 @@
     <span class="badge badge-pill badge-light text-muted">全 <%= @posts.count %> 件の投稿</span>
   </div>
 
-  <%# 🔍 検索フォーム：中央寄せ・白背景・丸みのあるデザイン %>
+  <%# 🔍 検索フォーム %>
   <div class="search_form mb-5 p-4 bg-white rounded shadow-sm border text-center">
     <p class="small text-muted mb-3"><i class="fas fa-search"></i> 気になるキーワードで投稿を探してみましょう</p>
     <%= form_with url: posts_path, method: :get, local: true, class: "form-inline justify-content-center" do |f| %>
@@ -18,10 +18,9 @@
   <div class="row">
     <% @posts.each do |post| %>
       <div class="col-md-6 col-lg-4 mb-4">
-        <%# 💡 カード全体のデザイン：shadow-smで少し浮かせる %>
         <div class="card h-100 shadow-sm border-0 rounded-lg overflow-hidden">
           
-          <%# 画像部分 %>
+          <%# 1. 画像エリア %>
           <div class="post-image-container bg-light text-center">
             <% if post.image.attached? %>
               <%= image_tag post.image, class: "card-img-top", style: "height: 200px; object-fit: cover;" %>
@@ -30,8 +29,8 @@
             <% end %>
           </div>
 
+          <%# 2. ボディエリア %>
           <div class="card-body">
-            <%# 感情レベルをタグのように表示 %>
             <div class="mb-2">
               <span class="badge badge-info">感情レベル: <%= post.emotion_level %></span>
             </div>
@@ -40,17 +39,29 @@
               <%= post.title %>
             </h5>
             
-            <p class="text-muted small mb-3">
+            <p class="text-muted small mb-0">
               <i class="fas fa-user"></i> <%= post.user.name %> さん
             </p>
           </div>
 
+          <%# 3. フッターエリア（コメント & いいね & 詳細ボタン） %>
           <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center pb-3">
-            <span class="small text-muted">
-              <i class="far fa-comment-dots"></i> 寄り添い数: <%= post.post_comments.count %>
-            </span>
+            <div class="d-flex align-items-center">
+              <%# コメント数 %>
+              <span class="small text-muted mr-3">
+                <i class="far fa-comment-dots"></i> <%= post.post_comments.count %>
+              </span>
+              
+              <%# いいねボタン %>
+              <span class="small">
+                <%= render 'favorites/favorite_btn', post: post %>
+              </span>
+            </div>
+
+            <%# 詳細リンク %>
             <%= link_to '詳細を見る', post_path(post), class: 'btn btn-outline-success btn-sm rounded-pill px-3' %>
           </div>
+
         </div>
       </div>
     <% end %>

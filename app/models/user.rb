@@ -9,6 +9,10 @@ class User < ApplicationRecord
   # dependent: :destroy をつけることで、退会時に投稿も一緒に消えます
   has_many :posts, dependent: :destroy
   has_many :post_comments, dependent: :destroy
+  
+  has_many :favorites, dependent: :destroy
+  # 自分がいいねした投稿を直接取得できるようにする
+  has_many :favorite_posts, through: :favorites, source: :post
 
   # 検索用メソッド
   def self.looks(search, word)

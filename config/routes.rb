@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get 'favorites/index'
   namespace :admin do
     get 'posts/index'
     get 'posts/show'
@@ -34,10 +35,20 @@ Rails.application.routes.draw do
   resources :posts do
     # コメントは投稿に紐付くため、中に書く（ネスト）
     resources :post_comments, only: [:create, :destroy]
+
+    # --- 💡 1. いいね機能を追加 (ネストさせる) ---
+    # 単数形の resource にすることで「一人が一つの投稿に一回だけいいね」という構造になります
+    resource :favorites, only: [:create, :destroy]
     
     # 元々あった確認画面もここに入れるとスッキリする
     member do
       get 'confirm'
     end
   end
+
+  # --- 💡 2. いいね一覧機能を追加 (ヘッダー用リンクなど) ---
+  # ユーザーに紐付くものなので、usersのリソース内に書くか、単独で定義します
+  # 今回は要件に合わせ、ログインユーザーの情報を出すための「単独URL」として定義
+  get 'favorites' => 'favorites#index'
+  
 end
