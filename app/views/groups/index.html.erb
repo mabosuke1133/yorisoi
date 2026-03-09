@@ -1,0 +1,36 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="font-weight-bold text-primary">グループ一覧</h2>
+    <%= link_to '新規グループ作成', new_group_path, class: "btn btn-success rounded-pill" %>
+  </div>
+
+  <table class="table table-hover bg-white shadow-sm rounded">
+    <thead class="thead-light">
+      <tr>
+        <th>グループ名</th>
+        <th>紹介文</th>
+        <th>オーナー</th>
+        <th>アクション</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @groups.each do |group| %>
+        <tr>
+          <td><%= group.name %></td>
+          <td><%= truncate(group.introduction, length: 30) %></td>
+          <td>
+            <%# 💡 ここで owner という名前を使ってUserモデルから名前を引いています %>
+            <i class="fas fa-user-crown text-warning"></i> <%= group.owner.name %>
+          </td>
+          <td>
+            <%= link_to '詳細', group_path(group), class: "btn btn-outline-primary btn-sm" %>
+            <%# 💡 修正後：グループのオーナーが自分である時だけボタンを出す %>
+            <% if group.owner == current_user %>
+              <%= link_to '削除', group_path(group), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "btn btn-outline-danger btn-sm" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,72 @@
+<div class="container mt-5">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-primary text-white p-4">
+      <h2 class="mb-0"><%= @group.name %></h2>
+      <p class="mb-0 mt-2 small">オーナー：<%= @group.owner.name %> さん</p>
+    </div>
+    
+    <div class="card-body p-4">
+      <h5 class="font-weight-bold border-bottom pb-2">グループ紹介・ルール</h5>
+      <p class="card-text text-muted mb-5" style="white-space: pre-wrap;"><%= @group.introduction %></p>
+      
+      <div class="d-flex align-items-center">
+        <%= link_to '一覧に戻る', groups_path, class: "btn btn-secondary mr-3" %>
+
+        <%# 💡 1. 自分がオーナーかどうかで分岐 %>
+        <% if @group.owner == current_user %>
+          <span class="badge badge-primary p-2">あなたはオーナーです</span>
+        
+        <% else %>
+          <%# 💡 2. 申請データの有無を確認 %>
+          <% permit = current_user.permits.find_by(group_id: @group.id) %>
+
+          <% if permit.nil? %>
+            <%# 申請していない %>
+            <%= link_to '参加申請を送る', group_permits_path(@group), method: :post, class: "btn btn-success px-4 shadow-sm" %>
+          
+          <% elsif permit.pending? %>
+            <%# 承認待ち %>
+            <span class="badge badge-warning p-2 mr-2">承認待ちです</span>
+            <%= link_to '申請を取り消す', group_permit_path(@group, permit), method: :delete, class: "btn btn-outline-danger btn-sm" %>
+          
+          <% elsif permit.approved? %>
+            <%# 承認済み %>
+            <span class="badge badge-info p-2"><i class="fas fa-check-circle"></i> メンバーです</span>
+          
+          <% elsif permit.rejected? %>
+            <%# 拒否済み %>
+            <span class="badge badge-secondary p-2">今回は参加できません</span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if @group.owner == current_user %>
+  <hr class="my-5">
+  <div class="card border-warning shadow-sm">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="mb-0"><i class="fas fa-bell"></i> 届いている参加申請</h5>
+    </div>
+    <ul class="list-group list-group-flush">
+      <%# 💡 申請中(pending)のデータだけを表示 %>
+      <% pending_permits = @group.permits.pending %>
+      
+      <% if pending_permits.any? %>
+        <% pending_permits.each do |permit| %>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span><strong><%= permit.user.name %></strong> さんからの申請</span>
+            <div>
+              <%# 💡 statusを引数で渡して、同じupdateアクションで「承認」か「拒否」かを判断させる %>
+              <%= link_to '承認', group_permit_path(@group, permit, status: :approved), method: :patch, class: "btn btn-success btn-sm mr-2" %>
+              <%= link_to '拒否', group_permit_path(@group, permit, status: :rejected), method: :patch, class: "btn btn-outline-danger btn-sm" %>
+            </div>
+          </li>
+        <% end %>
+      <% else %>
+        <li class="list-group-item text-muted">現在、新しい申請はありません。</li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

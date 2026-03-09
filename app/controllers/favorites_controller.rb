@@ -3,17 +3,16 @@ class FavoritesController < ApplicationController
 
   # 💡 いいねを作る（カウント+1）
   def create
-    post = Post.find(params[:post_id])
-    favorite = current_user.favorites.new(post_id: post.id)
+    @post = Post.find(params[:post_id])
+    favorite = current_user.favorites.new(post_id: @post.id)
     favorite.save
-    # 直前のページに戻る（一覧なら一覧、詳細なら詳細）
     redirect_back(fallback_location: root_path)
   end
 
   # 💡 いいねを消す（カウント-1）
   def destroy
-    post = Post.find(params[:post_id])
-    favorite = current_user.favorites.find_by(post_id: post.id)
+    @post = Post.find(params[:post_id])
+    favorite = current_user.favorites.find_by(post_id: @post.id)
     favorite.destroy
     redirect_back(fallback_location: root_path)
   end

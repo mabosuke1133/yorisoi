@@ -1,18 +1,41 @@
-<h1>マイページ</h1>
+<%# 💡 自分のページなら「マイページ」、他人なら「〇〇さんのページ」と表示 %>
+<h1><%= @user == current_user ? "マイページ" : "#{@user.name}さんのページ" %></h1>
 
-<p>氏名：<%= @user.name %></p> <p>メールアドレス：<%= @user.email %></p>
+<p>氏名：<%= @user.name %></p>
+<%# 💡 メールアドレスは自分にしか見えないように制限 %>
+<% if @user == current_user %>
+  <p>メールアドレス：<%= @user.email %></p>
+<% end %>
 
-<%= link_to "プロフィール編集", edit_user_registration_path %>
+<%# --- 💡 ここから追加：フォロー・フォロワー数のリンク --- %>
+<div class="mb-3">
+  <%= link_to followings_user_path(@user), class: "mr-3", style: "text-decoration: none; color: inherit;" do %>
+    <strong><%= @user.followings.count %></strong> フォロー中
+  <% end %>
+
+  <%= link_to followers_user_path(@user), style: "text-decoration: none; color: inherit;" do %>
+    <strong><%= @user.followers.count %></strong> フォロワー
+  <% end %>
+</div>
+
+<%# --- 💡 ここから追加：フォローボタン --- %>
+<div class="mb-3">
+  <%= render "relationships/btn", user: @user %>
+</div>
+
+<%# 💡 編集ボタンは自分の時だけ表示 %>
+<% if @user == current_user %>
+  <%= link_to "プロフィール編集", edit_user_registration_path %>
+<% end %>
 
 <hr>
 
-<h2>自分の投稿一覧</h2>
+<h2><%= @user == current_user ? "自分" : @user.name + "さん" %>の投稿一覧</h2>
 <% @posts.each do |post| %>
   <div>
     <p>
       <%= post.created_at.strftime('%Y/%m/%d') %>：
       <%= link_to post.title, post_path(post) %>
-      <%# --- 💡 各投稿へのコメント数 --- %>
       （コメント数：<%= post.post_comments.count %>）
     </p>
   </div>
@@ -20,4 +43,6 @@
 
 <hr>
 
-<%= link_to "退会する", user_path(current_user), method: :delete, data: { confirm: "本当に退会しますか？" }, style: "color: red;" %>
+<% if @user == current_user %>
+  <%= link_to "退会する", user_path(current_user), method: :delete, data: { confirm: "本当に退会しますか？" }, style: "color: red;" %>
+<% end %>

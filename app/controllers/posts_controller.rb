@@ -4,13 +4,18 @@ class PostsController < ApplicationController
   before_action :ensure_correct_user, only: [:edit, :update, :destroy]
 
   def index
-    if params[:keyword].present?
-      # 検索窓に文字が入っている場合、その文字で絞り込む
-      @posts = Post.where('title LIKE ?', "%#{params[:keyword]}%").order(created_at: :desc)
-    else
-      # 検索窓が空、または検索していない場合、全件表示する
-      @posts = Post.all.order(created_at: :desc)
-    end
+    # 1. まずはベースとなる投稿を決める（ログインならタイムライン、未ログインなら全投稿）
+   if user_signed_in?
+     @posts = current_user.feed
+   else
+     @posts = Post.all
+   end
+    # 2. もし検索キーワードがあれば、その中からさらに絞り込む
+   if params[:keyword].present?
+     @posts = @posts.where('title LIKE ?', "%#{params[:keyword]}%")
+   end
+    # 3. 最後に並び替えを適用する
+     @posts = @posts.order(created_at: :desc)
   end
 
   def show

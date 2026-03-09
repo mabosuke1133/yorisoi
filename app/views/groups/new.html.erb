@@ -1,0 +1,14 @@
+<div class="container mt-5">
+  <h2>新規グループ作成</h2>
+  <%= form_with model: @group, local: true do |f| %>
+    <div class="form-group">
+      <%= f.label :name, "グループ名" %>
+      <%= f.text_field :name, class: "form-control" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :introduction, "紹介文・ルール" %>
+      <%= f.text_area :introduction, class: "form-control", rows: 5 %>
+    </div>
+    <%= f.submit "グループを作る", class: "btn btn-success" %>
+  <% end %>
+</div>

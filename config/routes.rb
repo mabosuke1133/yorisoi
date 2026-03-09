@@ -30,7 +30,15 @@ Rails.application.routes.draw do
 
   get '/users' => redirect('/users/sign_up')
 
-  resources :users, only: [:show, :destroy] 
+  resources :users, only: [:show, :destroy] do
+    # 💡 フォロー/解除のためのルート
+    resource :relationships, only: [:create, :destroy]
+    
+    # 💡 一覧表示用のルート
+    member do
+      get :followings, :followers
+    end
+  end
 
   resources :posts do
     # コメントは投稿に紐付くため、中に書く（ネスト）
@@ -44,6 +52,12 @@ Rails.application.routes.draw do
     member do
       get 'confirm'
     end
+  end
+  
+  resources :groups, only: [:index, :new, :create, :show, :destroy]
+
+  resources :groups do
+    resources :permits, only: [:create, :destroy, :update]
   end
 
   # --- 💡 2. いいね一覧機能を追加 (ヘッダー用リンクなど) ---
