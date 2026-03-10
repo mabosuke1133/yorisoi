@@ -3,6 +3,12 @@ class GroupsController < ApplicationController
 
   def index
     @groups = Group.all
+
+     # 💡 ログイン中なら、自分に関係するグループを準備
+    if user_signed_in?
+      @my_groups = current_user.owned_groups # 自分が作った
+      @joining_groups = current_user.participating_groups # 承認されて参加中
+    end
   end
 
   def new

@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
     if resource.is_a?(Admin)
       admin_users_path # 管理者はログイン後、ユーザー一覧（管理画面）へ
     else
-      posts_path       # 一般ユーザーはログイン後、投稿一覧（タイムライン）へ
+      groups_path # 一般ユーザーはチームルーム（グループ一覧）へ！
     end
   end
 

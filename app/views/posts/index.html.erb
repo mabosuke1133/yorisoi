@@ -1,8 +1,16 @@
 <div class="container mt-4">
   <%# ヘッダー部分 %>
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="font-weight-bold text-success">寄り添いタイムライン</h1>
-    <span class="badge badge-pill badge-light text-muted">全 <%= @posts.count %> 件の投稿</span>
+    <div>
+      <h2 class="font-weight-bold text-success d-inline-block mr-2">みんなの広場</h2>
+      <span class="badge badge-pill badge-light text-muted p-2 shadow-sm">
+        全 <%= @posts.count %> 件の投稿
+      </span>
+    </div>
+    
+    <%= link_to new_post_path, class: "btn btn-success rounded-pill px-4 shadow-sm" do %>
+      <i class="fas fa-paper-plane"></i> つぶやきを届ける
+    <% end %>
   </div>
 
   <%# 🔍 検索フォーム %>

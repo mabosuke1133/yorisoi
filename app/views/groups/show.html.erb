@@ -9,37 +9,95 @@
       <h5 class="font-weight-bold border-bottom pb-2">グループ紹介・ルール</h5>
       <p class="card-text text-muted mb-5" style="white-space: pre-wrap;"><%= @group.introduction %></p>
       
+      <div class="mb-5">
+        <h5 class="font-weight-bold border-bottom pb-2">
+          <i class="fas fa-users text-info"></i> 参加メンバー (<%= @group.approved_users.count %>名)
+        </h5>
+        <div class="d-flex flex-wrap mt-3">
+          <% if @group.approved_users.any? %>
+            <% @group.approved_users.each do |user| %>
+              <div class="text-center mr-4 mb-3">
+                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 50px; height: 50px; margin: 0 auto;">
+                  <i class="fas fa-user text-secondary"></i>
+                </div>
+                <p class="small mt-2 mb-0"><%= user.name %></p>
+              </div>
+            <% end %>
+          <% else %>
+            <p class="text-muted small ml-2">まだメンバーはいません。</p>
+          <% end %>
+        </div>
+      </div>
+
       <div class="d-flex align-items-center">
         <%= link_to '一覧に戻る', groups_path, class: "btn btn-secondary mr-3" %>
 
-        <%# 💡 1. 自分がオーナーかどうかで分岐 %>
         <% if @group.owner == current_user %>
           <span class="badge badge-primary p-2">あなたはオーナーです</span>
-        
         <% else %>
-          <%# 💡 2. 申請データの有無を確認 %>
           <% permit = current_user.permits.find_by(group_id: @group.id) %>
-
           <% if permit.nil? %>
-            <%# 申請していない %>
             <%= link_to '参加申請を送る', group_permits_path(@group), method: :post, class: "btn btn-success px-4 shadow-sm" %>
-          
           <% elsif permit.pending? %>
-            <%# 承認待ち %>
             <span class="badge badge-warning p-2 mr-2">承認待ちです</span>
             <%= link_to '申請を取り消す', group_permit_path(@group, permit), method: :delete, class: "btn btn-outline-danger btn-sm" %>
-          
           <% elsif permit.approved? %>
-            <%# 承認済み %>
             <span class="badge badge-info p-2"><i class="fas fa-check-circle"></i> メンバーです</span>
-          
           <% elsif permit.rejected? %>
-            <%# 拒否済み %>
             <span class="badge badge-secondary p-2">今回は参加できません</span>
           <% end %>
         <% end %>
       </div>
     </div>
+  </div>
+</div>
+
+<hr class="my-5">
+<div class="row">
+  <div class="col-md-10 mx-auto">
+    <h4 class="mb-4"><i class="fas fa-comments text-primary"></i> メンバー限定掲示板</h4>
+
+    <%# 1. メッセージ一覧表示エリア %>
+    <div class="chat-board bg-light p-4 rounded shadow-sm mb-4" style="max-height: 500px; overflow-y: auto;">
+      <% if @group.group_messages.any? %>
+        <% @group.group_messages.each do |message| %>
+          <div class="mb-3 d-flex align-items-start">
+            <div class="mr-3 text-center">
+              <i class="fas fa-user-circle fa-2x text-secondary"></i>
+              <div class="small text-muted" style="font-size: 0.7rem;"><%= message.user.name %></div>
+            </div>
+            <div class="bg-white p-3 rounded shadow-sm position-relative" style="max-width: 80%;">
+              <div class="card-text"><%= simple_format(message.body) %></div>
+              <div class="text-right small text-muted" style="font-size: 0.6rem;">
+                <%= message.created_at.strftime('%Y/%m/%d %H:%M') %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-muted text-center py-5">まだメッセージはありません。最初の投稿をしてみましょう！</p>
+      <% end %>
+    </div>
+
+    <%# 2. 投稿フォーム（オーナーまたは承認済みメンバーのみ） %>
+    <% if @group.owner == current_user || @group.approved_users.include?(current_user) %>
+      <div class="card border-primary shadow-sm">
+        <div class="card-body">
+          <%= form_with model: [@group, GroupMessage.new], local: true do |f| %>
+            <div class="form-group">
+              <%= f.text_area :body, class: "form-control", rows: 3, placeholder: "チームにメッセージを送りましょう（現場の悩みや共有事項など）" %>
+            </div>
+            <div class="text-right">
+              <%= f.submit "投稿する", class: "btn btn-primary px-4 shadow-sm" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <div class="alert alert-secondary text-center shadow-sm">
+        <i class="fas fa-lock"></i> 掲示板への投稿・閲覧は承認されたメンバー限定です。
+      </div>
+    <% end %>
   </div>
 </div>
 
@@ -50,15 +108,12 @@
       <h5 class="mb-0"><i class="fas fa-bell"></i> 届いている参加申請</h5>
     </div>
     <ul class="list-group list-group-flush">
-      <%# 💡 申請中(pending)のデータだけを表示 %>
       <% pending_permits = @group.permits.pending %>
-      
       <% if pending_permits.any? %>
         <% pending_permits.each do |permit| %>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span><strong><%= permit.user.name %></strong> さんからの申請</span>
             <div>
-              <%# 💡 statusを引数で渡して、同じupdateアクションで「承認」か「拒否」かを判断させる %>
               <%= link_to '承認', group_permit_path(@group, permit, status: :approved), method: :patch, class: "btn btn-success btn-sm mr-2" %>
               <%= link_to '拒否', group_permit_path(@group, permit, status: :rejected), method: :patch, class: "btn btn-outline-danger btn-sm" %>
             </div>

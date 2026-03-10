@@ -6,75 +6,82 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# Bootstrapの導入 %>
+    <%# Bootstrap 4.5 %>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <%# Font Awesome (アイコン用) %>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css">
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
-  <%# 管理者ログイン時だけ背景色を少し変える工夫 %>
+  <%# 管理者ログイン時のみ背景を bg-light に変更 %>
   <body class="<%= 'bg-light' if admin_signed_in? %>">
 
     <header>
-      <%# ナビゲーションバー %>
       <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
         <div class="container">
           <%= link_to 'Yorisoi', root_path, class: 'navbar-brand font-weight-bold text-success' %>
           
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ml-auto align-items-center">
-              <%# --- 管理者ログイン中 --- %>
+
               <% if admin_signed_in? %>
+                <%# --- 管理者メニュー --- %>
                 <li class="nav-item border-right pr-2 mr-2"><span class="badge badge-dark">管理者モード</span></li>
                 <li class="nav-item"><%= link_to 'ユーザー一覧', admin_users_path, class: 'nav-link' %></li>
                 <li class="nav-item"><%= link_to '投稿管理', admin_posts_path, class: 'nav-link' %></li>
-                <li class="nav-item"><%= link_to 'ログアウト', destroy_admin_session_path, class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to 'ログアウト', destroy_admin_session_path, class: 'nav-link', method: :delete %></li>
 
-              <%# --- 一般ユーザーログイン中 --- %>
               <% elsif user_signed_in? %>
-                <li class="nav-item"><%= link_to '投稿一覧', posts_path, class: 'nav-link' %></li>
-                <li class="nav-item"><%= link_to '新規投稿', new_post_path, class: 'nav-link btn btn-outline-success mx-2' %></li>
+                <%# --- 一般ユーザーメニュー --- %>
                 <li class="nav-item">
+                  <%= link_to groups_path, class: 'nav-link' do %>
+                    <i class="fas fa-users"></i> チームルーム
+                  <% end %>
+                </li>
+                <li class="nav-item"><%= link_to 'みんなの広場', posts_path, class: 'nav-link' %></li>
+                <li class="nav-item ml-2">
                   <%= link_to favorites_path, class: 'nav-link' do %>
-                    <i class="fas fa-heart text-danger"></i> いいね一覧
+                    <i class="fas fa-heart text-danger"></i> いいね
                   <% end %>
                 </li>
                 <li class="nav-item"><%= link_to 'マイページ', user_path(current_user), class: 'nav-link' %></li>
-                <li class="nav-item"><%= link_to 'ログアウト', destroy_user_session_path, class: 'nav-link' %></li>
-              
-              <%# --- 未ログイン状態 --- %>
+                <li class="nav-item ml-2"><%= link_to 'ログアウト', destroy_user_session_path, class: 'nav-link text-muted', method: :delete %></li>
+
               <% else %>
+                <%# --- 未ログインメニュー --- %>
                 <li class="nav-item"><%= link_to 'About', about_path, class: 'nav-link' %></li>
-                <li class="nav-item"><%= link_to '新規登録', new_user_registration_path, class: 'nav-link' %></li>
+                <li class="nav-item"><%= link_to '新規登録', new_user_registration_path, class: 'nav-link font-weight-bold' %></li>
                 <li class="nav-item"><%= link_to 'ログイン', new_user_session_path, class: 'nav-link' %></li>
-                <li class="nav-item ml-2">
-                  <%= link_to '管理者ログイン', new_admin_session_path, class: 'nav-link' %>
+                <li class="nav-item ml-3 border-left pl-3">
+                  <%= link_to '管理者の方はこちら', new_admin_session_path, class: 'small text-muted' %>
                 </li>
               <% end %>
+
             </ul>
           </div>
         </div>
       </nav>
 
-      <%# フラッシュメッセージ %>
+      <%# 通知用フラッシュメッセージ %>
       <div class="container">
-        <% if notice %>
-          <div class="alert alert-success alert-dismissible fade show">
-            <%= notice %>
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-          </div>
-        <% end %>
-        <% if alert %>
-          <div class="alert alert-danger alert-dismissible fade show">
-            <%= alert %>
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <% flash.each do |key, value| %>
+          <% alert_class = key == 'notice' ? 'success' : 'danger' %>
+          <div class="alert alert-<%= alert_class %> alert-dismissible fade show shadow-sm" role="alert">
+            <%= value %>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
         <% end %>
       </div>
     </header>
 
-    <%# メインコンテンツ %>
     <main class="container mb-5">
       <%= yield %>
     </main>

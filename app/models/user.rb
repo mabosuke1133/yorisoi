@@ -66,4 +66,11 @@ class User < ApplicationRecord
     # Post.where(user_id: [1, 3, 5, 自分のID]) という条件で検索
     Post.where(user_id: following_ids << self.id)
   end
+
+  # 💡 自分がオーナー（作った人）であるグループ
+  has_many :owned_groups, class_name: 'Group', foreign_key: 'owner_id', dependent: :destroy
+
+  # 💡 自分がメンバーとして「承認済み」のグループ
+  has_many :approved_permits, -> { where(status: :approved) }, class_name: 'Permit'
+  has_many :participating_groups, through: :approved_permits, source: :group
 end

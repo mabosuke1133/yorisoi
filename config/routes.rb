@@ -58,6 +58,7 @@ Rails.application.routes.draw do
 
   resources :groups do
     resources :permits, only: [:create, :destroy, :update]
+    resources :group_messages, only: [:create]
   end
 
   # --- 💡 2. いいね一覧機能を追加 (ヘッダー用リンクなど) ---

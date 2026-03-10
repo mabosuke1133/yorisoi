@@ -1,36 +1,82 @@
 <div class="container mt-4">
+  <% if user_signed_in? %>
+    <div class="row mb-5">
+      <div class="col-md-6">
+        <div class="card shadow-sm border-0 bg-light">
+          <div class="card-body">
+            <h5 class="font-weight-bold text-primary mb-3"><i class="fas fa-tools"></i> 管理中のグループ</h5>
+            <% if @my_groups.any? %>
+              <ul class="list-unstyled mb-0">
+                <% @my_groups.each do |group| %>
+                  <li class="mb-2 d-flex justify-content-between align-items-center">
+                    <%= link_to group.name, group_path(group), class: "text-dark font-weight-bold" %>
+                    <span class="badge badge-primary px-3">オーナー</span>
+                  </li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p class="text-muted small mb-0">管理しているグループはありません。</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="card shadow-sm border-0 bg-light">
+          <div class="card-body">
+            <h5 class="font-weight-bold text-success mb-3"><i class="fas fa-handshake"></i> 参加中のグループ</h5>
+            <% if @joining_groups.any? %>
+              <ul class="list-unstyled mb-0">
+                <% @joining_groups.each do |group| %>
+                  <li class="mb-2 d-flex justify-content-between align-items-center">
+                    <%= link_to group.name, group_path(group), class: "text-dark font-weight-bold" %>
+                    <span class="badge badge-success px-3">メンバー</span>
+                  </li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p class="text-muted small mb-0">参加しているグループはありません。</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="mb-5">
+  <% end %>
+  <%# --- 🆕 ここまで --- %>
+
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="font-weight-bold text-primary">グループ一覧</h2>
-    <%= link_to '新規グループ作成', new_group_path, class: "btn btn-success rounded-pill" %>
+    <%= link_to '新規グループ作成', new_group_path, class: "btn btn-success rounded-pill px-4 shadow-sm" %>
   </div>
 
-  <table class="table table-hover bg-white shadow-sm rounded">
-    <thead class="thead-light">
-      <tr>
-        <th>グループ名</th>
-        <th>紹介文</th>
-        <th>オーナー</th>
-        <th>アクション</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @groups.each do |group| %>
+  <div class="table-responsive">
+    <table class="table table-hover bg-white shadow-sm rounded">
+      <thead class="thead-light">
         <tr>
-          <td><%= group.name %></td>
-          <td><%= truncate(group.introduction, length: 30) %></td>
-          <td>
-            <%# 💡 ここで owner という名前を使ってUserモデルから名前を引いています %>
-            <i class="fas fa-user-crown text-warning"></i> <%= group.owner.name %>
-          </td>
-          <td>
-            <%= link_to '詳細', group_path(group), class: "btn btn-outline-primary btn-sm" %>
-            <%# 💡 修正後：グループのオーナーが自分である時だけボタンを出す %>
-            <% if group.owner == current_user %>
-              <%= link_to '削除', group_path(group), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "btn btn-outline-danger btn-sm" %>
-            <% end %>
-          </td>
+          <th>グループ名</th>
+          <th>紹介文</th>
+          <th>オーナー</th>
+          <th>アクション</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% @groups.each do |group| %>
+          <tr>
+            <td class="align-middle"><strong><%= group.name %></strong></td>
+            <td class="align-middle"><%= truncate(group.introduction, length: 30) %></td>
+            <td class="align-middle">
+              <i class="fas fa-user-circle text-muted"></i> <%= group.owner.name %>
+            </td>
+            <td class="align-middle">
+              <%= link_to '詳細', group_path(group), class: "btn btn-outline-primary btn-sm" %>
+              <% if group.owner == current_user %>
+                <%= link_to '削除', group_path(group), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "btn btn-outline-danger btn-sm" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>

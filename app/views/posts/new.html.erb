@@ -1,41 +1,31 @@
-<h1>新規投稿</h1>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-5">
+          <h2 class="text-center mb-4 font-weight-bold text-success">つぶやきを届ける</h2>
+          <p class="text-muted text-center mb-5 small">今の気持ちや現場での気づきを、みんなに届けてみましょう。</p>
 
-<% if @post.errors.any? %>
-  <div id="error_explanation">
-    <h3><%= @post.errors.count %> 件のエラーが発生しました。</h3>
-    <ul>
-      <% @post.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
+          <%= form_with model: @post, local: true do |f| %>
+            <div class="form-group mb-4">
+              <%= f.label :title, "タイトル", class: "font-weight-bold" %>
+              <%= f.text_field :title, class: "form-control form-control-lg bg-light border-0", placeholder: "一言で表すと？" %>
+            </div>
+
+            <div class="form-group mb-4">
+              <%= f.label :body, "内容", class: "font-weight-bold" %>
+              <%= f.text_area :body, class: "form-control bg-light border-0", rows: 6, placeholder: "今の気持ちをとことん書いてみましょう" %>
+            </div>
+
+            <div class="text-center mt-5">
+              <%= f.submit "みんなに届ける", class: "btn btn-success btn-lg rounded-pill px-5 shadow" %>
+              <div class="mt-3">
+                <%= link_to '戻る', posts_path, class: "text-muted small" %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
-<% end %>
-
-<%= form_with model: @post, local: true do |f| %>
-  <div>
-    <%= f.label :title, "タイトル" %><br>
-    <%= f.text_field :title %>
-  </div>
-
-  <div>
-    <%= f.label :body, "本文" %><br>
-    <%= f.text_area :body %>
-  </div>
-
-  <div>
-    <%= f.label :image, "画像" %><br>
-    <%= f.file_field :image, accept: "image/*" %>
-  </div>
-
-  <div>
-    <%= f.label :emotion_level, "今の感情レベル（1: どん底 〜 5: 絶好調）" %><br>
-    <%= f.select :emotion_level, [1, 2, 3, 4, 5], include_blank: "選択してください" %>
-  </div>
-
-  <div>
-    <%= f.submit "投稿する" %>
-  </div>
-<% end %>
-
-<hr>
-<%= link_to '一覧に戻る', posts_path %>
+</div>
