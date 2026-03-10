@@ -4,7 +4,7 @@
     <div>
       <h2 class="font-weight-bold text-success d-inline-block mr-2">みんなの広場</h2>
       <span class="badge badge-pill badge-light text-muted p-2 shadow-sm">
-        全 <%= @posts.count %> 件の投稿
+        全 <%= @posts.count %> 件の想い
       </span>
     </div>
     
@@ -26,7 +26,7 @@
   <div class="row">
     <% @posts.each do |post| %>
       <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100 shadow-sm border-0 rounded-lg overflow-hidden">
+        <div class="card h-100 shadow-sm border-0 rounded-lg overflow-hidden <%= 'border-sos animate-pulse' if post.priority == 5 %>">
           
           <%# 1. 画像エリア %>
           <div class="post-image-container bg-light text-center">
@@ -40,7 +40,13 @@
           <%# 2. ボディエリア %>
           <div class="card-body">
             <div class="mb-2">
-              <span class="badge badge-info">感情レベル: <%= post.emotion_level %></span>
+              <% if post.priority == 5 %>
+                <span class="badge badge-danger p-2 shadow-sm"><i class="fas fa-exclamation-triangle"></i> 緊急SOS</span>
+              <% elsif post.priority == 1 %>
+                <span class="badge badge-info p-2 text-white"><i class="fas fa-seedling"></i> おだやか</span>
+              <% else %>
+                <span class="badge badge-success p-2"><i class="fas fa-leaf"></i> きいて</span>
+              <% end %>
             </div>
             
             <h5 class="card-title font-weight-bold text-dark mb-1">
@@ -52,22 +58,24 @@
             </p>
           </div>
 
-          <%# 3. フッターエリア（コメント & いいね & 詳細ボタン） %>
+          <%# 3. フッターエリア（削除ボタンを追加） %>
           <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center pb-3">
             <div class="d-flex align-items-center">
-              <%# コメント数 %>
               <span class="small text-muted mr-3">
                 <i class="far fa-comment-dots"></i> <%= post.post_comments.count %>
               </span>
-              
-              <%# いいねボタン %>
               <span class="small">
                 <%= render 'favorites/favorite_btn', post: post %>
               </span>
             </div>
 
-            <%# 詳細リンク %>
-            <%= link_to '詳細を見る', post_path(post), class: 'btn btn-outline-success btn-sm rounded-pill px-3' %>
+            <div class="d-flex align-items-center">
+              <%# 🆕 投稿者本人の場合のみ削除ボタンを表示 %>
+              <% if post.user == current_user %>
+                <%= link_to '削除', post_path(post), method: :delete, data: { confirm: 'このつぶやきを削除してもよろしいですか？' }, class: 'text-danger small mr-3' %>
+              <% end %>
+              <%= link_to '詳細を見る', post_path(post), class: 'btn btn-outline-success btn-sm rounded-pill px-3' %>
+            </div>
           </div>
 
         </div>
@@ -75,3 +83,20 @@
     <% end %>
   </div>
 </div>
+
+<style>
+  .border-sos {
+    border: 2px solid #dc3545 !important;
+    box-shadow: 0 0 15px rgba(220, 53, 69, 0.3) !important;
+  }
+  
+  .animate-pulse {
+    animation: pulse 2.5s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+</style>

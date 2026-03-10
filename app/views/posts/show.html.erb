@@ -11,12 +11,18 @@
         <div class="card-body p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h1 class="h3 font-weight-bold mb-0"><%= @post.title %></h1>
-            <span class="badge badge-info p-2">感情レベル: <%= @post.emotion_level %></span>
+            
+            <%# 🆕 シグナルの表示を更新（おだやか・きいて・SOS） %>
+            <% if @post.priority == 5 %>
+              <span class="badge badge-danger p-2 shadow-sm animate-pulse"><i class="fas fa-exclamation-triangle"></i> 緊急SOS</span>
+            <% elsif @post.priority == 1 %>
+              <span class="badge badge-info p-2 text-white"><i class="fas fa-seedling"></i> おだやか</span>
+            <% else %>
+              <span class="badge badge-success p-2"><i class="fas fa-leaf"></i> きいて</span>
+            <% end %>
           </div>
 
-          <p class="text-muted mb-4" style="line-height: 1.8;">
-            <%= @post.body %>
-          </p>
+          <p class="text-muted mb-4" style="line-height: 1.8; white-space: pre-wrap;"><%= @post.body %></p>
 
           <div class="d-flex justify-content-between align-items-center border-top pt-3">
             <div class="d-flex align-items-center">
@@ -25,7 +31,7 @@
                 投稿者: <%= link_to @post.user.name, user_path(@post.user), class: "font-weight-bold text-success" %>
               </div>
               
-              <%# 💡 いいねボタンをここに追加 %>
+              <%# いいねボタン %>
               <div class="small">
                 <%= render 'favorites/favorite_btn', post: @post %>
               </div>
@@ -34,8 +40,9 @@
             <%# 編集・削除ボタン（自分の投稿の場合のみ） %>
             <div>
               <% if @post.user == current_user %>
-                <%= link_to '編集', edit_post_path(@post), class: "btn btn-outline-secondary btn-sm" %>
-                <%= link_to '削除', confirm_post_path(@post), class: "btn btn-outline-danger btn-sm" %>
+                <%= link_to '編集', edit_post_path(@post), class: "btn btn-outline-secondary btn-sm rounded-pill px-3 mr-2" %>
+                <%# 🆕 confirm_post_path ではなく直接 delete するように修正 %>
+                <%= link_to '削除', post_path(@post), method: :delete, data: { confirm: 'このつぶやきを削除してもよろしいですか？' }, class: "btn btn-outline-danger btn-sm rounded-pill px-3" %>
               <% end %>
             </div>
           </div>
@@ -50,37 +57,3 @@
       <h4 class="mb-4"><i class="far fa-comments text-success"></i> 寄り添いメッセージ（<%= @post.post_comments.count %>件）</h4>
       
       <div class="comments-section mb-5">
-        <% @post.post_comments.each do |post_comment| %>
-          <div class="p-3 mb-3 bg-white rounded-lg shadow-sm" style="border-left: 5px solid #88b04b;">
-            <p class="mb-2"><%= post_comment.comment %></p>
-            
-            <div class="d-flex justify-content-between align-items-center">
-              <small class="text-muted">
-                <strong><%= link_to post_comment.user.name, user_path(post_comment.user), class: "text-success" %></strong> さん 
-                <span class="ml-2"><%= post_comment.created_at.strftime('%Y/%m/%d %H:%M') %></span>
-              </small>
-
-              <% if post_comment.user == current_user %>
-                <%= link_to "削除", post_post_comment_path(@post, post_comment), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "text-danger small" %>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-
-      <%# --- コメント投稿フォーム --- %>
-      <div class="new-comment bg-light p-4 rounded-lg shadow-sm mb-5">
-        <%= form_with model: [@post, PostComment.new], local: true do |f| %>
-          <div class="form-group">
-            <%= f.label :comment, "寄り添いのコメントを送る", class: "font-weight-bold" %>
-            <%= f.text_area :comment, rows: '3', placeholder: "ここにコメントを入力してください", class: "form-control border-0 shadow-sm" %>
-          </div>
-          <div class="text-right">
-            <%= f.submit "送信する", class: "btn btn-success px-4 rounded-pill shadow-sm" %>
-          </div>
-        <% end %>
-      </div>
-
-    </div>
-  </div>
-</div>

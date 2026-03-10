@@ -1,21 +1,19 @@
 class PostsController < ApplicationController
-  # ログインしていないと投稿できないようにする
   before_action :authenticate_user!
   before_action :ensure_correct_user, only: [:edit, :update, :destroy]
 
   def index
-    # 1. まずはベースとなる投稿を決める（ログインならタイムライン、未ログインなら全投稿）
-   if user_signed_in?
-     @posts = current_user.feed
-   else
-     @posts = Post.all
-   end
-    # 2. もし検索キーワードがあれば、その中からさらに絞り込む
-   if params[:keyword].present?
-     @posts = @posts.where('title LIKE ?', "%#{params[:keyword]}%")
-   end
-    # 3. 最後に並び替えを適用する
-     @posts = @posts.order(created_at: :desc)
+    if user_signed_in?
+      @posts = current_user.feed
+    else
+      @posts = Post.all
+    end
+
+    if params[:keyword].present?
+      @posts = @posts.where('title LIKE ?', "%#{params[:keyword]}%")
+    end
+
+    @posts = @posts.order(created_at: :desc)
   end
 
   def show
@@ -24,55 +22,56 @@ class PostsController < ApplicationController
 
   def edit
     @post = Post.find(params[:id])
-  # 【要件10】投稿者本人でない場合は、一覧へリダイレクトさせる（URL直打ち対策）
-   if @post.user != current_user
-     redirect_to posts_path, alert: "他人の投稿は編集できません。"
-   end
   end
 
   def new
-    @post = Post.new # 新しい投稿用の空のインスタンスを作成
+    @post = Post.new
   end
 
   def create
-   @post = Post.new(post_params)
-   @post.user_id = current_user.id # ログイン中のユーザーIDを紐付け
-   if @post.save
-     redirect_to posts_path, notice: "寄り添い（投稿）を公開しました！"
-   else
-     render :new # 保存失敗時は新規登録画面を再表示
-   end
+    @post = Post.new(post_params)
+    @post.user_id = current_user.id
+    if @post.save
+      redirect_to posts_path, notice: "つぶやきをみんなに届けました！"
+    else
+      # 保存に失敗した場合、ここ（入力画面）に戻ってくる
+      render :new
+    end
   end
   
   def update
     @post = Post.find(params[:id])
-    # 【要件7 & 8】バリデーションチェック。成功すれば詳細へ、失敗すれば編集画面を再表示
     if @post.update(post_params)
-     redirect_to post_path(@post), notice: "投稿を更新しました！"
+      redirect_to post_path(@post), notice: "投稿を更新しました！"
     else
-     render :edit
-   end
-  end
-
-  def confirm
-  @post = Post.find(params[:id])
+      render :edit
+    end
   end
 
   def destroy
     @post = Post.find(params[:id])
-    # 本人確認（要件10の削除制限も兼ねる）
-    if @post.user == current_user
-      @post.destroy
-      redirect_to posts_path, notice: "投稿を削除しました。"
-    else
-      redirect_to posts_path, alert: "他人の投稿は削除できません。"
-    end
+    @post.destroy
+    redirect_to posts_path, notice: "投稿を削除しました。"
   end
 
+  def confirm
+    # 🆕 IDを元に、削除しようとしている投稿を探して @post に入れる
+    @post = Post.find(params[:id])
+  end
+
+  # --- ここから下に「身内用」のメソッドをまとめる ---
   private
 
-  # 悪意のあるデータ操作を防ぐ「ストロングパラメーター」
+  # 門番（許可する項目をここにすべて書く）
   def post_params
-    params.require(:post).permit(:title, :body, :emotion_level, :image)
+    params.require(:post).permit(:title, :body, :priority, :image)
+  end
+
+  # 本人確認のメソッド（もし以前作っていたならここに入れる）
+  def ensure_correct_user
+    @post = Post.find(params[:id])
+    if @post.user != current_user
+      redirect_to posts_path, alert: "権限がありません。"
+    end
   end
 end
