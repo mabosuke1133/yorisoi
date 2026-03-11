@@ -4,36 +4,31 @@ class ApplicationController < ActionController::Base
   # 🟢 ログインした後の遷移先
   def after_sign_in_path_for(resource)
     if resource.is_a?(Admin)
-      admin_users_path # 管理者はログイン後、ユーザー一覧（管理画面）へ
+      # 管理者も、ログイン後は「チームルーム（グループ一覧）」へ！
+      groups_path
     else
-      groups_path # 一般ユーザーはチームルーム（グループ一覧）へ！
+      # 一般ユーザーもチームルーム（グループ一覧）へ！
+      groups_path
+    end
+  end
+
+  # 🔴 ログアウトした後の遷移先
+  def after_sign_out_path_for(resource_or_scope)
+    if resource_or_scope == :admin
+      new_admin_session_path
+    else
+      new_user_session_path
     end
   end
 
   protected
 
   def configure_permitted_parameters
-    # もし操作しているのが「管理者(Admin)」モデルなら
     if resource_name == :admin
       devise_parameter_sanitizer.permit(:sign_up, keys: [:invitation_code])
-      
-    # もし操作しているのが「一般ユーザー(User)」モデルなら
     elsif resource_name == :user
       devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
       devise_parameter_sanitizer.permit(:account_update, keys: [:name])
-    end
-  end
-
-  private
-
-  # 🔴 ログアウトした後の遷移先
-  def after_sign_out_path_for(resource_or_scope)
-    if resource_or_scope == :admin
-      # 管理者がログアウトしたら管理者用ログイン画面へ
-      new_admin_session_path
-    else
-      # 一般ユーザーがログアウトしたら、ログイン画面へ
-      new_user_session_path
     end
   end
 end
