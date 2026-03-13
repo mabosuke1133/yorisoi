@@ -15,10 +15,26 @@
 
   <%# 🔍 検索フォーム %>
   <div class="search_form mb-5 p-4 bg-white rounded shadow-sm border text-center">
-    <p class="small text-muted mb-3"><i class="fas fa-search"></i> 気になるキーワードで投稿を探してみましょう</p>
+    <p class="small text-muted mb-3">
+      <i class="fas fa-search"></i> 
+      <% if params[:keyword].present? %>
+        「<strong><%= params[:keyword] %></strong>」の検索結果（<%= @posts.count %>件）
+      <% else %>
+        気になるキーワードで投稿を探してみましょう
+      <% end %>
+    </p>
+
     <%= form_with url: posts_path, method: :get, local: true, class: "form-inline justify-content-center" do |f| %>
+      <%# params[:keyword] を value に入れることで、検索後も入力した文字が残るようにします %>
       <%= f.text_field :keyword, value: params[:keyword], class: "form-control mr-sm-2 rounded-pill w-50", placeholder: "キーワードを入力..." %>
       <%= f.submit "検索", class: "btn btn-success rounded-pill px-4 shadow-sm" %>
+      
+      <%# 💡 検索中のみ「クリア」ボタンを表示して、全表示に戻りやすくする %>
+      <% if params[:keyword].present? %>
+        <%= link_to posts_path, class: "btn btn-link text-muted ml-2" do %>
+          <i class="fas fa-times-circle"></i> クリア
+        <% end %>
+      <% end %>
     <% end %>
   </div>
 

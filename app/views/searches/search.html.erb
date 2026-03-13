@@ -1,6 +1,7 @@
 <h2>検索結果</h2>
 
 <table class="table">
+  <%# 💡 条件分岐：検索対象(User or Post)に合わせて、最適なテーブルレイアウトを動的に生成 %>
   <% if @range == "User" %>
     <thead>
       <tr>
@@ -12,6 +13,7 @@
       <% @users.each do |user| %>
         <tr>
           <td><%= user.name %></td>
+          <%# 💡 導線設計：検索して終わりではなく、すぐに詳細を確認できるようスムーズな遷移を意識 %>
           <td><%= link_to '詳細', user_path(user) %></td>
         </tr>
       <% end %>
@@ -26,7 +28,8 @@
     <tbody>
       <% @posts.each do |post| %>
         <tr>
-          <td><%= post.title %></td>
+          <%# 💡 視認性：タイトルをクリック可能にすることで、直感的な操作感を提供（ここは要件に合わせてリンク化も検討） %>
+          <td><%= link_to post.title, post_path(post) %></td>
           <td><%= post.body %></td>
         </tr>
       <% end %>

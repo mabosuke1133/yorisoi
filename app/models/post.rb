@@ -19,15 +19,16 @@ class Post < ApplicationRecord
   # 検索用メソッド
   def self.looks(search, word)
     if search == "perfect_match"
-      @post = Post.where("title LIKE?", "#{word}")
+      where("title LIKE?", "#{word}")
     elsif search == "forward_match"
-      @post = Post.where("title LIKE?", "#{word}%")
+      where("title LIKE?", "#{word}%")
     elsif search == "backward_match"
-      @post = Post.where("title LIKE?", "%#{word}")
+      where("title LIKE?", "%#{word}")
     elsif search == "partial_match"
-      @post = Post.where("title LIKE?", "%#{word}%")
+      # 💡 title だけでなく body（本文）からも探せると、より検索しやすい
+      where("title LIKE ? OR body LIKE ?", "%#{word}%", "%#{word}%")
     else
-      @post = Post.all
+      all
     end
   end
 end

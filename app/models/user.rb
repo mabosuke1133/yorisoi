@@ -30,15 +30,15 @@ class User < ApplicationRecord
       @user = User.all
     end
   end
-
+  
+  # --- 💡 フォロー機能の定義（自己参照リレーション） ---
   # フォローを行う側の関係性（自分から相手へ）
   has_many :active_relationships, class_name: "Relationship", foreign_key: "follower_id", dependent: :destroy
   # フォローされる側の関係性（相手から自分へ）
   has_many :passive_relationships, class_name: "Relationship", foreign_key: "followed_id", dependent: :destroy
 
-  # 自分がいまフォローしている人たち（active_relationships を経由して followed を取得）
+  # 💡 活用：throughを経由することで「誰をフォロー中か」「誰がフォロワーか」を直感的な名前で取得可能に
   has_many :followings, through: :active_relationships, source: :followed
-  # 自分をフォローしてくれている人たち（passive_relationships を経由して follower を取得）
   has_many :followers, through: :passive_relationships, source: :follower
 
   # 指定したユーザーをフォローするメソッド
@@ -56,21 +56,20 @@ class User < ApplicationRecord
     followings.include?(user)
   end
 
-  # 💡 タイムライン用のメソッド
+  # --- 💡 業務効率化：パーソナライズされた情報収集 ---
   def feed
-    # 自分がフォローしている人たちのIDを配列で取得
-    # [1, 3, 5] のような形式になる
+    # フォロー中のスタッフIDを配列で抽出
     following_ids = self.followings.pluck(:id)
     
-    # 💡 「フォローしている人のID」に「自分のID」を合流させる
-    # Post.where(user_id: [1, 3, 5, 自分のID]) という条件で検索
+    # 💡 自分の投稿も含めた「自分に関係する全投稿」を一括検索し、情報の見落としを防ぐ
     Post.where(user_id: following_ids << self.id)
   end
 
-  # 💡 自分がオーナー（作った人）であるグループ
+  # 💡 権限管理：グループ運営の責任所在を明確化
+  # 自分が作成した（責任を持つ）グループ
   has_many :owned_groups, class_name: 'Group', foreign_key: 'owner_id', dependent: :destroy
 
-  # 💡 自分がメンバーとして「承認済み」のグループ
+  # 💡 承認フロー：管理者に「承認」されたグループのみを「参加中」として扱う厳格な権限設計
   has_many :approved_permits, -> { where(status: :approved) }, class_name: 'Permit'
   has_many :participating_groups, through: :approved_permits, source: :group
 end

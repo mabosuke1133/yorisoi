@@ -1,13 +1,14 @@
-<%# 💡 自分のページなら「マイページ」、他人なら「〇〇さんのページ」と表示 %>
+<%# 💡 UX：状況に応じて見出しを動的に変え、ユーザーが「誰のページか」を直感的に把握できるよう工夫 %>
 <h1><%= @user == current_user ? "マイページ" : "#{@user.name}さんのページ" %></h1>
 
 <p>氏名：<%= @user.name %></p>
-<%# 💡 メールアドレスは自分にしか見えないように制限 %>
+
+<%# 💡 プライバシー保護：メールアドレスは機密情報のため、本人以外には非表示にする制約を実装 %>
 <% if @user == current_user %>
   <p>メールアドレス：<%= @user.email %></p>
 <% end %>
 
-<%# --- 💡 ここから追加：フォロー・フォロワー数のリンク --- %>
+<%# 💡 連携の可視化：フォロー・フォロワー数をリンク化し、スタッフ間の繋がりを辿りやすく設計 %>
 <div class="mb-3">
   <%= link_to followings_user_path(@user), class: "mr-3", style: "text-decoration: none; color: inherit;" do %>
     <strong><%= @user.followings.count %></strong> フォロー中
@@ -18,24 +19,27 @@
   <% end %>
 </div>
 
-<%# --- 💡 ここから追加：フォローボタン --- %>
+<%# 💡 コンポーネント化：フォローボタンは共通パーツ(partial)化し、他ページとの保守性を向上 %>
 <div class="mb-3">
   <%= render "relationships/btn", user: @user %>
 </div>
 
-<%# 💡 編集ボタンは自分の時だけ表示 %>
+<%# 💡 権限管理：編集権限は本人のみに制限。Deviseのルーティングを活用 %>
 <% if @user == current_user %>
   <%= link_to "プロフィール編集", edit_user_registration_path %>
 <% end %>
 
 <hr>
 
+<%# 💡 活動ログ：特定のスタッフがどのような発信（投稿）をしているか、時系列で確認できる情報集約の場 %>
 <h2><%= @user == current_user ? "自分" : @user.name + "さん" %>の投稿一覧</h2>
 <% @posts.each do |post| %>
   <div>
     <p>
+      <%# 💡 視認性：日付フォーマットを統一し、業務報告としての読みやすさを意識 %>
       <%= post.created_at.strftime('%Y/%m/%d') %>：
       <%= link_to post.title, post_path(post) %>
+      <%# 💡 コミュニケーションの活性化：コメント数を表示し、反応があることを可視化 %>
       （コメント数：<%= post.post_comments.count %>）
     </p>
   </div>
@@ -43,6 +47,7 @@
 
 <hr>
 
+<%# 💡 セキュリティ・安全設計：誤操作によるデータ消失を防ぐため、JavaScriptの確認ダイアログを実装 %>
 <% if @user == current_user %>
-  <%= link_to "退会する", user_path(current_user), method: :delete, data: { confirm: "本当に退会しますか？" }, style: "color: red;" %>
+  <%= link_to "退会する", user_path(current_user), method: :delete, data: { confirm: "本当に退会しますか？データは復旧できませんがよろしいですか？" }, style: "color: red;" %>
 <% end %>

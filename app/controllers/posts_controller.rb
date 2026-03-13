@@ -5,19 +5,16 @@ class PostsController < ApplicationController
   before_action :ensure_correct_user, only: [:edit, :update, :destroy]
 
   def index
-    # 管理者の場合は「全投稿」を表示、ユーザーの場合は「フィード（関係する投稿）」を表示
-    if admin_signed_in?
-      @posts = Post.all
-    elsif user_signed_in?
-      @posts = current_user.feed
-    else
-      @posts = Post.all
-    end
+    # 1. 土台（全員分）
+    @posts = Post.all
 
+    # 2. 検索実行
     if params[:keyword].present?
-      @posts = @posts.where('title LIKE ?', "%#{params[:keyword]}%")
+      # 💡 第一引数に "partial_match" を明示的に渡すことで、モデルの分岐を動かします！
+      @posts = Post.looks("partial_match", params[:keyword])
     end
 
+    # 3. 並び替え
     @posts = @posts.order(created_at: :desc)
   end
 
