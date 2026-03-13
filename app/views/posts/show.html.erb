@@ -37,11 +37,10 @@
               </div>
             </div>
             
-            <%# 編集・削除ボタン（自分の投稿の場合のみ） %>
+            <%# 編集ボタン（本人のみ）削除ボタン（本人と管理者のみ） %>
             <div>
-              <% if @post.user == current_user %>
-                <%= link_to '編集', edit_post_path(@post), class: "btn btn-outline-secondary btn-sm rounded-pill px-3 mr-2" %>
-                <%# 🆕 confirm_post_path ではなく直接 delete するように修正 %>
+              <% if @post.user == current_user || admin_signed_in? %>
+                <%= link_to '編集', edit_post_path(@post), class: "btn btn-outline-secondary btn-sm rounded-pill px-3 mr-2" if @post.user == current_user %>
                 <%= link_to '削除', post_path(@post), method: :delete, data: { confirm: 'このつぶやきを削除してもよろしいですか？' }, class: "btn btn-outline-danger btn-sm rounded-pill px-3" %>
               <% end %>
             </div>
@@ -70,8 +69,8 @@
                   </span>
                 </div>
                 
-                <%# 自分のコメントなら削除ボタンを表示 %>
-                <% if post_comment.user == current_user %>
+                <%# コメントが削除ボタンを本人と管理者のみに表示 %>
+                <% if post_comment.user == current_user || admin_signed_in? %>
                   <%= link_to post_post_comment_path(post_comment.post, post_comment), method: :delete, data: { confirm: 'メッセージを削除しますか？' }, class: "text-danger small" do %>
                     <i class="fas fa-trash"></i>
                   <% end %>

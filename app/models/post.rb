@@ -13,6 +13,9 @@ class Post < ApplicationRecord
 
   # 引数で渡されたユーザidがfavoritesテーブル内に存在するかどうかを調べる
   def favorited_by?(user)
+    # 💡 以下の1行を追加！ userがnil(空)なら、即座にfalseを返して終了する
+    return false if user.nil?
+    
     favorites.where(user_id: user.id).exists?
   end
 

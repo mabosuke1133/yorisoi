@@ -86,8 +86,8 @@
             </div>
 
             <div class="d-flex align-items-center">
-              <%# 🆕 投稿者本人の場合のみ削除ボタンを表示 %>
-              <% if post.user == current_user %>
+              <%# 投稿者本人または管理者の場合のみ削除ボタンを表示 %>
+              <% if post.user == current_user || admin_signed_in? %>
                 <%= link_to '削除', post_path(post), method: :delete, data: { confirm: 'このつぶやきを削除してもよろしいですか？' }, class: 'text-danger small mr-3' %>
               <% end %>
               <%= link_to '詳細を見る', post_path(post), class: 'btn btn-outline-success btn-sm rounded-pill px-3' %>

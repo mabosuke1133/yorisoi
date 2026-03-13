@@ -53,11 +53,14 @@ class PostsController < ApplicationController
 
   def destroy
     @post = Post.find(params[:id])
-    @post.destroy
-    redirect_to posts_path, notice: "投稿を削除しました。"
+    # 管理者、もしくは投稿者本人の場合のみ削除を許可
+    if @post.user == current_user || admin_signed_in?
+      @post.destroy
+      redirect_to posts_path, notice: "投稿を削除しました"
+    else
+      redirect_to posts_path, alert: "権限がありません"
+    end
   end
-
-  # --- 🆕 confirm アクションは詳細画面からの直接削除（method: :delete）になったので削除しました ---
 
   private
 
