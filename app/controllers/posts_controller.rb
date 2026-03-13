@@ -20,6 +20,8 @@ class PostsController < ApplicationController
 
   def show
     @post = Post.find(params[:id])
+    # 💡 この1行が、投稿フォームの「空の入力欄」を作るために必要
+    @post_comment = PostComment.new
   end
 
   def edit
