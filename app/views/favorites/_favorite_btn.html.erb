@@ -1,13 +1,26 @@
 <div id="favorite_btn_<%= post.id %>">
- <% if post.favorited_by?(current_user) %>
-   <%# 💡 すでにいいねしている場合：赤いハートで削除リンク %>
-   <%= link_to post_favorites_path(post), method: :delete, class: "text-danger" do %>
-     ♥ <%= post.favorites.count %>
-   <% end %>
- <% else %>
-   <%# 💡 まだいいねしていない場合：グレーのハートで作成リンク %>
-   <%= link_to post_favorites_path(post), method: :post, class: "text-muted" do %>
-     ♡ <%= post.favorites.count %>
-   <% end %>
- <% end %>
+  <% if user_signed_in? %>
+    <%# --- ユーザーログイン中：今まで通りの動き --- %>
+    <% if post.favorited_by?(current_user) %>
+      <%= link_to post_favorites_path(post), method: :delete, class: "text-danger" do %>
+        ♥ <%= post.favorites.count %>
+      <% end %>
+    <% else %>
+      <%= link_to post_favorites_path(post), method: :post, class: "text-muted" do %>
+        ♡ <%= post.favorites.count %>
+      <% end %>
+    <% end %>
+
+  <% elsif admin_signed_in? %>
+    <%# --- 管理者ログイン中：リンクを貼らず、ただの表示だけにする --- %>
+    <span class="text-muted">
+      <i class="fas fa-heart"></i> <%= post.favorites.count %>
+    </span>
+
+  <% else %>
+    <%# --- 未ログイン（ゲスト）：ログイン画面へ誘導 --- %>
+    <%= link_to new_user_session_path, class: "text-muted" do %>
+      ♡ <%= post.favorites.count %>
+    <% end %>
+  <% end %>
 </div>
