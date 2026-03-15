@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_03_10_133706) do
+ActiveRecord::Schema.define(version: 2026_03_15_083458) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -60,11 +60,12 @@ ActiveRecord::Schema.define(version: 2026_03_10_133706) do
   end
 
   create_table "group_messages", force: :cascade do |t|
-    t.integer "user_id", null: false
+    t.integer "user_id"
     t.integer "group_id", null: false
     t.text "body"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "admin_id"
     t.index ["group_id"], name: "index_group_messages_on_group_id"
     t.index ["user_id"], name: "index_group_messages_on_user_id"
   end
@@ -75,6 +76,33 @@ ActiveRecord::Schema.define(version: 2026_03_10_133706) do
     t.integer "owner_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "issues", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "status"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_issues_on_user_id"
+  end
+
+  create_table "message_rooms", force: :cascade do |t|
+    t.integer "issue_id", null: false
+    t.integer "admin_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["admin_id"], name: "index_message_rooms_on_admin_id"
+    t.index ["issue_id"], name: "index_message_rooms_on_issue_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.text "body"
+    t.integer "message_room_id", null: false
+    t.string "sender_type"
+    t.integer "sender_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["message_room_id"], name: "index_messages_on_message_room_id"
   end
 
   create_table "permits", force: :cascade do |t|
@@ -129,6 +157,10 @@ ActiveRecord::Schema.define(version: 2026_03_10_133706) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "group_messages", "groups"
   add_foreign_key "group_messages", "users"
+  add_foreign_key "issues", "users"
+  add_foreign_key "message_rooms", "admins"
+  add_foreign_key "message_rooms", "issues"
+  add_foreign_key "messages", "message_rooms"
   add_foreign_key "permits", "groups"
   add_foreign_key "permits", "users"
 end

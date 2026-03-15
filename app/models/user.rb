@@ -16,6 +16,8 @@ class User < ApplicationRecord
 
   has_many :permits, dependent: :destroy
 
+  has_many :issues, dependent: :destroy
+
   # 検索用メソッド
   def self.looks(search, word)
     if search == "perfect_match"

@@ -34,6 +34,15 @@
                   <span class="badge badge-dark">管理者モード</span>
                 </li>
                 <li class="nav-item">
+                  <% unstarted_count = Issue.where(status: :unstarted).count %>
+                  <%= link_to admin_issues_path, class: 'nav-link' do %>
+                    <i class="fas fa-bell text-danger"></i> 相談一覧
+                    <% if unstarted_count > 0 %>
+                      <span class="badge badge-pill badge-danger"><%= unstarted_count %></span>
+                    <% end %>
+                  <% end %>
+                </li>
+                <li class="nav-item">
                   <%= link_to groups_path, class: 'nav-link' do %>
                     <i class="fas fa-users text-success"></i> チームルーム
                   <% end %>
@@ -55,6 +64,27 @@
 
               <% elsif user_signed_in? %>
                 <%# --- 一般ユーザーメニュー --- %>
+
+                <% current_issue = current_user.issues.where(status: [:unstarted, :in_progress]).last %>
+                <li class="nav-item">
+                  <% if current_issue %>
+                    <div class="d-flex align-items-center">
+                      <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 mr-2" disabled title="現在、メンターが確認中です">
+                        <i class="fas fa-paper-plane"></i> 送信済み
+                      </button>
+                      <% if current_issue.unstarted? %>
+                        <%= link_to issue_path(current_issue), method: :delete, data: { confirm: "相談依頼を取り消しますか？" }, class: "text-muted small mr-3" do %>
+                          <u>取り消す</u>
+                        <% end %>
+                      <% end %>
+                    </div>
+                  <% else %>
+                    <%= link_to issues_path, method: :post, data: { confirm: "メンターに面談の相談を依頼しますか？" }, class: "btn btn-danger btn-sm rounded-pill px-3 shadow-sm mr-3" do %>
+                      <i class="fas fa-exclamation-circle"></i> メンターに相談する
+                    <% end %>
+                  <% end %>
+                </li>
+
                 <li class="nav-item">
                   <%= link_to groups_path, class: 'nav-link' do %>
                     <i class="fas fa-users"></i> チームルーム

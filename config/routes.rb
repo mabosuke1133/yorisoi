@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  namespace :admin do
+    get 'issues/index'
+  end
+  get 'issues/create'
   # 1. サイトの根幹（Top / About）
   root to: 'homes#top'
   get 'about' => 'homes#about'
@@ -38,6 +42,8 @@ Rails.application.routes.draw do
   # --- 💡 いいね一覧機能を追加 (ヘッダー用リンクなど) ---
   get 'favorites' => 'favorites#index'
 
+  resources :issues, only: [:create, :destroy]
+
   resources :posts do
     # コメントは投稿に紐付くため、中に書く（ネスト）
     resources :post_comments, only: [:create, :destroy]
@@ -63,6 +69,7 @@ Rails.application.routes.draw do
   # 現場のガバナンス（投稿削除権限など）を担保。
   namespace :admin do
     resources :users, only: [:index, :show, :destroy]
+    resources :issues, only: [:index, :update] # 一覧表示と状態更新（対応中への変更など）
     
     # 💡 管理者は投稿の一覧・詳細・削除ができる
     resources :posts, only: [:index, :show, :destroy] do
