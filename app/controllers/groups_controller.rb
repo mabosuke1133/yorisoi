@@ -3,12 +3,20 @@ class GroupsController < ApplicationController
   before_action :authenticate_any!
 
   def index
-    @groups = Group.all
-
-    # 💡 ログイン中なら、自分に関係するグループを準備
-    if user_signed_in?
-      @my_groups = current_user.owned_groups # 自分が作った
-      @joining_groups = current_user.participating_groups # 承認されて参加中
+    if admin_signed_in?
+      # 管理者は管理のために全部見える
+      @groups = Group.all
+    elsif user_signed_in?
+      # 💡 一般ユーザーは「自分に関係があるもの」だけに絞り込む
+      # 自分がオーナーのグループ + 自分がメンバーとして承認されているグループ
+      @groups = Group.where(id: current_user.owned_groups.pluck(:id) + current_user.participating_groups.pluck(:id))
+    
+      # ビューで「作成した」「参加中」と分けたいなら、以下も残してOK
+      @my_groups = current_user.owned_groups
+      @joining_groups = current_user.participating_groups
+    else
+      # ログインしていない場合は空（または公開グループのみ）
+      @groups = Group.none
     end
   end
 
@@ -18,19 +26,42 @@ class GroupsController < ApplicationController
 
   def create
     @group = Group.new(group_params)
-    # 管理者が作成した場合は、便宜上システム上のオーナーにするか、処理を分ける必要がある
-    # ここでは一般ユーザーが作成することを想定
-    @group.owner_id = current_user.id if user_signed_in?
+  
+    if @group.name.include?("相談") || @group.name.include?("個別")
+      # 💡 修正前：mentor = User.find_by(email: "dummy@example.com")
+      # 💡 修正前：@group.owner_id = mentor.id
     
-    if @group.save
-      redirect_to groups_path, notice: "グループを作成しました"
-    else
-      render :new
+      # ✅ 修正後：ボタンを押した本人（まししさん等）をオーナーにする
+      @group.owner_id = current_user.id 
+    
+      if @group.save
+        # 相談相手（管理者側で使うダミー）をメンバーとして参加させる
+        mentor = User.find_by(email: "dummy@example.com")
+        @group.permits.create(user_id: mentor.id, status: "approved")
+      
+        # 最初の挨拶メッセージ
+        @group.group_messages.create(
+          body: "#{current_user.name}さん、こんにちは。担当のメンターです。相談内容を教えてくださいね。",
+          user_id: mentor.id
+        )
+        redirect_to group_path(@group), notice: "相談を開始しました"
+      else
+        render :new
+      end
     end
   end
 
   def show
     @group = Group.find(params[:id])
+  
+    # 💡 閲覧制限を追加
+    # 管理者（Admin）ならOK
+    # 一般ユーザーなら「オーナー本人」か「承認済みメンバー（メンター）」以外はNG
+    unless admin_signed_in? || @group.owner == current_user || @group.users.include?(current_user)
+      redirect_to groups_path, alert: "このルームへのアクセス権限がありません。"
+    end
+
+    @group_message = GroupMessage.new
   end
 
   def destroy

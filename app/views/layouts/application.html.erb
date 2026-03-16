@@ -32,6 +32,8 @@
                 <%# --- 管理者メニュー --- %>
                 <li class="nav-item border-right pr-2 mr-2">
                   <span class="badge badge-dark">管理者モード</span>
+                  <span class="small ml-2 font-weight-bold text-secondary">
+                    <%= current_admin.name %>
                 </li>
                 <li class="nav-item">
                   <% unstarted_count = Issue.where(status: :unstarted).count %>
