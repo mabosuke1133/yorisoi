@@ -9,6 +9,12 @@
             <%= render "admins/shared/error_messages", resource: resource %>
 
             <div class="form-group mb-3">
+              <%= f.label :name, "管理者名", class: "small font-weight-bold" %>
+              <%= f.text_field :name, autofocus: true, class: "form-control form-control-lg" %>
+              <small class="text-muted">※相談ルームなどで表示される名前になります。</small>
+            </div>
+
+            <div class="form-group mb-3">
               <%= f.label :email, "メールアドレス", class: "small font-weight-bold" %>
               <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg" %>
             </div>

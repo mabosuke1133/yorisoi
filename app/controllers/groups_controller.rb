@@ -53,10 +53,14 @@ class GroupsController < ApplicationController
 
   def show
     @group = Group.find(params[:id])
-  
-    # 💡 閲覧制限を追加
-    # 管理者（Admin）ならOK
-    # 一般ユーザーなら「オーナー本人」か「承認済みメンバー（メンター）」以外はNG
+
+    # 💡 修正：statusの制限を外し、そのユーザーの「一番新しい相談」を特定する
+    # これにより、完了後（status: :completed）でも @issue が取得でき、Viewで判定が可能になります
+    @issue = Issue.where(user_id: @group.owner_id)
+                  .order(created_at: :desc)
+                  .first
+
+    # 💡 閲覧制限
     unless admin_signed_in? || @group.owner == current_user || @group.users.include?(current_user)
       redirect_to groups_path, alert: "このルームへのアクセス権限がありません。"
     end

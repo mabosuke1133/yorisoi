@@ -3,20 +3,24 @@ ja:
     models:
       post: "投稿"
       user: "ユーザー"
+      admin: "管理者" 
     attributes:
-      post:
-        title: "タイトル"
-        body: "本文"
-        emotion_level: "感情レベル"
-        image: "画像"
+      # ...既存の post 設定...
       user:
+        name: "名前" # 💡 user側にも一応追加しておくと安心
+        email: "メールアドレス"
+        # ...
+      admin: # 💡 admin用の設定を追加
+        name: "管理者名"
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード（確認用）"
-        current_password: "現在のパスワード"
+        invitation_code: "招待コード"
     errors:
       messages:
         blank: "を入力してください"
+        taken: "は既に使用されています" 
+        invalid: "は不正な値です"
 
   errors:
     messages:

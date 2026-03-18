@@ -69,8 +69,12 @@ Rails.application.routes.draw do
   # 現場のガバナンス（投稿削除権限など）を担保。
   namespace :admin do
     resources :users, only: [:index, :show, :destroy]
-    resources :issues, only: [:index, :update] # 一覧表示と状態更新（対応中への変更など）
-    
+    resources :issues, only: [:index, :update]do # 一覧表示と状態更新（対応中への変更など）
+     member do
+      patch :complete
+     end
+    end
+
     # 💡 管理者は投稿の一覧・詳細・削除ができる
     resources :posts, only: [:index, :show, :destroy] do
       # 💡 管理者は投稿に紐付くコメントを削除できる

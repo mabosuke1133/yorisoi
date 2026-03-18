@@ -24,9 +24,14 @@ class ApplicationController < ActionController::Base
   protected
 
   def configure_permitted_parameters
+    # 管理者(Admin)側の登録
     if resource_name == :admin
-      devise_parameter_sanitizer.permit(:sign_up, keys: [:invitation_code])
-    elsif resource_name == :user
+      devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :invitation_code])
+      devise_parameter_sanitizer.permit(:account_update, keys: [:name])
+    end
+    
+    # ユーザー(User)側の登録
+    if resource_name == :user
       devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
       devise_parameter_sanitizer.permit(:account_update, keys: [:name])
     end

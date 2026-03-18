@@ -69,47 +69,67 @@
 
   <div class="row">
     <% @groups.each do |group| %>
-      <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100 shadow-sm border-0 rounded-lg overflow-hidden hover-shadow transition">
-          
-          <%# チームヘッダー %>
-          <div class="card-header bg-success text-white py-4 text-center border-0">
-            <i class="fas fa-users fa-3x mb-2 opacity-8"></i>
-            <h5 class="card-title font-weight-bold mb-0"><%= group.name %></h5>
+  <%# 💡 絆（issue_id）がある場合だけ、相談データを取得する %>
+  <% if group.issue_id.present? %>
+    <% target_issue = Issue.find_by(id: group.issue_id) %>
+    <% is_completed = target_issue&.completed? %>
+  <% end %>
+
+  <div class="col-md-6 col-lg-4 mb-4">
+    <div class="card h-100 shadow-sm border-0 rounded-lg overflow-hidden hover-shadow transition">
+      
+      <%# 💡 修正：issue_id がある（個別相談）かつ 完了している場合だけ グレーにする %>
+      <div class="card-header <%= (group.issue_id.present? && is_completed) ? 'bg-secondary' : 'bg-success' %> text-white py-4 text-center border-0" style="position: relative;">
+        
+        <%# 💡 修正：issue_id がある場合のみ、ステータスバッジを表示 %>
+        <% if group.issue_id.present? %>
+          <div style="position: absolute; top: 10px; right: 10px;">
+            <% if is_completed %>
+              <span class="badge badge-pill badge-light text-secondary shadow-sm">解決済み</span>
+            <% else %>
+              <span class="badge badge-pill badge-warning text-white shadow-sm">相談対応中</span>
+            <% end %>
+          </div>
+        <% end %>
+
+        <i class="fas <%= (group.issue_id.present? && is_completed) ? 'fa-check-circle' : 'fa-users' %> fa-3x mb-2 opacity-8"></i>
+        <h5 class="card-title font-weight-bold mb-0"><%= group.name %></h5>
+      </div>
+
+      <div class="card-body d-flex flex-column">
+        <p class="text-muted small mb-3 flex-grow-1" style="min-height: 3em;">
+          <%# 💡 個別相談で完了済みの場合だけ [相談終了] と出す %>
+          <% if group.issue_id.present? && is_completed %>
+            <span class="text-success font-weight-bold">[相談終了]</span>
+          <% end %>
+          <%= truncate(group.introduction, length: 60) || "紹介文はまだありません。" %>
+        </p>
+        
+        <div class="mt-auto pt-3 border-top">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <small class="text-muted">
+              <i class="fas fa-user-circle"></i> オーナー: <strong><%= group.owner.name %></strong>
+            </small>
+            <span class="badge badge-pill badge-light border">メンバー <%= group.users.count + 1 %>名</span>
           </div>
 
-          <div class="card-body d-flex flex-column">
-            <p class="text-muted small mb-3 flex-grow-1" style="min-height: 3em;">
-              <%= truncate(group.introduction, length: 60) || "紹介文はまだありません。" %>
-            </p>
-            
-            <div class="mt-auto pt-3 border-top">
-              <div class="d-flex justify-content-between align-items-center mb-3">
-                <small class="text-muted">
-                  <i class="fas fa-user-circle"></i> オーナー: <strong><%= group.owner.name %></strong>
-                </small>
-                <span class="badge badge-pill badge-light border">メンバー <%= group.users.count + 1 %>名</span>
-              </div>
+          <div class="d-flex align-items-center">
+            <%# 💡 修正：完了済みならボタンの色を少し変える %>
+            <%= link_to group_path(group), class: "btn #{is_completed ? 'btn-outline-secondary' : 'btn-outline-success'} btn-block rounded-pill font-weight-bold" do %>
+              <%= is_completed ? '過去の相談を見る' : 'ルームに入る' %> <i class="fas fa-arrow-right ml-1"></i>
+            <% end %>
 
-              <div class="d-flex align-items-center">
-                <%= link_to group_path(group), class: "btn btn-outline-success btn-block rounded-pill font-weight-bold" do %>
-                  ルームに入る <i class="fas fa-arrow-right ml-1"></i>
-                <% end %>
-
-                <%# オーナーまたは管理者のみ削除を表示 %>
-                <% if (user_signed_in? && group.owner == current_user) || admin_signed_in? %>
-                  <%= link_to group_path(group), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "text-danger ml-3", title: "削除" do %>
-                    <i class="fas fa-trash-alt"></i>
-                  <% end %>
-                <% end %>
-              </div>
-            </div>
+            <% if (user_signed_in? && group.owner == current_user) || admin_signed_in? %>
+              <%= link_to group_path(group), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "text-danger ml-3", title: "削除" do %>
+                <i class="fas fa-trash-alt"></i>
+              <% end %>
+            <% end %>
           </div>
         </div>
       </div>
-    <% end %>
+    </div>
   </div>
-</div>
+<% end %>
 
 <style>
   .hover-shadow:hover {
