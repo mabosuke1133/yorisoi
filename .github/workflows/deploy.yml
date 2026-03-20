@@ -1,6 +1,5 @@
 name: Deploy to EC2
 
-# mainブランチにコードがpushされた時に実行する
 on:
   push:
     branches: [ main ]
@@ -10,11 +9,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # GitHubから最新のコードを取得
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # SSHでサーバーにログインしてコマンドを実行
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -23,17 +20,17 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            # 1. アプリのディレクトリに移動
+            # 1. パスを正確に指定（pwdで確認したパスに変えてください）
             cd /home/ubuntu/environment/yorisoi
             
             # 2. 最新コードを取得
             git pull origin main
             
-            # 3. ライブラリをインストール
-            bundle install
+            # 3. bundle の場所をフルパスで指定して実行
+            /home/ubuntu/.rbenv/bin/rbenv exec bundle install
             
-            # 4. データベースを更新
-            bundle exec rails db:migrate RAILS_ENV=production
+            # 4. データベース更新もフルパスで
+            /home/ubuntu/.rbenv/bin/rbenv exec bundle exec rails db:migrate RAILS_ENV=production
             
-            # 5. 【実務ポイント】Pumaを再起動して反映
+            # 5. 管理人に再起動を命令（先にサーバーで登録作業が必要です）
             sudo systemctl restart puma
