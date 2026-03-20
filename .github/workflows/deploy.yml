@@ -20,17 +20,21 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
-            # 1. パスを正確に指定（pwdで確認したパスに変えてください）
+            # 1. あなたのサーバーの「真実の住所」へ移動
             cd /home/ubuntu/environment/yorisoi
             
-            # 2. 最新コードを取得
+            # 2. 安全のためにディレクトリを信頼設定に追加
+            git config --global --add safe.directory /home/ubuntu/environment/yorisoi
+            
+            # 3. 最新コードを取得
             git pull origin main
             
-            # 3. bundle の場所をフルパスで指定して実行
-            /home/ubuntu/.rbenv/bin/rbenv exec bundle install
+            # 4. rubyの環境（rbenv）をロードしてから実行
+            export PATH="$HOME/.rbenv/bin:$PATH"
+            eval "$(rbenv init -)"
             
-            # 4. データベース更新もフルパスで
-            /home/ubuntu/.rbenv/bin/rbenv exec bundle exec rails db:migrate RAILS_ENV=production
+            bundle install
+            bundle exec rails db:migrate RAILS_ENV=production
             
-            # 5. 管理人に再起動を命令（先にサーバーで登録作業が必要です）
+            # 5. 再起動（パスワードなし設定が効いているはずです）
             sudo systemctl restart puma
