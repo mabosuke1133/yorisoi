@@ -39,5 +39,5 @@ jobs:
             RAILS_ENV=production bundle exec rails db:migrate
             RAILS_ENV=production bundle exec rails assets:precompile
             
-            # 5. 再起動
-            sudo systemctl restart puma || echo "Puma service not found, skipping restart."
+            # 5. Pumaの再起動
+            sudo systemctl restart puma
