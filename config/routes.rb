@@ -1,18 +1,11 @@
 Rails.application.routes.draw do
-  namespace :admin do
-    get 'issues/index'
-  end
-  get 'issues/create'
   # 1. サイトの根幹（Top / About）
   root to: 'homes#top'
   get 'about' => 'homes#about'
   get 'search' => 'searches#search'
-  get "search" => "searches#search" # 既存の定義を維持
 
   # 2. 認証・ログイン機能 (Devise)
-  # --- 認証（Devise）の設定 ---
-  # 一般スタッフ用と管理者用でログイン口を完全に分離。
-  # スタッフ情報はカスタマイズ性を高めるため、専用のコントローラーを指定。
+  # 一般スタッフ用と管理者用でログイン口を分離
   devise_for :users, controllers: {
     sessions:      'users/sessions',
     registrations: 'users/registrations'
@@ -26,58 +19,45 @@ Rails.application.routes.draw do
   # 3. ユーザー関連（プロフィール・フォロー）
   get '/users' => redirect('/users/sign_up')
 
-  # --- フォロー機能（自己参照のリレーション） ---
-  # ユーザー同士の繋がりを表現。
   resources :users, only: [:show, :destroy] do
-    # 💡 フォロー/解除のためのルート
     resource :relationships, only: [:create, :destroy]
-    
-    # 💡 一覧表示用のルート
     member do
       get :followings, :followers
     end
   end
 
-  # 4. 投稿関連（コメント・いいね）
-  # --- 💡 いいね一覧機能を追加 (ヘッダー用リンクなど) ---
-  get 'favorites' => 'favorites#index'
-
+  # 4. 相談（Issue）機能
+  # button_to (POST) で送られてくる /issues をここで受け取ります
   resources :issues, only: [:create, :destroy]
 
-  resources :posts do
-    # コメントは投稿に紐付くため、中に書く（ネスト）
-    resources :post_comments, only: [:create, :destroy]
+  # 5. 投稿関連（コメント・いいね）
+  get 'favorites' => 'favorites#index'
 
-    # --- 💡 いいね機能を追加 (ネストさせる) ---
-    # 単数形の resource にすることで「一人が一つの投稿に一回だけいいね」という構造になります
+  resources :posts do
+    resources :post_comments, only: [:create, :destroy]
     resource :favorites, only: [:create, :destroy]
-    
-    # 元々あった確認画面もここに入れるとスッキリする
     member do
       get 'confirm'
     end
   end
 
-  # 5. グループ・コミュニティ機能
+  # 6. グループ・コミュニティ機能
   resources :groups do
     resources :permits, only: [:create, :destroy, :update]
     resources :group_messages, only: [:create]
   end
 
-  # 6. 管理者専用機能 (Namespace)
-  # URLの頭に /admin/ を付与し、管理者以外が絶対に触れない領域としてディレクトリを物理的に分離。
-  # 現場のガバナンス（投稿削除権限など）を担保。
+  # 7. 管理者専用機能 (Namespace)
   namespace :admin do
     resources :users, only: [:index, :show, :destroy]
-    resources :issues, only: [:index, :update]do # 一覧表示と状態更新（対応中への変更など）
-     member do
-      patch :complete
-     end
+    # 管理者用の一覧とステータス更新
+    resources :issues, only: [:index, :update] do
+      member do
+        patch :complete
+      end
     end
 
-    # 💡 管理者は投稿の一覧・詳細・削除ができる
     resources :posts, only: [:index, :show, :destroy] do
-      # 💡 管理者は投稿に紐付くコメントを削除できる
       resources :post_comments, only: [:destroy]
     end
   end
