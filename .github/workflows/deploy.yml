@@ -21,8 +21,8 @@ jobs:
           port: 22
           script: |
             echo "--- Starting Deploy Script ---"
-            # 1. あなたのサーバーの「真実の住所」へ直接移動
-            cd /home/ubuntu/environment/yorisoi || { echo "Directory not found"; exit 1; }
+            # 1. 本番サーバーの正しいディレクトリへ移動
+            cd /home/ubuntu/yorisoi || { echo "Directory not found"; exit 1; }
             echo "Successfully moved to: $(pwd)"
             
             # 2. Gitの設定と最新化
@@ -32,13 +32,12 @@ jobs:
             
             # 3. Ruby環境 (rbenv) のロード
             export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-            if command -v rbenv > /dev/null; then
-              eval "$(rbenv init -)"
-            fi
+            eval "$(rbenv init -)"
             
-            # 4. Railsの更新作業
-            bundle install
+            # 4. Railsの更新作業（本番用）
+            bundle install --deployment --without development test
             RAILS_ENV=production bundle exec rails db:migrate
+            RAILS_ENV=production bundle exec rails assets:precompile
             
             # 5. 再起動
             sudo systemctl restart puma || echo "Puma service not found, skipping restart."
