@@ -88,7 +88,7 @@
                       <% end %>
                     </div>
                   <% else %>
-                    <%= link_to issues_path, method: :post, data: { confirm: "メンターに面談の相談を依頼しますか？" }, class: "btn btn-danger btn-sm rounded-pill px-3 shadow-sm mr-3" do %>
+                    <%= button_to issues_path, method: :post, data: { confirm: "メンターに面談の相談を依頼しますか？" }, class: "btn btn-danger btn-sm rounded-pill px-3 shadow-sm mr-3" do %>
                       <i class="fas fa-exclamation-circle"></i> メンターに相談する
                     <% end %>
                   <% end %>
