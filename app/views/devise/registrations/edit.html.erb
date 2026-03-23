@@ -1,31 +1,70 @@
-<h2>プロフィール編集</h2>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white text-center py-3">
+          <h2 class="h4 mb-0"><i class="fas fa-user-edit mr-2"></i>プロフィール編集</h2>
+        </div>
+        
+        <div class="card-body p-4">
+          <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+            <%= render "devise/shared/error_messages", resource: resource %>
 
-<%# 1. プロフィール更新用のフォーム (ここから) %>
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+            <%# 名前（もしUserモデルに追加していれば） %>
+            <div class="form-group mb-4">
+              <%= f.label :name, class: "font-weight-bold" do %>
+                <i class="fas fa-id-card text-muted mr-1"></i> お名前
+              <% end %>
+              <%= f.text_field :name, class: "form-control form-control-lg", placeholder: "あなたの名前を入力" %>
+            </div>
 
-  <div class="field">
-    <%= f.label :email, "メールアドレス" %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+            <%# メールアドレス %>
+            <div class="form-group mb-4">
+              <%= f.label :email, class: "font-weight-bold" do %>
+                <i class="fas fa-envelope text-muted mr-1"></i> メールアドレス
+              <% end %>
+              <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg" %>
+            </div>
+
+            <%# パスワード変更（任意） %>
+            <div class="form-group mb-4 p-3 bg-light rounded">
+              <label class="font-weight-bold text-secondary small text-uppercase">
+                <i class="fas fa-lock mr-1"></i> パスワード変更（変更しない場合は空欄）
+              </label>
+              <div class="mt-2">
+                <%= f.password_field :password, autocomplete: "new-password", class: "form-control", placeholder: "新しいパスワード" %>
+                <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control mt-2", placeholder: "確認用にもう一度" %>
+              </div>
+            </div>
+
+            <%# 現在のパスワード（更新に必要） %>
+            <div class="form-group mb-4">
+              <%= f.label :current_password, class: "font-weight-bold text-danger" do %>
+                <i class="fas fa-key mr-1"></i> 現在のパスワード
+              <% end %>
+              <small class="text-muted d-block mb-2">更新を確定するために現在のパスワードを入力してください</small>
+              <%= f.password_field :current_password, autocomplete: "current-password", class: "form-control border-danger" %>
+            </div>
+
+            <div class="actions mt-5">
+              <%= f.submit "変更を保存する", class: "btn btn-success btn-lg btn-block shadow-sm font-weight-bold" %>
+            </div>
+          <% end %>
+
+          <div class="text-center mt-4">
+            <%= link_to "マイページに戻る", :back, class: "text-muted" %>
+          </div>
+        </div>
+      </div>
+
+      <%# 退会セクション（少し控えめに配置） %>
+      <div class="mt-5 pt-4 border-top text-center">
+        <h3 class="h6 text-muted mb-3">アカウントの管理</h3>
+        <%= button_to "アカウントを削除する", registration_path(resource_name), 
+            data: { confirm: "本当に退会しますか？全てのデータが消去されます。" }, 
+            method: :delete, 
+            class: "btn btn-outline-danger btn-sm" %>
+      </div>
+    </div>
   </div>
-
-  <%# ... (パスワードなどのフィールドは省略せずに入れてください) ... %>
-
-  <div class="actions">
-    <%= f.submit "更新する" %>
-  </div>
-<% end %> 
-<%# ↑ ここで一度フォームを完全に終わらせるのが超重要！ %>
-
-<hr>
-
-<h3>アカウント退会</h3>
-
-<p>
-  <%= button_to "退会する", registration_path(resource_name), 
-      method: :delete, 
-      data: { confirm: "本当に退会しますか？" }, 
-      class: "btn btn-danger" %>
-</p>
-
-<%= link_to "戻る", :back %>
+</div>
