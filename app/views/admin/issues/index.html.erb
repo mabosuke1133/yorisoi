@@ -28,12 +28,12 @@
           </td>
           <td>
             <% if issue.unstarted? %>
-              <%= link_to '対応を開始する', admin_issue_path(issue, status: :in_progress), method: :patch, class: "btn btn-primary btn-sm" %>
+              <%= button_to '対応を開始する', admin_issue_path(issue, status: :in_progress), method: :patch, class: "btn btn-primary btn-sm" %>
             <% elsif issue.in_progress? %>
               <div class="d-flex align-items-center">
                 <span class="badge badge-info mr-2">対応中</span>
                 <%# 💡 追加：ステータスを未対応に戻すリセットボタン %>
-                <%= link_to '解除', admin_issue_path(issue, status: :unstarted), method: :patch, class: "btn btn-outline-danger btn-sm", data: { confirm: "対応中を解除して、未対応に戻しますか？" } %>
+                <%= button_to '解除', admin_issue_path(issue, status: :unstarted), method: :patch, class: "btn btn-outline-danger btn-sm", data: { confirm: "対応中を解除して、未対応に戻しますか？" } %>
               </div>
             <% elsif issue.completed? %>
               <span class="badge badge-success">完了</span>
