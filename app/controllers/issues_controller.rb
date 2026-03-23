@@ -8,7 +8,7 @@ class IssuesController < ApplicationController
     if existing_issue
       redirect_to posts_path, alert: "すでに相談依頼を送信済みです。メンターからの連絡をお待ちください。"
     else
-      @issue = current_user.issues.new(status: :unstarted)
+      @issue = current_user.issues.build(status: :unstarted)
       if @issue.save
         redirect_to posts_path, notice: "メンターへ相談依頼を送信しました。"
       else

@@ -16,7 +16,7 @@ class Admin::IssuesController < ApplicationController
           # 2. ルームを作成
           @group = Group.new(
             name: "個別相談ルーム",
-            introduction: "こんにちは。メンターとの個別相談ルームとなります。現場での悩みや、誰にも言えない不安など、ここで自由にお話しください。",
+            introduction: "メンターとの個別相談ルームとなります。現場での悩みや、誰にも言えない不安など、ここで自由にお話しください。",
             owner_id: @issue.user.id,
             issue_id: @issue.id  # 💡 ここを追加！これで「絆」が保存されます
           )
@@ -32,7 +32,7 @@ class Admin::IssuesController < ApplicationController
           @issue.update!(status: :in_progress)
         end
 
-        redirect_to group_path(@group), notice: "相談ルームを作成しました。対話を始めてください。"
+        redirect_to "/groups/#{@group.id}", notice: "相談ルームを作成しました。対話を始めてください。"
 
       rescue => e
         redirect_to admin_issues_path, alert: "ルーム作成に失敗しました: #{e.message}"
