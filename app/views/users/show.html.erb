@@ -1,6 +1,5 @@
 <div class="container mt-5">
   <div class="row">
-    <%# 左側：プロフィールカード %>
     <div class="col-lg-4 mb-4">
       <div class="card shadow-sm border-0 rounded-lg text-center overflow-hidden">
         <div class="bg-success py-4">
@@ -11,8 +10,6 @@
             <%= @user == current_user ? "マイページ" : "#{@user.name}さんのページ" %>
           </h2>
           <p class="text-muted mb-3"><%= @user.name %></p>
-
-          <%# フォロー数・フォロワー数 %>
           <div class="d-flex justify-content-around border-top border-bottom py-3 mb-3">
             <%= link_to followings_user_path(@user), class: "text-decoration-none text-dark" do %>
               <div class="small text-muted">フォロー中</div>
@@ -23,50 +20,35 @@
               <div class="h5 mb-0 font-weight-bold"><%= @user.followers.count %></div>
             <% end %>
           </div>
-
-          <%# フォローボタン（共通パーツ） %>
           <div class="mb-3">
             <%= render "relationships/btn", user: @user %>
           </div>
-
-          <%# 編集ボタン（本人のみ） %>
           <% if @user == current_user %>
             <%= link_to edit_user_registration_path, class: "btn btn-outline-success btn-block btn-sm rounded-pill mt-3" do %>
               <i class="fas fa-user-edit mr-1"></i> プロフィールを編集
             <% end %>
-          <% end %>
-
-          <%# プライバシー情報 %>
-          <% if @user == current_user %>
             <div class="mt-4 p-2 bg-light rounded small text-left text-muted">
               <i class="fas fa-envelope mr-1"></i> <%= @user.email %>
             </div>
           <% end %>
         </div>
       </div>
-
-      <%# 退会リンク（本人のみ） %>
       <% if @user == current_user %>
         <div class="mt-4 text-center">
-          <%= link_to user_path(current_user), method: :delete, data: { confirm: "本当に退会しますか？データは復旧できませんがよろしいですか？" }, class: "text-danger small" do %>
+          <%= link_to user_path(current_user), method: :delete, data: { confirm: "本当に退会しますか？" }, class: "text-danger small" do %>
             <u>退会手続きはこちら</u>
           <% end %>
         </div>
       <% end %>
     </div>
-
-    <%# 右側：投稿一覧 %>
     <div class="col-lg-8">
       <div class="card shadow-sm border-0 rounded-lg">
-        <div class="card-header bg-white py-3 border-bottom">
-          <h5 class="mb-0 font-weight-bold text-success">
-            <i class="fas fa-pen-nib mr-2"></i>
-            <%= @user == current_user ? "あなたの投稿" : "#{@user.name}さんの投稿" %>
-          </h5>
+        <div class="card-header bg-white py-3 border-bottom text-success">
+          <h5 class="mb-0 font-weight-bold"><i class="fas fa-pen-nib mr-2"></i><%= @user == current_user ? "あなたの投稿" : "#{@user.name}さんの投稿" %></h5>
         </div>
         <div class="card-body p-0">
           <div class="list-group list-group-flush">
-            <% if @posts.present? && @posts.any? %>
+            <% if @posts.any? %>
               <% @posts.each do |post| %>
                 <%= link_to post_path(post), class: "list-group-item list-group-item-action p-4 border-bottom-0" do %>
                   <div class="d-flex w-100 justify-content-between align-items-center">
@@ -79,9 +61,7 @@
                 <% end %>
               <% end %>
             <% else %>
-              <div class="p-5 text-center text-muted">
-                まだ投稿がありません。
-              </div>
+              <div class="p-5 text-center text-muted">まだ投稿がありません。</div>
             <% end %>
           </div>
         </div>
