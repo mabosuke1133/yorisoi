@@ -120,7 +120,7 @@
             <% end %>
 
             <% if (user_signed_in? && group.owner == current_user) || admin_signed_in? %>
-              <%= link_to group_path(group), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "text-danger ml-3", title: "削除" do %>
+              <%= button_to group_path(group), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "btn btn-link text-danger ml-3 p-0 border-0", title: "削除", style: "display: inline-block; vertical-align: middle;" do %>
                 <i class="fas fa-trash-alt"></i>
               <% end %>
             <% end %>
