@@ -26,28 +26,27 @@ class GroupsController < ApplicationController
 
   def create
     @group = Group.new(group_params)
+    @group.owner_id = current_user.id # 💡 オーナー設定は共通でOK
   
-    if @group.name.include?("相談") || @group.name.include?("個別")
-      # 💡 修正前：mentor = User.find_by(email: "dummy@example.com")
-      # 💡 修正前：@group.owner_id = mentor.id
-    
-      # ✅ 修正後：ボタンを押した本人（まししさん等）をオーナーにする
-      @group.owner_id = current_user.id 
-    
-      if @group.save
-        # 相談相手（管理者側で使うダミー）をメンバーとして参加させる
+    if @group.save
+      #  名前によって追加処理（メンター参加）を分ける
+      if @group.name.include?("相談") || @group.name.include?("個別")
         mentor = User.find_by(email: "dummy@example.com")
-        @group.permits.create(user_id: mentor.id, status: "approved")
-      
-        # 最初の挨拶メッセージ
-        @group.group_messages.create(
-          body: "#{current_user.name}さん、こんにちは。担当のメンターです。相談内容を教えてくださいね。",
-          user_id: mentor.id
-        )
+        if mentor
+          @group.permits.create(user_id: mentor.id, status: "approved")
+          @group.group_messages.create(
+            body: "#{current_user.name}さん、こんにちは。担当のメンターです。相談内容を教えてくださいね。",
+            user_id: mentor.id
+          )
+        end
         redirect_to group_path(@group), notice: "相談を開始しました"
       else
-        render :new
+        #  普通のグループの場合
+        redirect_to groups_path, notice: "グループを作成しました"
       end
+    else
+      #  バリデーションエラーなどで保存できなかった場合
+      render :new
     end
   end
 
