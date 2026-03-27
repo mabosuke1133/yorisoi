@@ -6,7 +6,7 @@ class Post < ApplicationRecord
   # 空での投稿を禁止する
   validates :title, presence: true
   validates :body, presence: true
-  validates :priority, presence: true
+  validates :emotion_level, presence: true
 
   has_many :post_comments, dependent: :destroy
   has_many :favorites, dependent: :destroy
