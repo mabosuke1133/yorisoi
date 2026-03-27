@@ -1,56 +1,56 @@
 <div class="container my-5 text-center px-4">
-  <%# --- 1. キャッチコピー --- %>
+  <%# --- 1. ヒーローセクション --- %>
   <div class="py-5 mb-5 animate-fade-in">
     <h1 class="display-3 font-weight-bold text-success mb-4">Yorisoi</h1>
-    <h2 class="h4 text-secondary mb-5">
-      3つのレベルで、今の気分をシェアする。<br class="d-md-none">
-      それだけで、誰かと繋がれる場所。
+    <h2 class="h4 text-secondary mb-5" style="line-height: 1.6;">
+      言葉にできない「いま」の気分を、<br class="d-md-none">
+      3つのカタチで置いていく場所。
     </h2>
     
-    <div class="action-buttons">
+    <div class="action-buttons mb-4">
       <% if user_signed_in? %>
         <%= link_to new_post_path, class: "btn btn-success btn-lg rounded-pill px-5 py-3 shadow-sm hover-up" do %>
-          <i class="fas fa-pen mr-2"></i> 今の気分を記録する
+          <i class="fas fa-pen mr-2"></i> 今の気持ちを届ける
         <% end %>
       <% else %>
         <%= link_to new_user_registration_path, class: "btn btn-success btn-lg rounded-pill px-5 py-3 shadow-sm hover-up" do %>
-          アカウントを作成してはじめる
+          はじめる（新規登録）
         <% end %>
       <% end %>
     </div>
   </div>
 
-  <%# --- 2. 3段階のステータスイメージ --- %>
-  <div class="row justify-content-center mb-5 py-5 bg-white rounded-xl shadow-sm border">
+  <%# --- 2. 3つのレベル（統一感のあるアイコンセット） --- %>
+  <div class="row justify-content-center mb-5 py-5 bg-white rounded-xl shadow-sm border mx-1">
     <div class="col-12 mb-4">
-      <p class="text-muted small font-weight-bold text-uppercase tracking-widest">Your Status Level</p>
+      <p class="text-muted small font-weight-bold text-uppercase tracking-widest">3 levels of feelings</p>
     </div>
     
-    <%# Level 1: Good %>
+    <%# Level 1: 独り言 %>
     <div class="col-4 col-md-3">
       <div class="status-icon-wrapper mb-2">
-        <i class="fas fa-smile fa-3x text-success"></i>
+        <i class="fas fa-comment-dots fa-3x text-success opacity-75"></i>
       </div>
-      <p class="font-weight-bold text-success mb-0">Good</p>
-      <span class="small text-muted">レベル 1</span>
+      <p class="font-weight-bold text-success mb-1">独り言</p>
+      <span class="small text-muted">そっと置くだけ</span>
     </div>
 
-    <%# Level 2: Normal %>
+    <%# Level 2: 聞いて %>
     <div class="col-4 col-md-3 border-left border-right">
       <div class="status-icon-wrapper mb-2">
-        <i class="fas fa-meh fa-3x text-warning"></i>
+        <i class="fas fa-bullhorn fa-3x text-warning opacity-75"></i>
       </div>
-      <p class="font-weight-bold text-warning mb-0">Normal</p>
-      <span class="small text-muted">レベル 2</span>
+      <p class="font-weight-bold text-warning mb-1">聞いて</p>
+      <span class="small text-muted">誰かに届けたい</span>
     </div>
 
     <%# Level 3: SOS %>
     <div class="col-4 col-md-3">
       <div class="status-icon-wrapper mb-2">
-        <i class="fas fa-exclamation-triangle fa-3x text-danger"></i>
+        <i class="fas fa-exclamation-circle fa-3x text-danger opacity-75"></i>
       </div>
-      <p class="font-weight-bold text-danger mb-0">SOS</p>
-      <span class="small text-muted">レベル 3</span>
+      <p class="font-weight-bold text-danger mb-1">SOS</p>
+      <span class="small text-muted">助けてほしい</span>
     </div>
   </div>
 
@@ -59,8 +59,8 @@
     <p class="text-muted small mb-0">
       <i class="fas fa-lock mr-1"></i> 投稿はログインしたメンバー内だけで共有されます
     </p>
-    <p class="text-muted small">
-      詳しい使い方は <%= link_to 'Aboutページ', about_path, class: "text-success border-bottom" %> をご覧ください
+    <p class="text-muted small mt-2">
+      <%= link_to 'Yorisoiについてもっと詳しく', about_path, class: "text-success border-bottom" %>
     </p>
   </div>
 </div>
@@ -70,9 +70,13 @@
   .tracking-widest { letter-spacing: 0.3em; }
   .status-icon-wrapper {
     transition: transform 0.3s ease;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .status-icon-wrapper:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
   }
   .hover-up {
     transition: all 0.3s ease;
