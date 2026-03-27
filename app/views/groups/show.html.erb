@@ -1,107 +1,136 @@
-<div class="container mt-4">
+<div class="container mt-4 pb-5">
   <div class="row justify-content-center">
-    <div class="col-md-9">
+    <div class="col-md-10">
       
-      <%# --- ヘッダーエリア --- %>
+      <%# --- 1. チームヘッダー --- %>
       <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
         <div>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-transparent p-0 mb-1">
+              <li class="breadcrumb-item"><%= link_to 'チーム一覧', groups_path, class: "text-success" %></li>
+              <li class="breadcrumb-item active" aria-current="page">ルーム</li>
+            </ol>
+          </nav>
           <h3 class="font-weight-bold text-dark mb-1">
-            <%= @group.name %>
-            <% if @issue&.completed? %>
-              <span class="badge badge-success ml-2" style="font-size: 0.8rem;">完了済み</span>
-            <% end %>
+            <i class="fas fa-house-user text-success mr-2"></i><%= @group.name %>
           </h3>
           <p class="text-muted small mb-0">
-            <i class="fas fa-lock text-success"></i> 
-            <% if admin_signed_in? %>
-              <span class="badge badge-info">メンター専用画面</span> <%= @group.owner.name %>さんをサポート中
-            <% else %>
-              このルームはあなたとメンター以外には非公開です
-            <% end %>
+            <i class="fas fa-users text-muted mr-1"></i> メンバー: <%= @group.users.count + 1 %>名
           </p>
         </div>
-        <%= link_to '一覧に戻る', groups_path, class: "btn btn-outline-secondary btn-sm rounded-pill" %>
+        <div class="text-right">
+          <% if @issue&.completed? %>
+            <span class="badge badge-secondary px-3 py-2 rounded-pill shadow-sm mb-2">アーカイブ（閲覧専用）</span>
+          <% else %>
+            <span class="badge badge-success px-3 py-2 rounded-pill shadow-sm mb-2">寄り添い受付中</span>
+          <% end %>
+        </div>
       </div>
 
-      <%# --- チャット掲示板エリア --- %>
-      <div class="chat-board bg-white p-4 rounded shadow-sm mb-4" style="height: 500px; overflow-y: auto; border: 1px solid #eee;">
+      <%# --- 2. チーム掲示板エリア（メッセージ一覧） --- %>
+      <div class="chat-board bg-light p-4 rounded-xl shadow-inner mb-4" style="height: 600px; overflow-y: auto; border: 1px solid #e9ecef;">
         <% if @group.group_messages.any? %>
           <% @group.group_messages.each do |message| %>
-            <div class="mb-4 d-flex align-items-start">
-              <div class="mr-3 text-center">
-                <% is_mentor = message.user&.name&.include?("メンター") %>
-                <i class="fas fa-user-circle fa-2x <%= is_mentor ? 'text-primary' : 'text-secondary' %>"></i>
-                <div class="small text-muted" style="font-size: 0.7rem;">
-                  <% if user_signed_in? && message.user == current_user %>
-                    あなた
-                  <% elsif is_mentor %>
-                    <span class="badge badge-primary" style="font-size: 0.6rem;">公式</span><br><%= message.user.name %>
-                  <% else %>
-                    <%= message.user.present? ? "#{message.user.name}さん" : "メンター" %>
-                  <% end %>
+            <% is_mine = (user_signed_in? && message.user == current_user) %>
+            
+            <div class="mb-4 d-flex <%= is_mine ? 'flex-row-reverse' : 'flex-row' %> align-items-start">
+              <%# アイコン部分 %>
+              <div class="<%= is_mine ? 'ml-3' : 'mr-3' %> text-center">
+                <i class="fas fa-user-circle fa-2x text-secondary opacity-50"></i>
+                <div class="small text-muted mt-1" style="font-size: 0.7rem;">
+                  <%= is_mine ? "あなた" : "#{message.user.name}さん" %>
                 </div>
               </div>
               
-              <div class="p-3 rounded shadow-sm" style="max-width: 80%; background-color: <%= is_mentor ? '#eef7ff' : '#f8f9fa' %>; border-radius: 15px !important;">
-                <div class="card-text" style="line-height: 1.6;"><%= simple_format(message.body) %></div>
-                <div class="text-right small text-muted mt-2" style="font-size: 0.6rem;">
-                  <%= message.created_at.strftime('%m/%d %H:%M') %>
+              <%# メッセージ本体 %>
+              <div class="p-3 shadow-sm position-relative" style="max-width: 75%; background-color: white; border-radius: <%= is_mine ? '20px 0px 20px 20px' : '0px 20px 20px 20px' %> !important; border: 1px solid #dee2e6;">
+                <div class="card-text text-dark" style="line-height: 1.6;">
+                  <%= simple_format(message.body) %>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                  <span class="small text-muted" style="font-size: 0.65rem;">
+                    <%= message.created_at.strftime('%m/%d %H:%M') %>
+                  </span>
                 </div>
               </div>
             </div>
           <% end %>
         <% else %>
-          <div class="text-center py-5">
-            <i class="fas fa-comments fa-3x text-light mb-3"></i>
-            <p class="text-muted">相談ルームが作成されました。<br>今の気持ちを自由に書き込んでみましょう。</p>
+          <div class="text-center py-5 my-5">
+            <div class="mb-3">
+              <i class="fas fa-comments fa-4x text-muted opacity-25"></i>
+            </div>
+            <h5 class="text-secondary">まだ寄り添いつぶやきがありません</h5>
+            <p class="text-muted small">「独り言」から始めてみませんか？</p>
           </div>
         <% end %>
       </div>
 
-      <%# --- 投稿フォームエリア --- %>
-      <%# 相談が未完了、かつ権限がある場合のみ表示 %>
-      <% if (@issue.nil? || !@issue.completed?) && (admin_signed_in? || (user_signed_in? && (@group.owner == current_user || @group.users.include?(current_user)))) %>
-        <div class="card border-0 shadow-sm" style="border-radius: 15px;">
-          <div class="card-body p-3 bg-light" style="border-radius: 15px;">
+      <%# --- 3. 投稿フォームエリア --- %>
+      <% if !@issue&.completed? %>
+        <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+          <div class="card-body p-4 bg-white" style="border-radius: 20px;">
             <%= form_with model: [@group, GroupMessage.new], local: true do |f| %>
-              <div class="input-group">
-                <%= f.text_area :body, class: "form-control border-0 bg-light", rows: 2, placeholder: "メッセージを入力...", style: "resize: none; box-shadow: none;" %>
-                <div class="input-group-append align-items-center ml-2">
-                  <%= f.submit "送信", class: "btn btn-primary px-4 rounded-pill shadow-sm" %>
+              <div class="form-group mb-3">
+                <label class="small font-weight-bold text-muted mb-2">
+                  <i class="fas fa-pen-nib mr-1"></i> 今のきもちをチームに届ける
+                </label>
+                <%= f.text_area :body, class: "form-control border-light bg-light p-3", rows: 3, placeholder: "ここに入力...", style: "resize: none; border-radius: 15px;" %>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                  <i class="fas fa-lock-open mr-1"></i> このチームのメンバーだけに公開されます
                 </div>
+                <%= f.submit "メッセージを送る", class: "btn btn-success rounded-pill px-5 py-2 font-weight-bold shadow-sm" %>
               </div>
             <% end %>
           </div>
         </div>
-      <% elsif @issue&.completed? %>
-        <%# 完了済みの場合の案内メッセージ %>
-        <div class="alert alert-secondary text-center shadow-sm py-3 mb-0" style="border-radius: 15px;">
-          <i class="fas fa-lock mr-2 text-muted"></i>この相談は終了したため、新規投稿はできません。
+      <% else %>
+        <div class="alert alert-secondary text-center shadow-sm py-4 rounded-xl">
+          <p class="mb-0 font-weight-bold text-secondary">
+            <i class="fas fa-archive mr-2"></i> このルームの寄り添い対応は終了し、保存されました（閲覧専用）
+          </p>
         </div>
       <% end %>
 
     </div>
   </div>
 
-  <%# --- 管理者向けの「完了」アクションエリア --- %>
-  <%# 💡 管理者ログイン中かつ、Issueがまだ完了していない場合のみ表示 %>
+  <%# --- 管理者向け「完了」操作（言葉を寄り添い風に） --- %>
   <% if admin_signed_in? && @issue && !@issue.completed? %>
-    <div class="row justify-content-center mt-5 mb-5">
-      <div class="col-md-9 text-center">
-        <div class="d-inline-block p-4 bg-white rounded shadow-sm border">
-          <i class="fas fa-check-circle text-success fa-2x mb-2"></i>
-          <h6 class="font-weight-bold">対応ステータスの管理</h6>
-          <p class="small text-muted mb-3">解決した場合はボタンを押してクローズしてください。</p>
-          
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-10 text-center">
+        <div class="p-4 bg-white rounded-xl shadow-sm border border-success">
+          <h6 class="font-weight-bold text-success"><i class="fas fa-heart mr-1"></i> 寄り添い状況の管理</h6>
+          <p class="small text-muted mb-3">状況が落ち着き、フォローが完了した場合はルームをアーカイブできます。</p>
           <%= link_to complete_admin_issue_path(@issue), 
-              method: :patch, 
-              data: { confirm: "この相談を「完了」にしてもよろしいですか？" }, 
-              class: "btn btn-success rounded-pill px-4 shadow-sm" do %>
-            <i class="fas fa-flag-checkered mr-1"></i> 相談を完了（クローズ）する
+                method: :patch, 
+                data: { confirm: "このチームの寄り添いを「完了（アーカイブ）」にしてもよろしいですか？" }, 
+                class: "btn btn-outline-success rounded-pill px-4 btn-sm" do %>
+            寄り添いフォローを完了する
           <% end %>
         </div>
       </div>
     </div>
   <% end %>
-
 </div>
+
+<style>
+  .rounded-xl { border-radius: 1.5rem; }
+  .shadow-inner {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06) !important;
+  }
+  .breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #ced4da;
+  }
+  .chat-board::-webkit-scrollbar {
+    width: 6px;
+  }
+  .chat-board::-webkit-scrollbar-thumb {
+    background-color: #ced4da;
+    border-radius: 10px;
+  }
+</style>
