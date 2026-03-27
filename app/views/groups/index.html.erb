@@ -1,145 +1,161 @@
-<div class="container mt-4">
+<div class="container mt-4 pb-5">
   <% if user_signed_in? %>
     <div class="row mb-5">
-      <div class="col-md-6">
-        <div class="card shadow-sm border-0 bg-white rounded-lg">
-          <div class="card-body">
-            <h5 class="font-weight-bold text-primary mb-3">
-              <i class="fas fa-tools"></i> 管理中のチーム
+      <%# --- 管理中のチーム --- %>
+      <div class="col-md-6 mb-4 mb-md-0">
+        <div class="card shadow-sm border-0 bg-white rounded-xl">
+          <div class="card-body p-4">
+            <h5 class="font-weight-bold text-success mb-3">
+              <i class="fas fa-user-shield mr-2"></i> 管理しているチーム
             </h5>
             <% if @my_groups.any? %>
-              <ul class="list-unstyled mb-0">
+              <div class="list-group list-group-flush">
                 <% @my_groups.each do |group| %>
-                  <li class="mb-2 d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                    <%= link_to group.name, group_path(group), class: "text-dark font-weight-bold" %>
-                    <span class="badge badge-primary px-3 shadow-sm">オーナー</span>
-                  </li>
+                  <%= link_to group_path(group), class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center border-0 px-0 py-2" do %>
+                    <span class="text-dark font-weight-bold"><i class="fas fa-chevron-right small mr-2 text-muted"></i><%= group.name %></span>
+                    <span class="badge badge-success badge-pill px-3 shadow-sm">管理者</span>
+                  <% end %>
                 <% end %>
-              </ul>
+              </div>
             <% else %>
-              <p class="text-muted small mb-0">管理しているチームはありません。</p>
+              <p class="text-muted small mb-0 pl-1">管理中のチームはありません。</p>
             <% end %>
           </div>
         </div>
       </div>
 
+      <%# --- 参加中のチーム --- %>
       <div class="col-md-6">
-        <div class="card shadow-sm border-0 bg-white rounded-lg">
-          <div class="card-body">
-            <h5 class="font-weight-bold text-success mb-3">
-              <i class="fas fa-handshake"></i> 参加中のチーム
+        <div class="card shadow-sm border-0 bg-white rounded-xl">
+          <div class="card-body p-4">
+            <h5 class="font-weight-bold text-info mb-3">
+              <i class="fas fa-hands-helping mr-2"></i> 参加しているチーム
             </h5>
             <% if @joining_groups.any? %>
-              <ul class="list-unstyled mb-0">
+              <div class="list-group list-group-flush">
                 <% @joining_groups.each do |group| %>
-                  <li class="mb-2 d-flex justify-content-between align-items-center p-2 bg-light rounded">
-                    <%= link_to group.name, group_path(group), class: "text-dark font-weight-bold" %>
-                    <span class="badge badge-success px-3 shadow-sm">メンバー</span>
-                  </li>
+                  <%= link_to group_path(group), class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center border-0 px-0 py-2" do %>
+                    <span class="text-dark font-weight-bold"><i class="fas fa-chevron-right small mr-2 text-muted"></i><%= group.name %></span>
+                    <span class="badge badge-info badge-pill px-3 shadow-sm text-white">メンバー</span>
+                  <% end %>
                 <% end %>
-              </ul>
+              </div>
             <% else %>
-              <p class="text-muted small mb-0">参加しているチームはありません。</p>
+              <p class="text-muted small mb-0 pl-1">参加中のチームはありません。</p>
             <% end %>
           </div>
         </div>
       </div>
     </div>
-    <hr class="my-5" style="border-top: 2px dashed #dee2e6;">
+    
+    <hr class="my-5" style="border-top: 2px dashed #e9ecef;">
   <% end %>
 
-  <%# --- 全グループ一覧（カード形式） --- %>
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="font-weight-bold text-dark d-inline-block mr-2">すべてのチーム</h2>
-      <span class="badge badge-pill badge-light text-muted p-2 border">全 <%= @groups.count %> チーム</span>
+  <%# --- チーム一覧セクション --- %>
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+    <div class="mb-3 mb-md-0">
+      <h2 class="font-weight-bold text-dark d-inline-block mr-2 mb-0">すべてのチームルーム</h2>
+      <span class="badge badge-pill badge-light text-muted p-2 border">
+        <i class="fas fa-door-open mr-1"></i><%= @groups.count %> ルーム
+      </span>
     </div>
     <% if user_signed_in? %>
-      <%= link_to new_group_path, class: "btn btn-success rounded-pill px-4 shadow-sm font-weight-bold" do %>
-        <i class="fas fa-plus-circle"></i> 新規作成
+      <%= link_to new_group_path, class: "btn btn-success rounded-pill px-4 shadow-sm font-weight-bold py-2" do %>
+        <i class="fas fa-plus-circle mr-1"></i> チームを作成する
       <% end %>
     <% end %>
   </div>
 
   <% if admin_signed_in? %>
-    <div class="alert alert-info border-0 shadow-sm rounded-lg mb-4">
-      <i class="fas fa-shield-alt"></i> 管理者モード：全チームの稼働状況を確認できます。
+    <div class="alert alert-dark border-0 shadow-sm rounded-lg mb-4 py-3">
+      <i class="fas fa-shield-alt mr-2 text-warning"></i> <strong>管理者モード：</strong> 全ルームの稼働状況を確認・管理できます。
     </div>
   <% end %>
 
   <div class="row">
     <% @groups.each do |group| %>
-  <%# 💡 絆（issue_id）がある場合だけ、相談データを取得する %>
-  <% if group.issue_id.present? %>
-    <% target_issue = Issue.find_by(id: group.issue_id) %>
-    <% is_completed = target_issue&.completed? %>
-  <% end %>
+      <%# ロジック部分はそのまま維持 %>
+      <% if group.issue_id.present? %>
+        <% target_issue = Issue.find_by(id: group.issue_id) %>
+        <% is_completed = target_issue&.completed? %>
+      <% end %>
 
-  <div class="col-md-6 col-lg-4 mb-4">
-    <div class="card h-100 shadow-sm border-0 rounded-lg overflow-hidden hover-shadow transition">
-      
-      <%# 💡 修正：issue_id がある（個別相談）かつ 完了している場合だけ グレーにする %>
-      <div class="card-header <%= (group.issue_id.present? && is_completed) ? 'bg-secondary' : 'bg-success' %> text-white py-4 text-center border-0" style="position: relative;">
-        
-        <%# 💡 修正：issue_id がある場合のみ、ステータスバッジを表示 %>
-        <% if group.issue_id.present? %>
-          <div style="position: absolute; top: 10px; right: 10px;">
-            <% if is_completed %>
-              <span class="badge badge-pill badge-light text-secondary shadow-sm">解決済み</span>
-            <% else %>
-              <span class="badge badge-pill badge-warning text-white shadow-sm">相談対応中</span>
-            <% end %>
-          </div>
-        <% end %>
-
-        <i class="fas <%= (group.issue_id.present? && is_completed) ? 'fa-check-circle' : 'fa-users' %> fa-3x mb-2 opacity-8"></i>
-        <h5 class="card-title font-weight-bold mb-0"><%= group.name %></h5>
-      </div>
-
-      <div class="card-body d-flex flex-column">
-        <p class="text-muted small mb-3 flex-grow-1" style="min-height: 3em;">
-          <%# 💡 個別相談で完了済みの場合だけ [相談終了] と出す %>
-          <% if group.issue_id.present? && is_completed %>
-            <span class="text-success font-weight-bold">[相談終了]</span>
-          <% end %>
-          <%= truncate(group.introduction, length: 60) || "紹介文はまだありません。" %>
-        </p>
-        
-        <div class="mt-auto pt-3 border-top">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <small class="text-muted">
-              <i class="fas fa-user-circle"></i> オーナー: <strong><%= group.owner.name %></strong>
-            </small>
-            <span class="badge badge-pill badge-light border">メンバー <%= group.users.count + 1 %>名</span>
-          </div>
-
-          <div class="d-flex align-items-center">
-            <%# 💡 修正：完了済みならボタンの色を少し変える %>
-            <%= link_to group_path(group), class: "btn #{is_completed ? 'btn-outline-secondary' : 'btn-outline-success'} btn-block rounded-pill font-weight-bold" do %>
-              <%= is_completed ? '過去の相談を見る' : 'ルームに入る' %> <i class="fas fa-arrow-right ml-1"></i>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm border-0 rounded-xl overflow-hidden hover-card transition">
+          
+          <%# カードヘッダー：色と文言を「寄り添い」に変更 %>
+          <div class="card-header border-0 py-4 text-center text-white <%= is_completed ? 'bg-secondary' : 'bg-success' %>" style="position: relative;">
+            <% if group.issue_id.present? %>
+              <div style="position: absolute; top: 12px; right: 12px;">
+                <% if is_completed %>
+                  <span class="badge badge-pill badge-light text-secondary px-3 py-1 shadow-sm">アーカイブ済</span>
+                <% else %>
+                  <span class="badge badge-pill badge-warning text-white px-3 py-1 shadow-sm animate-pulse">寄り添い対応中</span>
+                <% end %>
+              </div>
             <% end %>
 
-            <% if (user_signed_in? && group.owner == current_user) || admin_signed_in? %>
-              <%= button_to group_path(group), method: :delete, data: { confirm: '本当に削除しますか？' }, class: "btn btn-link text-danger ml-3 p-0 border-0", title: "削除", style: "display: inline-block; vertical-align: middle;" do %>
-                <i class="fas fa-trash-alt"></i>
+            <i class="fas <%= is_completed ? 'fa-archive' : 'fa-house-user' %> fa-3x mb-2 opacity-8"></i>
+            <h5 class="card-title font-weight-bold mb-0 mt-2"><%= group.name %></h5>
+          </div>
+
+          <div class="card-body d-flex flex-column p-4">
+            <p class="text-muted small mb-4 flex-grow-1" style="min-height: 4em; line-height: 1.6;">
+              <% if is_completed %>
+                <span class="badge badge-light border text-muted mb-2">サポート終了</span><br>
               <% end %>
-            <% end %>
+              <%= truncate(group.introduction, length: 70) || "このチームの紹介文はまだ設定されていません。" %>
+            </p>
+            
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="small text-secondary">
+                  <i class="fas fa-user-circle mr-1"></i> <%= group.owner.name %>
+                </div>
+                <div class="badge badge-pill badge-light border px-2 py-1 text-muted" style="font-size: 0.75rem;">
+                  <i class="fas fa-users mr-1"></i><%= group.users.count + 1 %>名
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center">
+                <%= link_to group_path(group), class: "btn #{is_completed ? 'btn-outline-secondary' : 'btn-outline-success'} btn-block rounded-pill font-weight-bold py-2 shadow-sm" do %>
+                  <%= is_completed ? '過去のログを確認' : 'ルームに入る' %> <i class="fas fa-sign-in-alt ml-1"></i>
+                <% end %>
+
+                <% if (user_signed_in? && group.owner == current_user) || admin_signed_in? %>
+                  <%= button_to group_path(group), method: :delete, data: { confirm: 'チームを削除してもよろしいですか？' }, class: "btn btn-link text-danger ml-2 p-0 border-0", title: "削除" do %>
+                    <i class="fas fa-trash-alt p-2"></i>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    <% end %>
   </div>
-<% end %>
+</div>
 
 <style>
-  .hover-shadow:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.1) !important;
+  .rounded-xl { border-radius: 1.25rem; }
+  .hover-card {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
-  .transition {
-    transition: all 0.3s ease;
+  .hover-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
   }
-  .opacity-8 {
-    opacity: 0.8;
+  .opacity-8 { opacity: 0.8; }
+  .animate-pulse {
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.9; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .btn-outline-success:hover {
+    background-color: #28a745;
+    color: white;
   }
 </style>
