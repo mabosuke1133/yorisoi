@@ -1,24 +1,74 @@
-<section class="about-section">
-  <h1>About Yorisoi</h1>
-  
-  <div class="symbol-image">
-    <div style="background: #f0f0f0; padding: 50px; text-align: center; border-radius: 10px;">
-       💡 ここに寄り添いをイメージする画像が入ります
+<div class="container my-5 py-5 bg-white rounded shadow-sm">
+  <section class="about-section text-center">
+    <%# --- ヒーローセクション --- %>
+    <h1 class="display-4 font-weight-bold text-success mb-4">About Yorisoi</h1>
+    
+    <div class="symbol-image mb-5">
+      <div class="py-5 rounded-lg d-flex align-items-center justify-content-center" 
+           style="background: linear-gradient(120deg, #f0fdf4 0%, #e6fffa 100%); min-height: 250px; border: 1px dashed #ced4da;">
+          <div class="text-muted">
+            <i class="fas fa-users fa-4x mb-3 text-success opacity-50"></i>
+            <p class="h5 mt-2">つながりをイメージするビジュアル</p>
+          </div>
+      </div>
     </div>
-  </div>
 
-  <div class="description">
-    <h2>「心の距離を、もっと近くに。」</h2>
-    <p>
-      Yorisoiは、日々の感情を1〜5のレベルでシェアし、<br>
-      言葉にできない「ちょっとした変化」に気づき、声をかけ合うためのSNSです。
-    </p>
-    <p>
-      部署の垣根を超えて、社員一人ひとりが孤独を感じない職場づくりをサポートします。
-    </p>
-  </div>
+    <%# --- コンセプトセクション --- %>
+    <div class="description mx-auto mb-5" style="max-width: 800px;">
+      <h2 class="h3 font-weight-bold text-dark mb-4">「心の距離を、もっと近くに。」</h2>
+      
+      <p class="text-secondary leading-relaxed mb-4">
+        Yorisoiは、日々の感情を3つのレベルでシェアし、<br>
+        言葉にできない<strong>「ちょっとした変化」</strong>に気づき、声をかけ合うためのプラットフォームです。
+      </p>
+      
+      <p class="text-secondary leading-relaxed">
+        忙しい日常の中で埋もれてしまいがちな個人の想いを可視化し、<br>
+        組織の垣根を超えて、一人ひとりが孤独を感じない環境づくりをサポートします。
+      </p>
+    </div>
 
-  <div class="footer-links">
-    <%= link_to 'トップページへ戻る', root_path %>
-  </div>
-</section>
+    <%# --- 3つの特徴（追加提案：視覚的に分かりやすく） --- %>
+    <div class="row mt-5 pt-4 border-top">
+      <div class="col-md-4 mb-4">
+        <i class="fas fa-smile-beam fa-2x text-success mb-2"></i>
+        <h5 class="font-weight-bold">感情の可視化</h5>
+        <p class="small text-muted">3段階のレベルで、今の状態を直感的に共有できます。</p>
+      </div>
+      <div class="col-md-4 mb-4">
+        <i class="fas fa-bell fa-2x text-success mb-2"></i>
+        <h5 class="font-weight-bold">気づきのサイン</h5>
+        <p class="small text-muted">変化に気づいた仲間が、すぐに手を差し伸べられます。</p>
+      </div>
+      <div class="col-md-4 mb-4">
+        <i class="fas fa-heart border-bottom-0 fa-2x text-success mb-2"></i>
+        <h5 class="font-weight-bold">心理的安全性を</h5>
+        <p class="small text-muted">本音で繋がれる、あたたかいコミュニティを。 </p>
+      </div>
+    </div>
+
+    <%# --- フッターリンク --- %>
+    <div class="footer-links mt-5 pt-4">
+      <%= link_to root_path, class: "btn btn-outline-success rounded-pill px-5" do %>
+        <i class="fas fa-arrow-left mr-2"></i> トップページへ戻る
+      <% end %>
+    </div>
+  </section>
+</div>
+
+<style>
+  /* 全体のフォントを少し柔らかく */
+  .about-section {
+    line-height: 1.8;
+  }
+  .leading-relaxed {
+    font-size: 1.1rem;
+  }
+  /* アイコンに少しアニメーションを */
+  .fa-2x {
+    transition: transform 0.3s ease;
+  }
+  .fa-2x:hover {
+    transform: scale(1.2);
+  }
+</style>
