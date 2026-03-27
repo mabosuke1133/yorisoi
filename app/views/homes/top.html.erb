@@ -1,3 +1,73 @@
-<h1>Yorisoi</h1>
-<p>あなたの感情に寄り添う、社内コミュニケーションSNSです。</p>
-<%= link_to 'Aboutページへ', about_path %>
+<%# --- 1. メインビジュアル（ヒーローセクション） --- %>
+<div class="jumbotron jumbotron-fluid bg-white text-center py-5 mb-0">
+  <div class="container py-4">
+    <h1 class="display-3 font-weight-bold text-success mb-3 animate-fade-in">Yorisoi</h1>
+    <p class="lead text-secondary mb-5">あなたの「いま」に、誰かが寄り添う場所。</p>
+    
+    <div class="d-flex justify-content-center">
+      <%= link_to new_post_path, class: "btn btn-success btn-lg rounded-pill px-5 shadow-sm mr-3" do %>
+        <i class="fas fa-pen-nib"></i> 想いをつぶやく
+      <% end %>
+      <%= link_to posts_path, class: "btn btn-outline-success btn-lg rounded-pill px-5 shadow-sm" do %>
+        <i class="fas fa-search"></i> みんなの広場へ
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<%# --- 2. Yorisoiでできること（3つのステップ） --- %>
+<div class="bg-light py-5">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm p-4 rounded-lg">
+          <i class="fas fa-heartbeat fa-3x text-success mb-3"></i>
+          <h5 class="font-weight-bold">心の解像度を上げる</h5>
+          <p class="small text-muted">3つのレベルで今の調子を選びましょう。言葉にならないモヤモヤも、すぐに伝えられます。</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm p-4 rounded-lg">
+          <i class="fas fa-hands-helping fa-3x text-success mb-3"></i>
+          <h5 class="font-weight-bold">孤独をなくす</h5>
+          <p class="small text-muted">あなたの投稿は誰かの画面に届きます。「いいね」やコメントで、一人じゃない実感を。</p>
+        </div>
+      </div>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm p-4 rounded-lg">
+          <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+          <h5 class="font-weight-bold">安心のサイン</h5>
+          <p class="small text-muted">本当に苦しい時は「緊急SOS」。信頼できる仲間や管理者に、いち早く気づいてもらえます。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%# --- 3. ログイン・新規登録への誘導（未ログイン時のみ） --- %>
+<% unless user_signed_in? %>
+  <div class="container py-5 text-center">
+    <h3 class="font-weight-bold mb-4">まずは、今の気持ちを置いていきませんか？</h3>
+    <%= link_to '新規登録してはじめる', new_user_registration_path, class: "btn btn-success rounded-pill px-5" %>
+    <p class="mt-3 small text-muted">アカウントをお持ちの方は <%= link_to 'こちらからログイン', new_user_session_path %></p>
+  </div>
+<% end %>
+
+<style>
+  .jumbotron {
+    background: radial-gradient(circle at top right, #f0fdf4 0%, #ffffff 70%);
+  }
+  .animate-fade-in {
+    animation: fadeIn 1.5s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card {
+    transition: transform 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+  }
+</style>
