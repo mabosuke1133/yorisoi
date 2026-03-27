@@ -1,74 +1,84 @@
-<div class="container my-5 py-5 bg-white rounded shadow-sm">
-  <section class="about-section text-center">
-    <%# --- ヒーローセクション --- %>
-    <h1 class="display-4 font-weight-bold text-success mb-4">About Yorisoi</h1>
-    
-    <div class="symbol-image mb-5">
-      <div class="py-5 rounded-lg d-flex align-items-center justify-content-center" 
-           style="background: linear-gradient(120deg, #f0fdf4 0%, #e6fffa 100%); min-height: 250px; border: 1px dashed #ced4da;">
-          <div class="text-muted">
-            <i class="fas fa-users fa-4x mb-3 text-success opacity-50"></i>
-            <p class="h5 mt-2">つながりをイメージするビジュアル</p>
-          </div>
+<div class="container my-5 py-5">
+  <%# --- 1. ヘッダーセクション --- %>
+  <div class="text-center mb-5">
+    <h1 class="display-4 text-success font-weight-bold mb-3">About Yorisoi</h1>
+    <p class="h5 text-secondary mx-auto" style="max-width: 700px; line-height: 1.6;">
+      Yorisoi（よりそい）は、日々の感情を可視化し、<br class="d-none d-md-inline">
+      チームで支え合うためのクローズドなコミュニケーションツールです。
+    </p>
+  </div>
+
+  <%# --- 2. 3つのコア機能（案3のカード） --- %>
+  <div class="row mb-5">
+    <%# 機能1: スコアリング %>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm text-center p-4">
+        <div class="mb-3 text-success">
+          <i class="fas fa-chart-line fa-3x"></i>
+        </div>
+        <h5 class="font-weight-bold">感情のスコアリング</h5>
+        <p class="small text-muted mb-0">
+          日々の状態を「3つのレベル」で記録。自分の変化を客観的に振り返り、不調のサインを早めにキャッチします。
+        </p>
       </div>
     </div>
 
-    <%# --- コンセプトセクション --- %>
-    <div class="description mx-auto mb-5" style="max-width: 800px;">
-      <h2 class="h3 font-weight-bold text-dark mb-4">「心の距離を、もっと近くに。」</h2>
-      
-      <p class="text-secondary leading-relaxed mb-4">
-        Yorisoiは、日々の感情を3つのレベルでシェアし、<br>
-        言葉にできない<strong>「ちょっとした変化」</strong>に気づき、声をかけ合うためのプラットフォームです。
+    <%# 機能2: SOS %>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm text-center p-4">
+        <div class="mb-3 text-success">
+          <i class="fas fa-bullhorn fa-3x"></i>
+        </div>
+        <h5 class="font-weight-bold">緊急SOSサイン</h5>
+        <p class="small text-muted mb-0">
+          本当にサポートが必要なときは、特別な通知機能を。言葉で説明しづらい「限界」を仲間に伝えます。
+        </p>
+      </div>
+    </div>
+
+    <%# 機能3: クローズド %>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm text-center p-4">
+        <div class="mb-3 text-success">
+          <i class="fas fa-users-cog fa-3x"></i>
+        </div>
+        <h5 class="font-weight-bold">クローズドな繋がり</h5>
+        <p class="small text-muted mb-0">
+          投稿は組織内のメンバーにのみ共有。オープンなSNSとは違う、安心できる心理的安全性を守ります。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <%# --- 3. プライバシーと信頼（締め） --- %>
+  <div class="row align-items-center bg-light p-4 rounded-lg shadow-sm mx-1 mb-5">
+    <div class="col-md-2 text-center text-success py-3">
+      <i class="fas fa-user-shield fa-4x opacity-50"></i>
+    </div>
+    <div class="col-md-10">
+      <h5 class="font-weight-bold mb-2">プライバシーを第一に考えた設計</h5>
+      <p class="text-muted small mb-0">
+        Yorisoiは、ログインなしでは一切の投稿を閲覧できない仕様になっています。<br>
+        外部の検索エンジンや第三者に内容が漏れることはありません。あなたの「本音」を、安心して預けてください。
       </p>
-      
-      <p class="text-secondary leading-relaxed">
-        忙しい日常の中で埋もれてしまいがちな個人の想いを可視化し、<br>
-        組織の垣根を超えて、一人ひとりが孤独を感じない環境づくりをサポートします。
-      </p>
     </div>
+  </div>
 
-    <%# --- 3つの特徴（追加提案：視覚的に分かりやすく） --- %>
-    <div class="row mt-5 pt-4 border-top">
-      <div class="col-md-4 mb-4">
-        <i class="fas fa-smile-beam fa-2x text-success mb-2"></i>
-        <h5 class="font-weight-bold">感情の可視化</h5>
-        <p class="small text-muted">3段階のレベルで、今の状態を直感的に共有できます。</p>
-      </div>
-      <div class="col-md-4 mb-4">
-        <i class="fas fa-bell fa-2x text-success mb-2"></i>
-        <h5 class="font-weight-bold">気づきのサイン</h5>
-        <p class="small text-muted">変化に気づいた仲間が、すぐに手を差し伸べられます。</p>
-      </div>
-      <div class="col-md-4 mb-4">
-        <i class="fas fa-heart border-bottom-0 fa-2x text-success mb-2"></i>
-        <h5 class="font-weight-bold">心理的安全性を</h5>
-        <p class="small text-muted">本音で繋がれる、あたたかいコミュニティを。 </p>
-      </div>
-    </div>
-
-    <%# --- フッターリンク --- %>
-    <div class="footer-links mt-5 pt-4">
-      <%= link_to root_path, class: "btn btn-outline-success rounded-pill px-5" do %>
-        <i class="fas fa-arrow-left mr-2"></i> トップページへ戻る
-      <% end %>
-    </div>
-  </section>
+  <%# --- 4. フッターアクション --- %>
+  <div class="text-center pt-4">
+    <%= link_to root_path, class: "btn btn-outline-success rounded-pill px-5 shadow-sm" do %>
+      <i class="fas fa-arrow-left mr-2"></i> トップページへ戻る
+    <% end %>
+  </div>
 </div>
 
 <style>
-  /* 全体のフォントを少し柔らかく */
-  .about-section {
-    line-height: 1.8;
+  /* カードに少しだけ動きをプラス（CSSなのでJS不要） */
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
-  .leading-relaxed {
-    font-size: 1.1rem;
-  }
-  /* アイコンに少しアニメーションを */
-  .fa-2x {
-    transition: transform 0.3s ease;
-  }
-  .fa-2x:hover {
-    transform: scale(1.2);
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
   }
 </style>
