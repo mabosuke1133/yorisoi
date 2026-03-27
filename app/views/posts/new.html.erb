@@ -24,25 +24,28 @@
             <div class="form-group mb-4">
               <label class="font-weight-bold d-block mb-3">今の状況（シグナル）</label>
               <div class="row mx-0">
-              
+  
                 <div class="col-4 px-1">
-                  <%= f.radio_button :priority, 1, class: "sr-only custom-priority-input", id: "priority_1" %>
+                  <%# :priority ではなく :emotion_level に変更、値も 1 に %>
+                  <%= f.radio_button :emotion_level, 1, class: "sr-only custom-priority-input", id: "priority_1" %>
                   <label for="priority_1" class="btn btn-outline-info w-100 p-3 h-100 shadow-sm border-2">
-                    <i class="fas fa-seedling"></i><br><small>独り言</small>
+                    <i class="fas fa-comment-dots"></i><br><small>独り言</small>
                   </label>
                 </div>
 
                 <div class="col-4 px-1">
-                  <%= f.radio_button :priority, 3, class: "sr-only custom-priority-input", id: "priority_3", checked: true %>
-                  <label for="priority_3" class="btn btn-outline-success w-100 p-3 h-100 shadow-sm border-2">
-                    <i class="fas fa-leaf"></i><br><small>聞いて</small>
+                  <%# :priority ではなく :emotion_level に変更、値も 2 に %>
+                  <%= f.radio_button :emotion_level, 2, class: "sr-only custom-priority-input", id: "priority_2", checked: true %>
+                  <label for="priority_2" class="btn btn-outline-success w-100 p-3 h-100 shadow-sm border-2">
+                    <i class="fas fa-bullhorn"></i><br><small>聞いて</small>
                   </label>
                 </div>
 
                 <div class="col-4 px-1">
-                  <%= f.radio_button :priority, 5, class: "sr-only custom-priority-input", id: "priority_5" %>
-                  <label for="priority_5" class="btn btn-outline-danger w-100 p-3 h-100 shadow-sm border-2">
-                    <i class="fas fa-exclamation-triangle"></i><br><small>SOS</small>
+                  <%# :priority ではなく :emotion_level に変更、値も 3 に %>
+                  <%= f.radio_button :emotion_level, 3, class: "sr-only custom-priority-input", id: "priority_3" %>
+                  <label for="priority_3" class="btn btn-outline-danger w-100 p-3 h-100 shadow-sm border-2">
+                    <i class="fas fa-exclamation-circle"></i><br><small>SOS</small>
                   </label>
                 </div>
               </div>
