@@ -65,7 +65,7 @@ class PostsController < ApplicationController
   private
 
   def post_params
-    params.require(:post).permit(:title, :body, :priority, :image)
+    params.require(:post).permit(:title, :body, :priority, :image, :emotion_level)
   end
 
   # 🟢 本人確認のメソッドを管理者の権限も含めて調整
