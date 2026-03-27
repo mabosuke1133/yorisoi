@@ -1,118 +1,127 @@
-<div class="container mt-4">
-  <%# ヘッダー部分 %>
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="font-weight-bold text-success d-inline-block mr-2">みんなの広場</h2>
-      <span class="badge badge-pill badge-light text-muted p-2 shadow-sm">
-        全 <%= @posts.count %> 件の想い
-      </span>
-    </div>
-    
-    <%= link_to new_post_path, class: "btn btn-success rounded-pill px-4 shadow-sm" do %>
-      <i class="fas fa-paper-plane"></i> つぶやきを届ける
-    <% end %>
-  </div>
-
-  <%# 🔍 検索フォーム %>
-  <div class="search_form mb-5 p-4 bg-white rounded shadow-sm border text-center">
-    <p class="small text-muted mb-3">
-      <i class="fas fa-search"></i> 
-      <% if params[:keyword].present? %>
-        「<strong><%= params[:keyword] %></strong>」の検索結果（<%= @posts.count %>件）
-      <% else %>
-        気になるキーワードで投稿を探してみましょう
-      <% end %>
+<div class="container mt-4 pb-5">
+  <%# --- 1. 広場のヘッダー --- %>
+  <div class="text-center mb-5 py-4 bg-white rounded-xl shadow-sm border">
+    <h2 class="font-weight-bold text-success mb-2">
+      <i class="fas fa-comments mr-2"></i>みんなの広場
+    </h2>
+    <p class="text-muted small mb-0">
+      ここは、チームを越えて「いまの気持ち」をそっと置ける場所です。<br class="d-none d-md-inline">
+      誰かの投稿に「わかる」と思ったら、寄り添いボタンで共感を届けましょう。
     </p>
-
-    <%= form_with url: posts_path, method: :get, local: true, class: "form-inline justify-content-center" do |f| %>
-      <%# params[:keyword] を value に入れることで、検索後も入力した文字が残るようにします %>
-      <%= f.text_field :keyword, value: params[:keyword], class: "form-control mr-sm-2 rounded-pill w-50", placeholder: "キーワードを入力..." %>
-      <%= f.submit "検索", class: "btn btn-success rounded-pill px-4 shadow-sm" %>
-      
-      <%# 💡 検索中のみ「クリア」ボタンを表示して、全表示に戻りやすくする %>
-      <% if params[:keyword].present? %>
-        <%= link_to posts_path, class: "btn btn-link text-muted ml-2" do %>
-          <i class="fas fa-times-circle"></i> クリア
-        <% end %>
+    
+    <div class="mt-4">
+      <%= link_to new_post_path, class: "btn btn-success rounded-pill px-5 py-2 shadow-sm font-weight-bold" do %>
+        <i class="fas fa-feather-alt mr-1"></i> 今の気持ちを投稿する
       <% end %>
-    <% end %>
+    </div>
   </div>
 
-  <%# 投稿カード一覧 %>
-  <div class="row">
-    <% @posts.each do |post| %>
-      <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100 shadow-sm border-0 rounded-lg overflow-hidden <%= 'border-sos animate-pulse' if post.priority == 5 %>">
-          
-          <%# 1. 画像エリア %>
-          <div class="post-image-container bg-light text-center">
-            <% if post.image.attached? %>
-              <%= image_tag post.image, class: "card-img-top", style: "height: 200px; object-fit: cover;" %>
-            <% else %>
-              <div class="py-5 text-muted"><i class="fas fa-image"></i> 画像なし</div>
-            <% end %>
-          </div>
+  <%# --- 2. 投稿一覧（カード形式） --- %>
+  <div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+      
+      <% if @posts.any? %>
+        <% @posts.each do |post| %>
+          <div class="card mb-4 border-0 shadow-sm rounded-xl hover-up transition">
+            <div class="card-body p-4">
+              <div class="d-flex align-items-start">
+                
+                <%# 左側：レベルに応じたアイコンバッジ %>
+                <div class="mr-3 text-center" style="width: 60px;">
+                  <% case post.level %>
+                  <% when 1 # 独り言 %>
+                    <div class="icon-circle bg-light-success text-success mb-1" title="独り言">
+                      <i class="fas fa-comment-dots"></i>
+                    </div>
+                    <span class="badge badge-pill badge-success-light">独り言</span>
+                  <% when 2 # 聞いて %>
+                    <div class="icon-circle bg-light-warning text-warning mb-1" title="聞いて">
+                      <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <span class="badge badge-pill badge-warning-light">聞いて</span>
+                  <% when 3 # SOS %>
+                    <div class="icon-circle bg-light-danger text-danger mb-1" title="SOS">
+                      <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <span class="badge badge-pill badge-danger-light">SOS</span>
+                  <% end %>
+                </div>
 
-          <%# 2. ボディエリア %>
-          <div class="card-body">
-            <div class="mb-2">
-              <% if post.priority == 5 %>
-                <span class="badge badge-danger p-2 shadow-sm"><i class="fas fa-exclamation-triangle"></i> 緊急SOS</span>
-              <% elsif post.priority == 1 %>
-                <span class="badge badge-info p-2 text-white"><i class="fas fa-seedling"></i> 独り言</span>
-              <% else %>
-                <span class="badge badge-success p-2"><i class="fas fa-leaf"></i> 聞いて</span>
-              <% end %>
+                <%# 右側：メインコンテンツ %>
+                <div class="flex-grow-1">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <strong class="text-dark"><%= post.user.name %> さん</strong>
+                    <small class="text-muted"><%= time_ago_in_words(post.created_at) %>前</small>
+                  </div>
+                  
+                  <div class="post-content text-secondary mb-3" style="line-height: 1.6; white-space: pre-wrap;">
+                    <%= post.body %>
+                  </div>
+
+                  <%# 下部：アクションエリア %>
+                  <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                    <div class="reaction-buttons">
+                      <%# ここに「共感（いいね）」などのボタンを配置予定 %>
+                      <button class="btn btn-sm btn-outline-light text-muted border-0 rounded-pill px-3 bg-light">
+                        <i class="far fa-heart mr-1"></i> 寄り添う
+                      </button>
+                    </div>
+                    <div>
+                      <%= link_to post_path(post), class: "text-success small font-weight-bold" do %>
+                        詳細を見る <i class="fas fa-chevron-right ml-1"></i>
+                      <% end %>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
-            
-            <h5 class="card-title font-weight-bold text-dark mb-1">
-              <%= post.title %>
-            </h5>
-            
-            <p class="text-muted small mb-0">
-              <i class="fas fa-user"></i> <%= post.user.name %> さん
-            </p>
           </div>
-
-          <%# 3. フッターエリア（削除ボタンを追加） %>
-          <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center pb-3">
-            <div class="d-flex align-items-center">
-              <span class="small text-muted mr-3">
-                <i class="far fa-comment-dots"></i> <%= post.post_comments.count %>
-              </span>
-              <span class="small">
-                <%= render 'favorites/favorite_btn', post: post %>
-              </span>
-            </div>
-
-            <div class="d-flex align-items-center">
-              <%# 投稿者本人または管理者の場合のみ削除ボタンを表示 %>
-              <% if post.user == current_user || admin_signed_in? %>
-                <%= link_to '削除', post_path(post), method: :delete, data: { confirm: 'このつぶやきを削除してもよろしいですか？' }, class: 'text-danger small mr-3' %>
-              <% end %>
-              <%= link_to '詳細を見る', post_path(post), class: 'btn btn-outline-success btn-sm rounded-pill px-3' %>
-            </div>
-          </div>
-
+        <% end %>
+      <% else %>
+        <div class="text-center py-5 bg-white rounded-xl shadow-sm border">
+          <i class="fas fa-leaf fa-3x text-muted opacity-25 mb-3"></i>
+          <h5 class="text-secondary">まだ投稿がありません</h5>
+          <p class="text-muted small">最初の一言を投稿してみませんか？</p>
         </div>
-      </div>
-    <% end %>
+      <% end %>
+
+    </div>
   </div>
 </div>
 
 <style>
-  .border-sos {
-    border: 2px solid #dc3545 !important;
-    box-shadow: 0 0 15px rgba(220, 53, 69, 0.3) !important;
+  .rounded-xl { border-radius: 1.25rem; }
+  .hover-up:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
   }
+  .transition { transition: all 0.3s ease; }
   
-  .animate-pulse {
-    animation: pulse 2.5s infinite;
+  /* アイコンサークル */
+  .icon-circle {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin: 0 auto;
   }
 
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
+  /* 独自の色定義（柔らかい背景色） */
+  .bg-light-success { background-color: #e8f5e9; }
+  .bg-light-warning { background-color: #fff3e0; }
+  .bg-light-danger  { background-color: #ffebee; }
+  
+  /* 柔らかなバッジ色 */
+  .badge-success-light { background-color: #c8e6c9; color: #2e7d32; }
+  .badge-warning-light { background-color: #ffe0b2; color: #ef6c00; }
+  .badge-danger-light  { background-color: #ffcdd2; color: #c62828; }
+
+  .post-content {
+    font-size: 1rem;
+    word-break: break-all;
   }
 </style>
