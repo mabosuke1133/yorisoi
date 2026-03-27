@@ -1,14 +1,77 @@
-<div class="container mt-5">
-  <h2>新規グループ作成</h2>
-  <%= form_with model: @group, local: true do |f| %>
-    <div class="form-group">
-      <%= f.label :name, "グループ名" %>
-      <%= f.text_field :name, class: "form-control" %>
+<div class="container mt-5 pb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      
+      <%# --- 1. タイトルエリア --- %>
+      <div class="text-center mb-5">
+        <h2 class="font-weight-bold text-success">
+          <i class="fas fa-plus-circle mr-2"></i>新しいチームルームを作成
+        </h2>
+        <p class="text-muted">
+          メンバーが「独り言・聞いて・SOS」を気兼ねなく共有できる、<br class="d-md-none">
+          安心できる居場所（ルーム）を準備しましょう。
+        </p>
+      </div>
+
+      <%# --- 2. 入力フォーム --- %>
+      <div class="card border-0 shadow-sm rounded-xl overflow-hidden">
+        <div class="card-body p-4 p-md-5 bg-white">
+          <%= form_with model: @group, local: true do |f| %>
+            
+            <%# チーム名（ルーム名） %>
+            <div class="form-group mb-4">
+              <%= f.label :name, class: "font-weight-bold text-dark mb-2" do %>
+                <i class="fas fa-tag mr-1 text-success small"></i> ルーム名（チーム名）
+              <% end %>
+              <%= f.text_field :name, class: "form-control form-control-lg border-light bg-light", 
+                  placeholder: "例：開発プロジェクトA、〇〇課、同期コミュニティ など", 
+                  style: "border-radius: 12px;" %>
+              <small class="form-text text-muted mt-2">
+                ※ 参加するメンバーが「自分の場所だ」と直感的にわかる名前にしましょう。
+              </small>
+            </div>
+
+            <%# 紹介文・共有のルール %>
+            <div class="form-group mb-5">
+              <%= f.label :introduction, class: "font-weight-bold text-dark mb-2" do %>
+                <i class="fas fa-clipboard-list mr-1 text-success small"></i> ルームの紹介・大切にしたいルール
+              <% end %>
+              <%= f.text_area :introduction, class: "form-control border-light bg-light", rows: 6, 
+                  placeholder: "例：『お疲れ様』を掛け合える場所にしましょう。どんな小さなつぶやきも歓迎です！", 
+                  style: "border-radius: 12px; resize: none;" %>
+              
+              <%# 記入のヒント（汎用的な内容に修正） %>
+              <div class="mt-3 p-3 bg-light rounded-lg border-left border-success" style="font-size: 0.85rem;">
+                <p class="mb-1 text-success font-weight-bold"><i class="fas fa-lightbulb mr-1"></i> 記入のヒント</p>
+                <ul class="text-muted mb-0 pl-3">
+                  <li>どのような目的でこのルームを使うか（日常の共有、お互いのフォローなど）</li>
+                  <li>「SOS」が出たときに、誰が中心となって声をかけ合うか</li>
+                  <li>お互いの多様性を尊重し、否定的な発言を控えるなどの約束事</li>
+                </ul>
+              </div>
+            </div>
+
+            <%# 送信ボタン %>
+            <div class="text-center">
+              <%= f.submit "チームルームを公開する", class: "btn btn-success btn-lg rounded-pill px-5 py-3 shadow font-weight-bold mb-3 w-100 w-md-auto" %>
+              <div>
+                <%= link_to 'キャンセルして戻る', groups_path, class: "text-muted small border-bottom" %>
+              </div>
+            </div>
+
+          <% end %>
+        </div>
+      </div>
+
     </div>
-    <div class="form-group">
-      <%= f.label :introduction, "紹介文・ルール" %>
-      <%= f.text_area :introduction, class: "form-control", rows: 5 %>
-    </div>
-    <%= f.submit "グループを作る", class: "btn btn-success" %>
-  <% end %>
+  </div>
 </div>
+
+<style>
+  .rounded-xl { border-radius: 1.5rem; }
+  .form-control:focus {
+    background-color: #fff !important;
+    border-color: #28a745 !important;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.1) !important;
+  }
+</style>
