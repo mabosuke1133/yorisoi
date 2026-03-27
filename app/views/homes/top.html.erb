@@ -1,71 +1,59 @@
 <div class="container my-5">
-  <%# --- ヒーローセクション（短く、印象的に） --- %>
+  <%# --- 1. ヒーローセクション（導入） --- %>
   <div class="text-center py-5 mb-5 bg-white rounded shadow-sm">
     <h1 class="display-4 text-success font-weight-bold mb-3">Yorisoi</h1>
-    <p class="lead text-muted">「いま」の気持ちを、ひとりにしない。</p>
-    <hr class="my-4 w-25">
-    
-    <% if user_signed_in? %>
-      <%= link_to new_post_path, class: "btn btn-success btn-lg rounded-pill px-5 shadow-sm" do %>
-        <i class="fas fa-pen"></i> つぶやきを届ける
-      <% end %>
-    <% else %>
-      <%= link_to new_user_registration_path, class: "btn btn-success btn-lg rounded-pill px-5 shadow-sm" do %>
-        まずは新規登録からはじめる
-      <% end %>
-    <% end %>
-  </div>
-
-  <%# --- 最新のつぶやきセクション --- %>
-  <div class="latest-posts-section">
-    <h3 class="text-center font-weight-bold mb-4">
-      <i class="fas fa-comment-dots text-success mr-2"></i>みんなの最新の想い
-    </h3>
-    
-    <div class="row">
-      <% if @latest_posts.present? %>
-        <% @latest_posts.each do |post| %>
-          <div class="col-md-4 mb-4">
-            <div class="card h-100 border-0 shadow-sm hover-up">
-              <div class="card-body">
-                <div class="mb-2">
-                  <%# 優先度（感情レベル）に応じたバッジ表示 %>
-                  <% if post.priority == 5 %>
-                    <span class="badge badge-danger">SOS</span>
-                  <% else %>
-                    <span class="badge badge-success">Level <%= post.priority %></span>
-                  <% end %>
-                </div>
-                <h5 class="card-title font-weight-bold text-truncate"><%= post.title %></h5>
-                <p class="card-text text-muted small"><%= truncate(post.body, length: 50) %></p>
-              </div>
-              <div class="card-footer bg-transparent border-0 pb-3">
-                <p class="small text-muted mb-0 text-right">
-                  <i class="fas fa-user-circle"></i> <%= post.user.name %> さん
-                </p>
-              </div>
-            </div>
-          </div>
-        <% end %>
+    <p class="h4 text-secondary mb-4">「心のコンディション」を共有し、チームで支え合う。</p>
+    <div class="mt-2">
+      <% if user_signed_in? %>
+        <%= link_to 'マイページへ', user_path(current_user), class: "btn btn-success btn-lg rounded-pill px-5 shadow-sm" %>
       <% else %>
-        <p class="text-center text-muted w-100">まだ投稿がありません。最初のつぶやきを届けてみませんか？</p>
+        <%= link_to '今すぐはじめる（新規登録）', new_user_registration_path, class: "btn btn-success btn-lg rounded-pill px-5 shadow-sm" %>
       <% end %>
     </div>
+  </div>
 
-    <div class="text-center mt-4">
-      <%= link_to posts_path, class: "btn btn-outline-success rounded-pill px-4" do %>
-        もっと見る <i class="fas fa-chevron-right ml-1"></i>
-      <% end %>
+  <%# --- 2. 3つのコア機能（図解風カード） --- %>
+  <div class="row mb-5">
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm text-center p-4">
+        <div class="mb-3 text-success">
+          <i class="fas fa-chart-line fa-3x"></i>
+        </div>
+        <h5 class="font-weight-bold">感情のスコアリング</h5>
+        <p class="small text-muted mb-0">日々の状態を1〜5のレベルで記録。自分の変化を客観的に振り返り、不調のサインを早めにキャッチします。</p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm text-center p-4">
+        <div class="mb-3 text-success">
+          <i class="fas fa-bullhorn fa-3x"></i>
+        </div>
+        <h5 class="font-weight-bold">緊急SOSサイン</h5>
+        <p class="small text-muted mb-0">本当にサポートが必要なときは、特別な通知機能を。言葉で説明しづらい「限界」を仲間に伝えます。</p>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card h-100 border-0 shadow-sm text-center p-4">
+        <div class="mb-3 text-success">
+          <i class="fas fa-users-cog fa-3x"></i>
+        </div>
+        <h5 class="font-weight-bold">クローズドな繋がり</h5>
+        <p class="small text-muted mb-0">投稿は組織内のメンバーにのみ共有。オープンなSNSとは違う、安心できる心理的安全性を守ります。</p>
+      </div>
+    </div>
+  </div>
+
+  <%# --- 3. プライバシーと信頼（締め） --- %>
+  <div class="row align-items-center bg-light p-4 rounded-lg shadow-sm mx-1">
+    <div class="col-md-2 text-center text-success py-3">
+      <i class="fas fa-user-shield fa-4x opacity-50"></i>
+    </div>
+    <div class="col-md-10">
+      <h5 class="font-weight-bold mb-2">プライバシーを第一に考えた設計</h5>
+      <p class="text-muted small mb-0">
+        Yorisoiは、ログインなしでは一切の投稿を閲覧できない仕様になっています。<br>
+        外部の検索エンジンや第三者に内容が漏れることはありません。あなたの「本音」を、安心して預けてください。
+      </p>
     </div>
   </div>
 </div>
-
-<style>
-  .hover-up {
-    transition: transform 0.3s ease;
-  }
-  .hover-up:hover {
-    transform: translateY(-5px);
-  }
-</style>
-</style>
