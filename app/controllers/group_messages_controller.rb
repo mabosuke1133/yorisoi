@@ -16,7 +16,6 @@ class GroupMessagesController < ApplicationController
         @message.user_id = current_user.id
       end
 
-      # 💡 成功！
       if @message.save
         redirect_to group_path(@group), notice: "メッセージを送信しました"
       else
