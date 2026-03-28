@@ -29,7 +29,7 @@ class GroupMessagesController < ApplicationController
   private
 
   def message_params
-    params.require(:group_message).permit(:body)
+    params.require(:group_message).permit(:body,:admin_id)
   end
 
   # 💡 どちらかがログインしていれば通す独自メソッド

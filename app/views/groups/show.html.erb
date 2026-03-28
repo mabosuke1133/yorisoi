@@ -72,6 +72,11 @@
         <div class="card border-0 shadow-lg" style="border-radius: 20px;">
           <div class="card-body p-4 bg-white" style="border-radius: 20px;">
             <%= form_with model: [@group, GroupMessage.new], local: true do |f| %>
+              
+              <% if admin_signed_in? %>
+                <%= f.hidden_field :admin_id, value: current_admin.id %>
+              <% end %>
+
               <div class="form-group mb-3">
                 <label class="small font-weight-bold text-muted mb-2">
                   <i class="fas fa-pen-nib mr-1"></i> 今のきもちをチームに届ける
