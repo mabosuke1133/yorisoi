@@ -53,13 +53,16 @@ class GroupsController < ApplicationController
   def show
     @group = Group.find(params[:id])
 
-    # 💡 修正：statusの制限を外し、そのユーザーの「一番新しい相談」を特定する
-    # これにより、完了後（status: :completed）でも @issue が取得でき、Viewで判定が可能になります
-    @issue = Issue.where(user_id: @group.owner_id)
+    # 💡 このグループ（@group）に関連する最新の相談のみを取得する
+    # group_id など、グループと相談を紐付けるカラムがある場合の書き方
+    @issue = Issue.where(group_id: @group.id)
                   .order(created_at: :desc)
                   .first
 
-    # 💡 閲覧制限
+    # 💡 もし Issue に group_id がない設計なら、以下のように「進行中」のみに絞る方法もある
+    # @issue = Issue.where(user_id: @group.owner_id, status: :open).first
+
+    # 閲覧制限
     unless admin_signed_in? || @group.owner == current_user || @group.users.include?(current_user)
       redirect_to groups_path, alert: "このルームへのアクセス権限がありません。"
     end
