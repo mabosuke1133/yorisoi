@@ -29,9 +29,9 @@ class GroupsController < ApplicationController
     @group.owner_id = current_user.id
   
     if @group.save
+      # 💡 A: 「相談」または「個別」という言葉が含まれる場合（個別相談ルーム）
       if @group.name.include?("相談") || @group.name.include?("個別")
-        # 💡 ここが重要！ グループに紐づく「最初の相談データ」を作成する
-        # これがあるおかげで、show画面が「相談中」だと認識できるようになります
+        # 相談専用のデータ（Issue）を作成して、完了/未完了の管理をさせる
         @group.issues.create(title: "#{@group.name}の相談", completed: false)
 
         mentor = User.find_by(email: "dummy@example.com")
@@ -43,10 +43,16 @@ class GroupsController < ApplicationController
           )
         end
         redirect_to group_path(@group), notice: "相談を開始しました"
+
+      # 💡 B: それ以外の場合（チームルーム）
       else
-        redirect_to groups_path, notice: "グループを作成しました"
+        # ここでは Issue.create を一切行わない！
+        # 作成後、すぐにトークができるように詳細画面（show）へリダイレクトさせる
+        redirect_to group_path(@group), notice: "チームルームを作成しました"
       end
+
     else
+      # バリデーションエラーなどで保存できなかった場合
       render :new
     end
   end
