@@ -68,7 +68,7 @@
       </div>
 
       <%# --- 3. 投稿フォームエリア --- %>
-      <% if !@issue&.completed? %>
+      <% if @issue.nil? || !@issue.completed? %>
         <div class="card border-0 shadow-lg" style="border-radius: 20px;">
           <div class="card-body p-4 bg-white" style="border-radius: 20px;">
             <%= form_with model: [@group, GroupMessage.new], local: true do |f| %>
@@ -93,10 +93,10 @@
             <% end %>
           </div>
         </div>
-      <% elsif @issue && @issue.completed? %>
+      <% elsif @issue&.completed? %>
         <div class="alert alert-secondary text-center shadow-sm py-4 rounded-xl">
           <p class="mb-0 font-weight-bold text-secondary">
-            <i class="fas fa-archive mr-2"></i> このルームの寄り添い対応は終了し、閲覧用して保存されました。
+            <i class="fas fa-archive mr-2"></i> このルームの寄り添い対応は終了し、閲覧用として保存されました。
           </p>
         </div>
       <% end %>
