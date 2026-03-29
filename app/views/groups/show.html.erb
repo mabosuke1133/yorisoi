@@ -19,7 +19,9 @@
           </p>
         </div>
         <div class="text-right">
-          <% if @issue&.completed? %>
+          <% if @issue.nil? %>
+            <span class="badge badge-info px-3 py-2 rounded-pill shadow-sm mb-2">チームトーク</span>
+          <% elsif @issue.completed? %>
             <span class="badge badge-secondary px-3 py-2 rounded-pill shadow-sm mb-2">アーカイブ（閲覧専用）</span>
           <% else %>
             <span class="badge badge-success px-3 py-2 rounded-pill shadow-sm mb-2">寄り添い受付中</span>
@@ -33,16 +35,16 @@
           <% @group.group_messages.each do |message| %>
             <% is_mine = (user_signed_in? && message.user == current_user) || (admin_signed_in? && message.admin_id == current_admin&.id) %>
             
-            <div class="small text-muted mt-1" style="font-size: 0.7rem;">
-              <% if message.admin_id.present? %>
-                <%# 💡 「管理者」を「メンター」や「相談担当」に！バッジで特別感を出す %>
-                <span class="badge badge-info shadow-sm py-1 px-2" style="font-size: 0.6rem; vertical-align: middle;">メンター</span>
-                <span class="ml-1 font-weight-bold" style="color: #17a2b8;">よりそい担当</span>
-              <% else %>
-                <%# 💡 ユーザー側は「さん」付けで柔らかく %>
-                <%= is_mine ? "あなた" : "#{message.user&.name}さん" %>
-              <% end %>
-            </div>
+              <div class="small text-muted mt-1" style="font-size: 0.7rem;">
+                <% if message.admin_id.present? %>
+                  <%# 💡 「管理者」を「メンター」や「相談担当」に！バッジで特別感を出す %>
+                  <span class="badge badge-info shadow-sm py-1 px-2" style="font-size: 0.6rem; vertical-align: middle;">メンター</span>
+                  <span class="ml-1 font-weight-bold" style="color: #17a2b8;">よりそい担当</span>
+                <% else %>
+                  <%# 💡 ユーザー側は「さん」付けで柔らかく %>
+                  <%= is_mine ? "あなた" : "#{message.user&.name}さん" %>
+                <% end %>
+              </div>
               
               <%# メッセージ本体 %>
               <div class="p-3 shadow-sm position-relative" style="max-width: 75%; background-color: white; border-radius: <%= is_mine ? '20px 0px 20px 20px' : '0px 20px 20px 20px' %> !important; border: 1px solid #dee2e6;">
