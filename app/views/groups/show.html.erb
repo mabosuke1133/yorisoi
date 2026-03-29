@@ -93,10 +93,10 @@
             <% end %>
           </div>
         </div>
-      <% else %>
+      <% elsif @issue && @issue.completed? %>
         <div class="alert alert-secondary text-center shadow-sm py-4 rounded-xl">
           <p class="mb-0 font-weight-bold text-secondary">
-            <i class="fas fa-archive mr-2"></i> このルームの寄り添い対応は終了し、保存されました（閲覧専用）
+            <i class="fas fa-archive mr-2"></i> このルームの寄り添い対応は終了し、閲覧用して保存されました。
           </p>
         </div>
       <% end %>
@@ -113,7 +113,7 @@
           <p class="small text-muted mb-3">状況が落ち着き、フォローが完了した場合はルームをアーカイブできます。</p>
           <%= link_to complete_admin_issue_path(@issue), 
                 method: :patch, 
-                data: { confirm: "このチームの寄り添いを「完了（アーカイブ）」にしてもよろしいですか？" }, 
+                data: { confirm: "このチームの寄り添いを「完了」にしてもよろしいですか？" }, 
                 class: "btn btn-outline-success rounded-pill px-4 btn-sm" do %>
             寄り添いフォローを完了する
           <% end %>
