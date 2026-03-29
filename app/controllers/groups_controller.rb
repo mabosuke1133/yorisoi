@@ -26,11 +26,14 @@ class GroupsController < ApplicationController
 
   def create
     @group = Group.new(group_params)
-    @group.owner_id = current_user.id # 💡 オーナー設定は共通でOK
+    @group.owner_id = current_user.id
   
     if @group.save
-      #  名前によって追加処理（メンター参加）を分ける
       if @group.name.include?("相談") || @group.name.include?("個別")
+        # 💡 ここが重要！ グループに紐づく「最初の相談データ」を作成する
+        # これがあるおかげで、show画面が「相談中」だと認識できるようになります
+        @group.issues.create(title: "#{@group.name}の相談", completed: false)
+
         mentor = User.find_by(email: "dummy@example.com")
         if mentor
           @group.permits.create(user_id: mentor.id, status: "approved")
@@ -41,11 +44,9 @@ class GroupsController < ApplicationController
         end
         redirect_to group_path(@group), notice: "相談を開始しました"
       else
-        #  普通のグループの場合
         redirect_to groups_path, notice: "グループを作成しました"
       end
     else
-      #  バリデーションエラーなどで保存できなかった場合
       render :new
     end
   end
