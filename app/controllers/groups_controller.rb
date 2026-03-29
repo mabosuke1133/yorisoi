@@ -59,9 +59,6 @@ class GroupsController < ApplicationController
                   .order(created_at: :desc)
                   .first
 
-    # 💡 もし Issue に group_id がない設計なら、以下のように「進行中」のみに絞る方法もある
-    # @issue = Issue.where(user_id: @group.owner_id, status: :open).first
-
     # 閲覧制限
     unless admin_signed_in? || @group.owner == current_user || @group.users.include?(current_user)
       redirect_to groups_path, alert: "このルームへのアクセス権限がありません。"

@@ -12,4 +12,5 @@ class Group < ApplicationRecord
   # 💡 承認されたメンバーだけを抽出する「新しい名前」を作る
   has_many :approved_users, -> { where(permits: { status: :approved }) }, through: :permits, source: :user
   has_many :group_messages, dependent: :destroy
+  has_many :issues, dependent: :destroy
 end
