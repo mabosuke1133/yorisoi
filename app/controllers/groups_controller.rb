@@ -55,11 +55,15 @@ class GroupsController < ApplicationController
   def show
     @group = Group.find(params[:id])
 
-    # 💡 このグループ（@group）に関連する最新の相談のみを取得する
-    # group_id など、グループと相談を紐付けるカラムがある場合の書き方
-    @issue = Issue.where(group_id: @group.id)
-                  .order(created_at: :desc)
-                  .first
+    # 💡 修正ポイント：グループ自体が「相談モード」の時だけIssueを取得する
+    if @group.is_consultation?
+      @issue = Issue.where(group_id: @group.id)
+                    .order(created_at: :desc)
+                    .first
+    else
+      # チームルームの場合は、Issueを強制的に空(nil)にする
+      @issue = nil
+    end
 
     # 閲覧制限
     unless admin_signed_in? || @group.owner == current_user || @group.users.include?(current_user)
