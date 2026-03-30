@@ -29,9 +29,9 @@ class GroupsController < ApplicationController
     @group.owner_id = current_user.id
   
     if @group.save
-      # 💡 A: 「相談」または「個別」という言葉が含まれる場合（個別相談ルーム）
-      if @group.name.include?("相談") || @group.name.include?("個別")
-        # 相談専用のデータ（Issue）を作成して、完了/未完了の管理をさせる
+      # 💡 修正ポイント：名前ではなく「is_consultation」フラグで判定！
+      if @group.is_consultation?
+        # 個別相談ルーム専用の処理（Issue作成など）
         @group.issues.create(title: "#{@group.name}の相談", completed: false)
 
         mentor = User.find_by(email: "dummy@example.com")
@@ -43,16 +43,11 @@ class GroupsController < ApplicationController
           )
         end
         redirect_to group_path(@group), notice: "相談を開始しました"
-
-      # 💡 B: それ以外の場合（チームルーム）
       else
-        # ここでは Issue.create を一切行わない！
-        # 作成後、すぐにトークができるように詳細画面（show）へリダイレクトさせる
+        # 普通のチームルーム
         redirect_to group_path(@group), notice: "チームルームを作成しました"
       end
-
     else
-      # バリデーションエラーなどで保存できなかった場合
       render :new
     end
   end
@@ -89,7 +84,7 @@ class GroupsController < ApplicationController
   private
 
   def group_params
-    params.require(:group).permit(:name, :introduction)
+    params.require(:group).permit(:name, :introduction, :group_image, :is_consultation)
   end
 
   # 管理者(Admin)または一般ユーザー(User)のどちらかがログインしていれば通す門番

@@ -18,6 +18,8 @@
         <div class="card-body p-4 p-md-5 bg-white">
           <%= form_with model: @group, local: true do |f| %>
             
+            <%= f.hidden_field :is_consultation, value: params[:is_consultation] %>
+            
             <%# チーム名（ルーム名） %>
             <div class="form-group mb-4">
               <%= f.label :name, class: "font-weight-bold text-dark mb-2" do %>
