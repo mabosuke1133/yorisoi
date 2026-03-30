@@ -57,17 +57,18 @@ class GroupsController < ApplicationController
   def show
     @group = Group.find(params[:id])
 
-    # 💡 修正ポイント：グループ自体が「相談モード」の時だけIssueを取得する
-    if @group.is_consultation?
+    # 💡 修正ポイント：カラムの値を「 == true 」で厳密にチェックする
+    # これにより、nil や false の時は確実に else（チームトーク）へ行きます
+    if @group[:is_consultation] == true
       @issue = Issue.where(group_id: @group.id)
                     .order(created_at: :desc)
                     .first
     else
-      # チームルームの場合は、Issueを強制的に空(nil)にする
+      # チームルーム、またはフラグが未設定(nil)の場合は、絶対に Issue を持たせない
       @issue = nil
     end
 
-    # 閲覧制限
+    # 閲覧制限（ここは変更なし）
     unless admin_signed_in? || @group.owner == current_user || @group.users.include?(current_user)
       redirect_to groups_path, alert: "このルームへのアクセス権限がありません。"
     end
