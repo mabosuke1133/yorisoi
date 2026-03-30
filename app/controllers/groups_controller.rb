@@ -27,6 +27,8 @@ class GroupsController < ApplicationController
   def create
     @group = Group.new(group_params)
     @group.owner_id = current_user.id
+    # 💡 強制的に「URLにフラグがある時だけ」相談モードにする（念のためのガード）
+    @group.is_consultation = (params[:is_consultation] == "true" || params[:group][:is_consultation] == "true")
   
     if @group.save
       # 💡 修正ポイント：名前ではなく「is_consultation」フラグで判定！
