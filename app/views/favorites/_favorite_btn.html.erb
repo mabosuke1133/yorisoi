@@ -1,26 +1,28 @@
 <div id="favorite_btn_<%= post.id %>">
   <% if user_signed_in? %>
-    <%# --- ユーザーログイン中：今まで通りの動き --- %>
-    <% if post.favorited_by?(current_user) %>
-      <%= link_to post_favorites_path(post), method: :delete, class: "text-danger" do %>
-        ♥ <%= post.favorites.count %>
+    <%# --- 💡 Userモデルで作ったメソッド名に修正し、デザインを統一 --- %>
+    <% if current_user.already_favorited?(post) %>
+      <%# 寄り添い済み（解除ボタン） %>
+      <%= link_to post_favorites_path(post), method: :delete, class: "btn btn-sm text-danger border-0 rounded-pill px-3 bg-light" do %>
+        <i class="fas fa-heart mr-1"></i> 寄り添い中 <%= post.favorites.count %>
       <% end %>
     <% else %>
-      <%= link_to post_favorites_path(post), method: :post, class: "text-muted" do %>
-        ♡ <%= post.favorites.count %>
+      <%# 未寄り添い（登録ボタン） %>
+      <%= link_to post_favorites_path(post), method: :post, class: "btn btn-sm text-muted border-0 rounded-pill px-3 bg-light" do %>
+        <i class="far fa-heart mr-1"></i> 寄り添う <%= post.favorites.count %>
       <% end %>
     <% end %>
 
   <% elsif admin_signed_in? %>
-    <%# --- 管理者ログイン中：リンクを貼らず、ただの表示だけにする --- %>
-    <span class="text-muted">
-      <i class="fas fa-heart"></i> <%= post.favorites.count %>
-    </span>
+    <%# 管理者は見るだけ（デザインだけ合わせる） %>
+    <span class="btn btn-sm text-muted border-0 rounded-pill px-3 bg-light disabled">
+      <i class="fas fa-heart mr-1"></i> <%= post.favorites.count %>
+    <% end %>
 
   <% else %>
-    <%# --- 未ログイン（ゲスト）：ログイン画面へ誘導 --- %>
-    <%= link_to new_user_session_path, class: "text-muted" do %>
-      ♡ <%= post.favorites.count %>
+    <%# 未ログインならログイン画面へ %>
+    <%= link_to new_user_session_path, class: "btn btn-sm text-muted border-0 rounded-pill px-3 bg-light" do %>
+      <i class="far fa-heart mr-1"></i> 寄り添う <%= post.favorites.count %>
     <% end %>
   <% end %>
 </div>
