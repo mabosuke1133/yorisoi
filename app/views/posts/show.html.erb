@@ -10,7 +10,7 @@
         
         <div class="card-body p-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
-            <h1 class="h3 font-weight-bold mb-0"><%= @post.title %></h1>
+            <h1 class="h4 font-weight-bold mb-0 text-dark"><%= @post.title %></h1>
             
             <%# シグナルの表示（独り言・聞いて・SOS） %>
             <% if @post.priority == 5 %>
@@ -18,95 +18,97 @@
             <% elsif @post.priority == 1 %>
               <span class="badge badge-info p-2 text-white"><i class="fas fa-seedling"></i> 独り言</span>
             <% else %>
-              <span class="badge badge-success p-2"><i class="fas fa-leaf"></i> 聞いて</span>
+              <span class="badge badge-success p-2 text-white"><i class="fas fa-leaf"></i> 聞いて</span>
             <% end %>
           </div>
 
-          <p class="text-muted mb-4" style="line-height: 1.8; white-space: pre-wrap;"><%= @post.body %></p>
+          <p class="text-secondary mb-4" style="line-height: 1.8; white-space: pre-wrap; font-size: 1.05rem;"><%= @post.body %></p>
 
-          <div class="d-flex justify-content-between align-items-center border-top pt-3">
+          <div class="d-flex justify-content-between align-items-center border-top pt-4">
             <div class="d-flex align-items-center">
-              <%# 投稿者情報 %>
-              <div class="text-muted small mr-3">
+              <%# 投稿者情報：アイコンを追加して温かみを %>
+              <div class="text-muted small mr-4">
+                <i class="fas fa-user-circle text-success mr-1"></i>
                 投稿者: <%= link_to @post.user.name, user_path(@post.user), class: "font-weight-bold text-success" %>
               </div>
               
-              <%# いいねボタン %>
-              <div class="small">
+              <%# いいねボタン：ここが先ほど直した共通部品 %>
+              <div class="favorite-section">
                 <%= render 'favorites/favorite_btn', post: @post %>
               </div>
             </div>
             
-            <%# 編集ボタン（本人のみ）削除ボタン（本人と管理者のみ） %>
+            <%# 編集・削除ボタン %>
             <div>
               <% if @post.user == current_user || admin_signed_in? %>
-                <%= link_to '編集', edit_post_path(@post), class: "btn btn-outline-secondary btn-sm rounded-pill px-3 mr-2" if @post.user == current_user %>
-                <%= link_to '削除', post_path(@post), method: :delete, data: { confirm: 'このつぶやきを削除してもよろしいですか？' }, class: "btn btn-outline-danger btn-sm rounded-pill px-3" %>
+                <%= link_to edit_post_path(@post), class: "btn btn-light btn-sm rounded-pill px-3 mr-2 text-muted" do %>
+                  <i class="fas fa-pen small"></i> 編集
+                <% end if @post.user == current_user %>
+                <%= link_to post_path(@post), method: :delete, data: { confirm: 'このつぶやきを削除してもよろしいですか？' }, class: "btn btn-outline-danger btn-sm rounded-pill px-3" do %>
+                  <i class="fas fa-trash-alt small"></i> 削除
+                <% end %>
               <% end %>
             </div>
           </div>
         </div>
       </div>
 
-      <%= link_to '← タイムラインに戻る', posts_path, class: "text-muted mb-5 d-block" %>
+      <%= link_to posts_path, class: "text-success mb-5 d-inline-block font-weight-bold" do %>
+        <i class="fas fa-chevron-left"></i> タイムラインに戻る
+      <% end %>
 
-      <hr class="my-5">
+      <hr class="my-5" style="border-top: 2px dashed #e9ecef;">
 
       <%# --- コメント一覧部分 --- %>
-      <h4 class="mb-4"><i class="far fa-comments text-success"></i> 寄り添いメッセージ（<%= @post.post_comments.count %>件）</h4>
+      <h5 class="mb-4 font-weight-bold text-dark">
+        <i class="fas fa-envelope-open-text text-success mr-2"></i> 寄り添いメッセージ（<%= @post.post_comments.count %>件）
+      </h5>
       
       <div class="comments-section mb-5">
         <% @post.post_comments.each do |post_comment| %>
-          <div class="card mb-3 border-0 shadow-sm rounded-lg">
+          <div class="card mb-3 border-0 shadow-sm rounded-lg" style="background-color: #fdfdfd; border-left: 4px solid #28a745 !important;">
             <div class="card-body p-3">
               <div class="d-flex justify-content-between align-items-start">
                 <div class="d-flex align-items-center mb-2">
-                  <span class="font-weight-bold text-dark small mr-2">
-                    <%= post_comment.user.name %>
+                  <span class="font-weight-bold text-success small mr-2">
+                    <i class="fas fa-comment-dots mr-1"></i><%= post_comment.user.name %>
                   </span>
-                  <span class="text-muted small">
+                  <span class="text-muted" style="font-size: 0.75rem;">
                     <%= post_comment.created_at.strftime('%Y/%m/%d %H:%M') %>
                   </span>
                 </div>
                 
-                <%# コメント削除ボタン（本人と管理者のみ） %>
                 <% if post_comment.user == current_user || admin_signed_in? %>
-                  <%= link_to post_post_comment_path(post_comment.post, post_comment), method: :delete, data: { confirm: 'メッセージを削除しますか？' }, class: "text-danger small" do %>
-                    <i class="fas fa-trash"></i>
+                  <%= link_to post_post_comment_path(post_comment.post, post_comment), method: :delete, data: { confirm: 'メッセージを削除しますか？' }, class: "text-muted small hover-danger" do %>
+                    <i class="fas fa-times"></i>
                   <% end %>
                 <% end %>
               </div>
               
-              <p class="mb-0 text-secondary" style="white-space: pre-wrap;"><%= post_comment.comment %></p>
+              <p class="mb-0 text-secondary small" style="white-space: pre-wrap;"><%= post_comment.comment %></p>
             </div>
           </div>
         <% end %>
       </div>
 
-      <hr class="my-5">
-
-      <%# --- コメント投稿フォーム（ユーザーのみ） --- %>
+      <%# --- コメント投稿フォーム --- %>
       <% if user_signed_in? %>
-        <div class="new-comment-form bg-light p-4 rounded-lg shadow-sm mb-5">
+        <div class="new-comment-form bg-white p-4 rounded-lg shadow-sm mb-5 border">
           <h5 class="mb-3 font-weight-bold text-success">
-            <i class="fas fa-pen-nib"></i> メッセージを贈る
+            <i class="fas fa-paper-plane mr-2"></i> 想いを届ける
           </h5>
           
           <%= form_with model: [@post, @post_comment], local: true do |f| %>
             <div class="form-group">
-              <%= f.text_area :comment, rows: '3', class: "form-control border-0 shadow-sm", placeholder: "ここに想いを綴ってみましょう..." %>
+              <%= f.text_area :comment, rows: '3', class: "form-control bg-light border-0", placeholder: "ここに想いを綴ってみましょう..." %>
             </div>
             <div class="text-right">
-              <%= f.submit "メッセージを届ける", class: "btn btn-success rounded-pill px-5 shadow-sm" %>
+              <%= f.submit "メッセージを贈る", class: "btn btn-success rounded-pill px-5 shadow font-weight-bold" %>
             </div>
           <% end %>
         </div>
-      <% elsif admin_signed_in? %>
-        <div class="alert alert-secondary text-center rounded-pill mb-5">
-          <i class="fas fa-info-circle"></i> 管理者モード：コメント投稿は制限されています
-        </div>
       <% end %>
 
-    </div> <%# col-md-8 の閉じ %>
-  </div> <%# row の閉じ %>
-</div> <%# container の閉じ %>
+    </div>
+  </div>
+</div>
