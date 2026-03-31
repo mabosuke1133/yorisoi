@@ -74,4 +74,10 @@ class User < ApplicationRecord
   # 💡 承認フロー：管理者に「承認」されたグループのみを「参加中」として扱う厳格な権限設計
   has_many :approved_permits, -> { where(status: :approved) }, class_name: 'Permit'
   has_many :participating_groups, through: :approved_permits, source: :group
+
+  # --- 💡 寄り添い機能の判定メソッド ---
+  # 指定した投稿（post）を、自分がすでに「寄り添い」済みか確認する
+  def already_favorited?(post)
+    self.favorites.exists?(post_id: post.id)
+  end
 end
