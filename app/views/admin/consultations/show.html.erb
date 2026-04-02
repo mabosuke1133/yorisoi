@@ -1,71 +1,97 @@
 <div class="container mt-4 pb-5">
+  <%# --- 1. ヘッダーエリア：相談情報とステータス操作 --- %>
   <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
     <div>
-      <h4 class="font-weight-bold"><%= @consultation.user.name %> さんの相談</h4>
-      <p class="text-muted mb-0">件名：<%= @consultation.title %></p>
+      <h4 class="font-weight-bold">
+        <i class="fas fa-user-circle text-secondary"></i> <%= @consultation.user.name %> さんの相談
+      </h4>
+      <p class="text-muted mb-0">
+        <span class="badge badge-light border text-secondary mr-2">件名</span>
+        <%= @consultation.title %>
+      </p>
     </div>
     
-    <%# 💡 未対応の場合のみ「対応開始」ボタンを出す %>
+    <%# 未対応の場合のみ「対応開始」ボタンを表示 %>
     <% if @consultation.pending? %>
-      <%= link_to 'この相談の対応を開始する', admin_consultation_path(@consultation), method: :patch, class: "btn btn-primary rounded-pill px-4 shadow-sm font-weight-bold" %>
+      <%= button_to admin_consultation_path(@consultation, consultation: { status: :processing }), 
+                    method: :patch, 
+                    class: "btn btn-success rounded-pill px-4 shadow-sm font-weight-bold" do %>
+        <i class="fas fa-play-circle"></i> この相談の対応を開始する
+      <% end %>
+    <% elsif @consultation.processing? %>
+      <span class="badge badge-warning p-2 px-3 rounded-pill">
+        <i class="fas fa-spinner fa-spin"></i> 対応中
+      </span>
+    <% else %>
+      <span class="badge badge-success p-2 px-3 rounded-pill">完了済み</span>
     <% end %>
   </div>
 
-  <%# メッセージ一覧（ユーザー側とほぼ同じ構造でOKですが、管理者は常に全メッセージが見えます） %>
-  <div class="chat-board bg-light p-4 rounded-xl mb-4" style="height: 450px; overflow-y: auto; border: 1px solid #dee2e6;">
+  <%# --- 2. メッセージ一覧エリア：チャット形式 --- %>
+  <div class="chat-container mb-4 shadow-sm" style="border-radius: 20px; border: 1px solid #eee; min-height: 500px;">
     <% if @consultation.pending? %>
-      <div class="text-center py-5">
-        <p class="text-muted">「対応を開始する」ボタンを押すと、チャットが利用可能になります。</p>
+      <%# 未対応時のロック画面 %>
+      <div class="text-center py-5 my-5">
+        <i class="fas fa-lock fa-4x text-muted mb-4 opacity-25"></i>
+        <h5 class="text-secondary">チャットはまだ利用できません</h5>
+        <p class="text-muted">上の「対応を開始する」ボタンを押すと、相談者とメッセージのやり取りが可能になります。</p>
       </div>
     <% else %>
-      <%# ここにメッセージを表示するループ（ユーザー側と同様） %>
-      <% @messages.each do |message| %>
-        <%# ... メッセージ表示ロジック ... %>
-      <% end %>
-    <% end %>
-  </div>
+      <%# メッセージ本体 %>
+      <div class="p-3">
+        <% @messages.each do |message| %>
+          <%# 管理者の発言（自分）か、ユーザーの発言（相手）かを判定 %>
+          <% is_admin_msg = message.admin_id.present? %>
+          
+          <div class="message-bubble <%= is_admin_msg ? 'current-user' : 'other-user' %>">
+            <div class="message-content">
+              <%# 相手（ユーザー）の発言時のみ名前を表示 %>
+              <% unless is_admin_msg %>
+                <div class="message-name font-weight-bold"><%= @consultation.user.name %> さん</div>
+              <% end %>
 
-  <%# 投稿フォーム（対応中のみ表示） %>
-  <% if @consultation.processing? %>
-    <%# ここに管理者用メッセージ投稿フォーム %>
-  <% end %>
-</div>
-
-<%# --- 2. メッセージ一覧エリア（中身を追記） --- %>
-<div class="chat-board bg-light p-4 rounded-xl mb-4" style="height: 450px; overflow-y: auto; border: 1px solid #dee2e6;">
-  <% if @consultation.pending? %>
-    <div class="text-center py-5">
-      <i class="fas fa-lock fa-3x text-muted mb-3 opacity-25"></i>
-      <p class="text-muted">「対応を開始する」ボタンを押すと、チャットが利用可能になります。</p>
-    </div>
-  <% else %>
-    <% @messages.each do |message| %>
-      <% is_admin_msg = message.admin_id.present? %>
-      <div class="mb-3 d-flex <%= is_admin_msg ? 'justify-content-end' : 'justify-content-start' %>">
-        <div class="p-3 shadow-sm" style="max-width: 75%; background-color: <%= is_admin_msg ? '#e3f2fd' : 'white' %>; border-radius: <%= is_admin_msg ? '20px 20px 0px 20px' : '20px 20px 20px 0px' %>; border: 1px solid #dee2e6;">
-          <div class="small text-muted mb-1" style="font-size: 0.7rem;">
-            <%= is_admin_msg ? "あなた（管理者）" : "#{@consultation.user.name} さん" %>
+              <div class="d-flex align-items-end <%= is_admin_msg ? 'flex-row-reverse' : 'flex-row' %>">
+                <%# 吹き出し本体 %>
+                <div class="message-text shadow-sm">
+                  <%= simple_format(message.body) %>
+                </div>
+                
+                <%# 送信時刻 %>
+                <span class="message-time">
+                  <%= message.created_at.strftime('%H:%M') %>
+                </span>
+              </div>
+            </div>
           </div>
-          <div class="text-dark" style="line-height: 1.6;"><%= simple_format(message.body) %></div>
-          <div class="text-right small text-muted" style="font-size: 0.6rem;"><%= message.created_at.strftime('%m/%d %H:%M') %></div>
-        </div>
+        <% end %>
       </div>
     <% end %>
-  <% end %>
-</div>
-
-<%# --- 3. 投稿フォーム（対応中のみ表示） --- %>
-<% if @consultation.processing? %>
-  <div class="card border-0 shadow-lg" style="border-radius: 20px;">
-    <div class="card-body p-4 bg-white" style="border-radius: 20px;">
-      <%= form_with model: [:admin, @consultation, ConsultationMessage.new], local: true do |f| %>
-        <div class="form-group mb-3">
-          <%= f.text_area :body, class: "form-control border-light bg-light p-3", rows: 3, placeholder: "返信を入力...", style: "resize: none; border-radius: 15px;" %>
-        </div>
-        <div class="text-right">
-          <%= f.submit "返信する", class: "btn btn-primary rounded-pill px-5 shadow-sm font-weight-bold" %>
-        </div>
-      <% end %>
-    </div>
   </div>
-<% end %>
+
+  <%# --- 3. 投稿フォーム：対応中のみ表示 --- %>
+  <% if @consultation.processing? %>
+    <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+      <div class="card-body p-4 bg-white" style="border-radius: 20px;">
+        <%= form_with model: [:admin, @consultation, @message], local: true do |f| %>
+          <div class="form-group mb-3">
+            <%= f.text_area :body, 
+                            class: "form-control border-light bg-light p-3", 
+                            rows: 3, 
+                            placeholder: "相談者への返信を入力してください...", 
+                            style: "resize: none; border-radius: 15px;" %>
+          </div>
+          <div class="text-right">
+            <%= f.submit "返信する", class: "btn btn-success rounded-pill px-5 shadow-sm font-weight-bold" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# 戻るリンク %>
+  <div class="mt-4">
+    <%= link_to admin_consultations_path, class: "text-muted" do %>
+      <i class="fas fa-chevron-left"></i> 一覧に戻る
+    <% end %>
+  </div>
+</div>

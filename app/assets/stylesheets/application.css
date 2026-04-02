@@ -42,3 +42,83 @@ body {
   background-color: #218838;    /* ホバー時は少し濃い緑に */
   color: white !important;
 }
+
+/* チャットの外枠：既存のカードスタイルに合わせる */
+.chat-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fdfaf5; /* 全体の背景色と統一 */
+  height: 600px;             /* 固定高にするか、用途に合わせて調整 */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* メッセージの基本構造 */
+.message-bubble {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: flex-end; /* 時刻を下に揃える */
+}
+
+/* 吹き出しの共通設定 */
+.message-text {
+  padding: 12px 16px;
+  border-radius: 18px; /* 既存の丸み(12px)より少し丸くして会話感を出す */
+  max-width: 75%;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.03); /* 既存の柔らかい影に合わせる */
+}
+
+/* 時刻表示 */
+.message-time {
+  font-size: 0.7rem;
+  color: #aaa;
+  margin: 0 8px;
+  white-space: nowrap;
+}
+
+/* -----------------------------------------
+   自分（ユーザー）の発言：右側に緑の吹き出し
+   ----------------------------------------- */
+.message-bubble.current-user {
+  flex-direction: row-reverse; /* 右寄せ */
+}
+
+.message-bubble.current-user .message-text {
+  background-color: #28a745; /* Yorisoiのテーマカラー(緑) */
+  color: #fff;               /* 文字は白 */
+  border-bottom-right-radius: 4px; /* 右下だけ少し角を立てて「自分の発言」を強調 */
+}
+
+/* -----------------------------------------
+   相手（メンター）の発言：左側に白の吹き出し
+   ----------------------------------------- */
+.message-bubble.other-user {
+  flex-direction: row; /* 左寄せ */
+}
+
+.message-bubble.other-user .message-text {
+  background-color: #ffffff;
+  color: #555;               /* 既存のbodyカラーと統一 */
+  border: 1px solid #eee;    /* 軽い枠線 */
+  border-bottom-left-radius: 4px; /* 左下だけ少し角を立てる */
+}
+
+/* 名前ラベル（相手側のみ） */
+.message-name {
+  font-size: 0.75rem;
+  color: #888;
+  margin-bottom: 4px;
+  margin-left: 5px;
+}
+
+/* 入力エリアの調整 */
+.chat-input-area {
+  background-color: #fff;
+  border-top: 1px solid #f0f0f0;
+  padding: 15px;
+}

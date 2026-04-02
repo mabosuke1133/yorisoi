@@ -10,6 +10,9 @@ class ConsultationsController < ApplicationController
 
   def create
     @consultation = current_user.consultations.build(consultation_params)
+    # ここでステータスの初期値をセットしておくと安心！
+    @consultation.status ||= 'pending'
+    
     if @consultation.save
       redirect_to consultation_path(@consultation), notice: "相談ルームを作成しました。メンターからの返信をお待ちください。"
     else
@@ -27,6 +30,6 @@ class ConsultationsController < ApplicationController
   private
 
   def consultation_params
-    params.require(:consultation).permit(:title)
+    params.fetch(:consultation, {}).permit(:title)
   end
 end

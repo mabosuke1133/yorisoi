@@ -1,40 +1,41 @@
-<div class="container mt-4">
-  <h3 class="font-weight-bold mb-4"><i class="fas fa-list text-primary mr-2"></i> 届いている個別相談一覧</h3>
+<div class="container">
+  <h2 class="mb-4">個別相談一覧</h2>
 
-  <div class="card border-0 shadow-sm" style="border-radius: 15px;">
-    <div class="table-responsive">
-      <table class="table table-hover mb-0">
-        <thead class="bg-light">
-          <tr>
-            <th>申請日</th>
-            <th>相談者</th>
-            <th>タイトル</th>
-            <th>ステータス</th>
-            <th>担当メンター</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @consultations.each do |c| %>
-            <tr>
-              <td class="small"><%= c.created_at.strftime('%Y/%m/%d %H:%M') %></td>
-              <td><span class="font-weight-bold"><%= c.user.name %></span> さん</td>
-              <td><%= c.title %></td>
-              <td>
-                <% case c.status %>
-                <% when 'pending' %><span class="badge badge-warning">未対応</span>
-                <% when 'processing' %><span class="badge badge-success">対応中</span>
-                <% when 'completed' %><span class="badge badge-secondary">完了</span>
-                <% end %>
-              </td>
-              <td class="small text-muted"><%= c.mentor&.name || "未定" %></td>
-              <td>
-                <%= link_to '詳細を見る', admin_consultation_path(c), class: "btn btn-outline-primary btn-sm rounded-pill px-3" %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <table class="table table-hover bg-white shadow-sm">
+    <thead class="thead-light">
+      <tr>
+        <th>作成日時</th>
+        <th>相談者</th>
+        <th>タイトル</th>
+        <th>ステータス</th>
+        <th>アクション</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%# 💡 ここを @issues から @consultations に変える %>
+      <% @consultations.each do |consultation| %>
+        <tr>
+          <td><%= consultation.created_at.strftime('%Y/%m/%d %H:%M') %></td>
+          <td><%= consultation.user.name %></td>
+          <td><%= consultation.title %></td>
+          <td>
+            <%# 💡 status の判定を Consultation モデルの enum に合わせる %>
+            <% if consultation.pending? %>
+              <span class="badge badge-danger">未対応</span>
+            <% elsif consultation.processing? %>
+              <span class="badge badge-warning">対応中</span>
+            <% elsif consultation.completed? %>
+              <span class="badge badge-success">完了</span>
+            <% end %>
+          </td>
+          <td>
+            <% if consultation.pending? %>
+              <%# ステータス更新ボタン %>
+              <%= button_to '対応を開始', admin_consultation_path(consultation), method: :patch, class: "btn btn-primary btn-sm" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>

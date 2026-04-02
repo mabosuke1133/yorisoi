@@ -18,7 +18,7 @@
       <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
         <div class="container">
           <%= link_to 'Yorisoi', root_path, class: 'navbar-brand font-weight-bold text-success' %>
-          
+
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -30,63 +30,49 @@
                 <%# --- 管理者メニュー --- %>
                 <li class="nav-item border-right pr-2 mr-2">
                   <span class="badge badge-dark">管理者モード</span>
-                  <span class="small ml-2 font-weight-bold text-secondary">
-                    <%= current_admin.name %>
+                  <span class="small ml-2 font-weight-bold text-secondary"><%= current_admin.name %></span>
                 </li>
+
                 <li class="nav-item">
-                  <% unstarted_count = Issue.where(status: :unstarted).count %>
-                  <%= link_to admin_issues_path, class: 'nav-link' do %>
-                    <i class="fas fa-bell text-danger"></i> 相談一覧
-                    <% if unstarted_count > 0 %>
-                      <span class="badge badge-pill badge-danger"><%= unstarted_count %></span>
-                    <% end %>
+                  <%= link_to admin_consultations_path, class: 'nav-link' do %>
+                    <i class="fas fa-comments text-primary"></i> 個別相談一覧
                   <% end %>
                 </li>
+
                 <li class="nav-item">
                   <%= link_to groups_path, class: 'nav-link' do %>
                     <i class="fas fa-users text-success"></i> チームルーム
                   <% end %>
                 </li>
+
                 <li class="nav-item">
                   <%= link_to posts_path, class: 'nav-link' do %>
-                    <i class="fas fa-comments text-success"></i> みんなの広場
+                    <i class="fas fa-globe text-info"></i> みんなの広場
                   <% end %>
-                </li>
-
-                <li class="nav-item ml-2 border-left pl-2">
-                  <%= link_to edit_admin_registration_path, class: 'nav-link text-secondary', title: '設定' do %>
-                  <i class="fas fa-cog"></i> <span class="small">設定</span>
-                <% end %>
                 </li>
 
                 <li class="nav-item ml-2 border-left pl-2">
                   <%= link_to 'ユーザー管理', admin_users_path, class: 'nav-link small text-muted' %>
                 </li>
+
                 <li class="nav-item">
                   <%= link_to '投稿管理', admin_posts_path, class: 'nav-link small text-muted' %>
                 </li>
+
                 <li class="nav-item ml-2">
-                  <%= link_to 'ログアウト', destroy_admin_session_path, class: 'nav-link text-danger' %>
+                  <%= link_to 'ログアウト', destroy_admin_session_path, method: :delete, class: 'nav-link text-danger' %>
                 </li>
 
               <% elsif user_signed_in? %>
                 <%# --- 一般ユーザーメニュー --- %>
-
-                <% current_issue = current_user.issues.where(status: [:unstarted, :in_progress]).last %>
                 <li class="nav-item">
-                  <% if current_issue %>
-                    <div class="d-flex align-items-center">
-                      <button class="btn btn-outline-secondary btn-sm rounded-pill px-3 mr-2" disabled title="現在、メンターが確認中です">
-                        <i class="fas fa-paper-plane"></i> 送信済み
-                      </button>
-                      <% if current_issue.unstarted? %>
-                        <%= link_to issue_path(current_issue), method: :delete, data: { confirm: "相談依頼を取り消しますか？" }, class: "text-muted small mr-3" do %>
-                          <u>取り消す</u>
-                        <% end %>
-                      <% end %>
-                    </div>
+                  <% current_consultation = current_user.consultations.last %>
+                  <% if current_consultation %>
+                    <%= link_to consultation_path(current_consultation), class: "btn btn-outline-primary btn-sm rounded-pill px-3 mr-3" do %>
+                      <i class="fas fa-comment-dots"></i> 相談ルーム
+                    <% end %>
                   <% else %>
-                    <%= link_to consultations_path, data: { confirm: "メンターに面談の相談を依頼しますか？" }, class: "btn btn-danger btn-sm rounded-pill px-3 shadow-sm mr-3" do %>
+                    <%= link_to consultations_path, data: { confirm: "メンターに個別相談を依頼しますか？" }, class: "btn btn-danger btn-sm rounded-pill px-3 shadow-sm mr-3" do %>
                       <i class="fas fa-exclamation-circle"></i> メンターに相談する
                     <% end %>
                   <% end %>
@@ -97,21 +83,19 @@
                     <i class="fas fa-users"></i> チームルーム
                   <% end %>
                 </li>
+
                 <li class="nav-item">
                   <%= link_to posts_path, class: 'nav-link' do %>
-                    <i class="fas fa-comments text-success"></i>みんなの広場
+                    <i class="fas fa-comments text-success"></i> みんなの広場
                   <% end %>
                 </li>
-                <li class="nav-item ml-2">
-                  <%= link_to favorites_path, class: 'nav-link' do %>
-                    <i class="fas fa-heart text-danger"></i> いいね
-                  <% end %>
-                </li>
+
                 <li class="nav-item">
                   <%= link_to 'マイページ', user_path(current_user), class: 'nav-link' %>
                 </li>
+
                 <li class="nav-item ml-2">
-                  <%= link_to 'ログアウト', destroy_user_session_path, class: 'nav-link text-muted' %>
+                  <%= link_to 'ログアウト', destroy_user_session_path, method: :delete, class: 'nav-link text-muted' %>
                 </li>
 
               <% else %>
@@ -129,7 +113,7 @@
         </div>
       </nav>
 
-      <%# フラッシュメッセージ %>
+      <%# フラッシュメッセージ省略（既存のまま） %>
       <div class="container">
         <% flash.each do |key, value| %>
           <% alert_class = key == 'notice' ? 'success' : 'danger' %>

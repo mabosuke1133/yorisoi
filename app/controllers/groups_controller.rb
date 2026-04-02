@@ -4,18 +4,18 @@ class GroupsController < ApplicationController
 
   def index
     if admin_signed_in?
-      # 管理者は管理のために全部見える
+      # 管理者は全ルーム見える
       @groups = Group.all
     elsif user_signed_in?
-      # 💡 一般ユーザーは「自分に関係があるもの」だけに絞り込む
-      # 自分がオーナーのグループ + 自分がメンバーとして承認されているグループ
-      @groups = Group.where(id: current_user.owned_groups.pluck(:id) + current_user.participating_groups.pluck(:id))
+      # 1. 「自分がオーナー」＋「自分が参加中」のIDを合体させて、重複を消す
+      my_ids = (current_user.owned_groups.pluck(:id) + current_user.participating_groups.pluck(:id)).uniq
     
-      # ビューで「作成した」「参加中」と分けたいなら、以下も残してOK
-      @my_groups = current_user.owned_groups
-      @joining_groups = current_user.participating_groups
+      # 2. そのIDに一致するグループを「自分の全チーム」として取得
+      @groups = Group.where(id: my_ids)
+    
+      # Viewで「参加しているチーム」セクションに使うための変数（中身は@groupsと同じ）
+      @my_all_groups = @groups
     else
-      # ログインしていない場合は空（または公開グループのみ）
       @groups = Group.none
     end
   end

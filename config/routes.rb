@@ -1,34 +1,30 @@
 Rails.application.routes.draw do
-  namespace :admin do
-    get 'consultations/index'
-    get 'consultations/show'
-    get 'consultations/update'
-    resources :consultations, only: [:index, :show, :update] do
-      resources :consultation_messages, only: [:create]
-    end
-  end
-  get 'consultations/index'
-  get 'consultations/show'
-  # 1. サイトの根幹（Top / About）
+  # =============================================================
+  # 1. サイト根幹・認証 (Top / About / Devise)
+  # =============================================================
   root to: 'homes#top'
-  get 'about' => 'homes#about'
+  get 'about'  => 'homes#about'
   get 'search' => 'searches#search'
 
-  # 2. 認証・ログイン機能 (Devise)
-  # 一般スタッフ用と管理者用でログイン口を分離
+  # 一般ユーザー用ログイン
   devise_for :users, controllers: {
     sessions:      'users/sessions',
     registrations: 'users/registrations'
   }
+
+  # 管理者用ログイン
   devise_for :admins, controllers: {
     sessions:      'admins/sessions',
     registrations: 'admins/registrations',
     passwords:     'admins/passwords'
   }
 
-  # 3. ユーザー関連（プロフィール・フォロー）
-  get '/users' => redirect('/users/sign_up')
-
+  # =============================================================
+  # 2. 一般ユーザー機能 (Public)
+  # =============================================================
+  
+  # ユーザー関連
+  get '/users' => redirect('/users/sign_up') # 直接一覧へのアクセスをリダイレクト
   resources :users, only: [:show, :destroy] do
     resource :relationships, only: [:create, :destroy]
     member do
@@ -36,13 +32,8 @@ Rails.application.routes.draw do
     end
   end
 
-  # 4. 相談（Issue）機能
-  # button_to (POST) で送られてくる /issues をここで受け取ります
-  resources :issues, only: [:create, :destroy]
-
-  # 5. 投稿関連（コメント・いいね）
-  get 'favorites' => 'favorites#index'
-
+  # 投稿関連
+  get 'favorites' => 'favorites#index' # お気に入り一覧
   resources :posts do
     resources :post_comments, only: [:create, :destroy]
     resource :favorites, only: [:create, :destroy]
@@ -51,28 +42,42 @@ Rails.application.routes.draw do
     end
   end
 
-  # 6. グループ・コミュニティ機能
+  # 相談機能 (一般)
+  resources :consultations, only: [:index, :show, :create] do
+    resources :consultation_messages, only: [:create]
+  end
+
+  # 簡易的な問題報告/相談 (Issue)
+  resources :issues, only: [:create, :destroy]
+
+  # グループ・コミュニティ
   resources :groups do
     resources :permits, only: [:create, :destroy, :update]
     resources :group_messages, only: [:create]
   end
 
-  # 7. 管理者専用機能 (Namespace)
+  # =============================================================
+  # 3. 管理者専用機能 (Admin Namespace)
+  # =============================================================
   namespace :admin do
+    # ユーザー管理
     resources :users, only: [:index, :show, :destroy]
-    # 管理者用の一覧とステータス更新
+
+    # 投稿・コメント管理
+    resources :posts, only: [:index, :show, :destroy] do
+      resources :post_comments, only: [:destroy]
+    end
+
+    # 相談管理 (admin/consultations)
+    resources :consultations, only: [:index, :show, :update] do
+      resources :consultation_messages, only: [:create]
+    end
+
+    # Issue対応管理
     resources :issues, only: [:index, :update] do
       member do
         patch :complete
       end
     end
-
-    resources :posts, only: [:index, :show, :destroy] do
-      resources :post_comments, only: [:destroy]
-    end
-  end
-
-  resources :consultations, only: [:index, :show, :create] do
-    resources :consultation_messages, only: [:create]
   end
 end
