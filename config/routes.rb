@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  namespace :admin do
+    get 'consultations/index'
+    get 'consultations/show'
+    get 'consultations/update'
+    resources :consultations, only: [:index, :show, :update] do
+      resources :consultation_messages, only: [:create]
+    end
+  end
   get 'consultations/index'
   get 'consultations/show'
   # 1. サイトの根幹（Top / About）
