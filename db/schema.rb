@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_04_02_084445) do
+ActiveRecord::Schema.define(version: 2026_04_02_093335) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -51,6 +51,29 @@ ActiveRecord::Schema.define(version: 2026_04_02_084445) do
     t.string "name"
     t.index ["email"], name: "index_admins_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admins_on_reset_password_token", unique: true
+  end
+
+  create_table "consultation_messages", force: :cascade do |t|
+    t.integer "consultation_id", null: false
+    t.integer "user_id"
+    t.integer "admin_id"
+    t.text "body", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["admin_id"], name: "index_consultation_messages_on_admin_id"
+    t.index ["consultation_id"], name: "index_consultation_messages_on_consultation_id"
+    t.index ["user_id"], name: "index_consultation_messages_on_user_id"
+  end
+
+  create_table "consultations", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "mentor_id"
+    t.string "title"
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["mentor_id"], name: "index_consultations_on_mentor_id"
+    t.index ["user_id"], name: "index_consultations_on_user_id"
   end
 
   create_table "favorites", force: :cascade do |t|
@@ -160,6 +183,11 @@ ActiveRecord::Schema.define(version: 2026_04_02_084445) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "consultation_messages", "admins"
+  add_foreign_key "consultation_messages", "consultations"
+  add_foreign_key "consultation_messages", "users"
+  add_foreign_key "consultations", "admins", column: "mentor_id"
+  add_foreign_key "consultations", "users"
   add_foreign_key "group_messages", "groups"
   add_foreign_key "group_messages", "users"
   add_foreign_key "issues", "users"

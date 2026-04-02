@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  consultation: one
+  user: one
+  admin_id: 1
+  body: MyText
+
+two:
+  consultation: two
+  user: two
+  admin_id: 1
+  body: MyText
