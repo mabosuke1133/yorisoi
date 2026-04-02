@@ -1,2 +1,40 @@
-<h1>Admin::Consultations#index</h1>
-<p>Find me in app/views/admin/consultations/index.html.erb</p>
+<div class="container mt-4">
+  <h3 class="font-weight-bold mb-4"><i class="fas fa-list text-primary mr-2"></i> 届いている個別相談一覧</h3>
+
+  <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="bg-light">
+          <tr>
+            <th>申請日</th>
+            <th>相談者</th>
+            <th>タイトル</th>
+            <th>ステータス</th>
+            <th>担当メンター</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @consultations.each do |c| %>
+            <tr>
+              <td class="small"><%= c.created_at.strftime('%Y/%m/%d %H:%M') %></td>
+              <td><span class="font-weight-bold"><%= c.user.name %></span> さん</td>
+              <td><%= c.title %></td>
+              <td>
+                <% case c.status %>
+                <% when 'pending' %><span class="badge badge-warning">未対応</span>
+                <% when 'processing' %><span class="badge badge-success">対応中</span>
+                <% when 'completed' %><span class="badge badge-secondary">完了</span>
+                <% end %>
+              </td>
+              <td class="small text-muted"><%= c.mentor&.name || "未定" %></td>
+              <td>
+                <%= link_to '詳細を見る', admin_consultation_path(c), class: "btn btn-outline-primary btn-sm rounded-pill px-3" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

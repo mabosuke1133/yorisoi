@@ -1,2 +1,32 @@
-<h1>Admin::Consultations#show</h1>
-<p>Find me in app/views/admin/consultations/show.html.erb</p>
+<div class="container mt-4 pb-5">
+  <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+    <div>
+      <h4 class="font-weight-bold"><%= @consultation.user.name %> さんの相談</h4>
+      <p class="text-muted mb-0">件名：<%= @consultation.title %></p>
+    </div>
+    
+    <%# 💡 未対応の場合のみ「対応開始」ボタンを出す %>
+    <% if @consultation.pending? %>
+      <%= link_to 'この相談の対応を開始する', admin_consultation_path(@consultation), method: :patch, class: "btn btn-primary rounded-pill px-4 shadow-sm font-weight-bold" %>
+    <% end %>
+  </div>
+
+  <%# メッセージ一覧（ユーザー側とほぼ同じ構造でOKですが、管理者は常に全メッセージが見えます） %>
+  <div class="chat-board bg-light p-4 rounded-xl mb-4" style="height: 450px; overflow-y: auto; border: 1px solid #dee2e6;">
+    <% if @consultation.pending? %>
+      <div class="text-center py-5">
+        <p class="text-muted">「対応を開始する」ボタンを押すと、チャットが利用可能になります。</p>
+      </div>
+    <% else %>
+      <%# ここにメッセージを表示するループ（ユーザー側と同様） %>
+      <% @messages.each do |message| %>
+        <%# ... メッセージ表示ロジック ... %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%# 投稿フォーム（対応中のみ表示） %>
+  <% if @consultation.processing? %>
+    <%# ここに管理者用メッセージ投稿フォーム %>
+  <% end %>
+</div>
