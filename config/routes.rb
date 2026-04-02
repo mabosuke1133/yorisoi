@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'consultations/index'
+  get 'consultations/show'
   # 1. サイトの根幹（Top / About）
   root to: 'homes#top'
   get 'about' => 'homes#about'
@@ -60,5 +62,9 @@ Rails.application.routes.draw do
     resources :posts, only: [:index, :show, :destroy] do
       resources :post_comments, only: [:destroy]
     end
+  end
+
+  resources :consultations, only: [:index, :show, :create] do
+    resources :consultation_messages, only: [:create]
   end
 end
