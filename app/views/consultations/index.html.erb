@@ -1,2 +1,66 @@
-<h1>Consultations#index</h1>
-<p>Find me in app/views/consultations/index.html.erb</p>
+<div class="container mt-5 pb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-9">
+      
+      <%# --- 1. ヘッダー --- %>
+      <div class="text-center mb-5">
+        <h3 class="font-weight-bold text-dark">
+          <i class="fas fa-heart text-danger mr-2"></i> 個別相談・メンター面談
+        </h3>
+        <p class="text-muted small">
+          業務の悩みや体調のことなど、一人で抱え込まずにいつでも相談してください。<br>
+          <span class="text-danger font-weight-bold">※この内容は他のメンバーには一切公開されません。</span>
+        </p>
+      </div>
+
+      <%# --- 2. 新規相談フォーム --- %>
+      <div class="card border-0 shadow-sm mb-5" style="border-radius: 20px; background-color: #fff5f5;">
+        <div class="card-body p-4">
+          <h6 class="font-weight-bold mb-3"><i class="fas fa-pen-nib mr-2"></i> 新しく相談を依頼する</h6>
+          <%= form_with model: @consultation, local: true do |f| %>
+            <div class="form-group mb-3">
+              <%= f.text_field :title, class: "form-control border-0 p-3", placeholder: "相談のタイトル（例：今後のキャリアについて、体調の相談など）", style: "border-radius: 12px;" %>
+            </div>
+            <div class="text-right">
+              <%= f.submit "相談を申請する", class: "btn btn-danger rounded-pill px-5 shadow-sm font-weight-bold", data: { confirm: "メンターに面談依頼を送信しますか？" } %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <%# --- 3. 相談履歴一覧 --- %>
+      <h6 class="font-weight-bold mb-3 text-muted"><i class="fas fa-history mr-2"></i> あなたの相談履歴</h6>
+      <% if @consultations.any? %>
+        <div class="list-group shadow-sm" style="border-radius: 15px; overflow: hidden;">
+          <% @consultations.each do |consultation| %>
+            <%= link_to consultation_path(consultation), class: "list-group-item list-group-item-action border-light py-3" do %>
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <span class="font-weight-bold text-dark"><%= consultation.title %></span>
+                  <div class="small text-muted mt-1">
+                    <%= consultation.created_at.strftime('%Y/%m/%d %H:%M') %>
+                  </div>
+                </div>
+                <div>
+                  <% case consultation.status %>
+                  <% when 'pending' %>
+                    <span class="badge badge-warning px-3 py-2 rounded-pill">受付中（確認待ち）</span>
+                  <% when 'processing' %>
+                    <span class="badge badge-success px-3 py-2 rounded-pill">対応中（チャット可能）</span>
+                  <% when 'completed' %>
+                    <span class="badge badge-secondary px-3 py-2 rounded-pill">対応完了</span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-5 bg-light rounded-xl">
+          <p class="text-muted mb-0 small">過去の相談履歴はありません。</p>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>
