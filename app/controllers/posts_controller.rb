@@ -33,10 +33,15 @@ class PostsController < ApplicationController
   end
 
   def create
-    @post = Post.new(post_params)
-    @post.user_id = current_user.id if user_signed_in? # 管理者が投稿する場合は別途検討
+    # 💡 データの不一致を防ぐため、ここで数値を強制的に整える
+    fix_params = post_params
+    fix_params[:priority] = fix_params[:priority].to_i if fix_params[:priority].present?
+    
+    @post = Post.new(fix_params)
+    @post.user_id = current_user.id if user_signed_in?
+    
     if @post.save
-      redirect_to posts_path, notice: "つぶやきをみんなに届けました！"
+      redirect_to posts_path, notice: "投稿しました！"
     else
       render :new
     end
@@ -44,7 +49,8 @@ class PostsController < ApplicationController
   
   def update
     @post = Post.find(params[:id])
-    if @post.update(post_params)
+    # 💡 update時も数値変換を通すように修正
+    if @post.update(post_params_with_priority)
       redirect_to post_path(@post), notice: "投稿を更新しました！"
     else
       render :edit
@@ -54,7 +60,7 @@ class PostsController < ApplicationController
   def destroy
     @post = Post.find(params[:id])
     # 管理者、もしくは投稿者本人の場合のみ削除を許可
-    if @post.user == current_user || admin_signed_in?
+    if (user_signed_in? && @post.user == current_user) || admin_signed_in?
       @post.destroy
       redirect_to posts_path, notice: "投稿を削除しました"
     else
@@ -65,7 +71,7 @@ class PostsController < ApplicationController
   private
 
   def post_params
-    params.require(:post).permit(:title, :body, :priority, :image, :emotion_level)
+    params.require(:post).permit(:title, :body, :priority, :image)
   end
 
   # 🟢 本人確認のメソッドを管理者の権限も含めて調整
