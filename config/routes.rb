@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'rooms/index'
+  get 'rooms/show'
+  get 'rooms/new'
+  get 'rooms/create'
   # =============================================================
   # 1. サイト根幹・認証 (Top / About / Devise)
   # =============================================================
@@ -79,5 +83,14 @@ Rails.application.routes.draw do
         patch :complete
       end
     end
+  end
+
+  resources :rooms, only: [:index, :show, :new, :create] do
+    member do
+      post :join
+    end
+
+    # ここから追記：ルームに紐づくメッセージ作成のルート
+    resources :messages, only: [:create]
   end
 end

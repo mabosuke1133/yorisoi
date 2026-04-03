@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_04_02_093335) do
+ActiveRecord::Schema.define(version: 2026_04_03_134447) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -74,6 +74,15 @@ ActiveRecord::Schema.define(version: 2026_04_02_093335) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["mentor_id"], name: "index_consultations_on_mentor_id"
     t.index ["user_id"], name: "index_consultations_on_user_id"
+  end
+
+  create_table "entries", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "room_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["room_id"], name: "index_entries_on_room_id"
+    t.index ["user_id"], name: "index_entries_on_user_id"
   end
 
   create_table "favorites", force: :cascade do |t|
@@ -168,6 +177,14 @@ ActiveRecord::Schema.define(version: 2026_04_02_093335) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "rooms", force: :cascade do |t|
+    t.string "name"
+    t.integer "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_rooms_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -188,6 +205,8 @@ ActiveRecord::Schema.define(version: 2026_04_02_093335) do
   add_foreign_key "consultation_messages", "users"
   add_foreign_key "consultations", "admins", column: "mentor_id"
   add_foreign_key "consultations", "users"
+  add_foreign_key "entries", "rooms"
+  add_foreign_key "entries", "users"
   add_foreign_key "group_messages", "groups"
   add_foreign_key "group_messages", "users"
   add_foreign_key "issues", "users"
@@ -196,4 +215,5 @@ ActiveRecord::Schema.define(version: 2026_04_02_093335) do
   add_foreign_key "messages", "message_rooms"
   add_foreign_key "permits", "groups"
   add_foreign_key "permits", "users"
+  add_foreign_key "rooms", "users"
 end

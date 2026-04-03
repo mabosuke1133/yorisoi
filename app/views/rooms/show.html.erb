@@ -1,0 +1,81 @@
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h3 class="mb-0"><%= @room.name %></h3>
+          <span class="badge badge-light">メンバー: <%= @room.entries.count %>名</span>
+        </div>
+
+        <div class="card-body">
+          <% current_entry_count = @room.entries.count %>
+
+          <% if current_entry_count >= 3 %>
+            <%# --- 3人以上揃った場合：チャット開始！ --- %>
+            <div class="alert alert-success p-2 mb-3 text-center">
+              <small><i class="fas fa-check-circle"></i> メンバーが揃いました。寄り添った会話を心がけましょう。</small>
+            </div>
+            
+            <%# メッセージ表示エリア %>
+            <div id="chat-messages" class="border rounded p-3 mb-3 bg-light" style="height: 450px; overflow-y: scroll;">
+              <% if @room.messages.any? %>
+                <% @room.messages.each do |message| %>
+                  <div class="mb-3 <%= 'text-right' if message.user == current_user %>">
+                    <div class="small text-muted mb-1">
+                      <%= message.user.name %>（<%= message.created_at.strftime("%H:%M") %>）
+                    </div>
+                    <div class="p-2 d-inline-block rounded shadow-sm <%= message.user == current_user ? 'bg-primary text-white' : 'bg-white border text-dark' %>" style="max-width: 80%; text-align: left;">
+                      <%= simple_format(message.content) %>
+                    </div>
+                  </div>
+                <% end %>
+              <% else %>
+                <p class="text-muted text-center mt-5">まだメッセージはありません。<br>最初の挨拶を送ってみましょう！</p>
+              <% end %>
+            </div>
+
+            <%# メッセージ入力フォーム %>
+            <%= form_with model: [@room, Message.new], local: true, class: "mt-3" do |f| %>
+              <div class="input-group">
+                <%= f.text_area :content, class: "form-control", placeholder: "メッセージを入力...", rows: 2, required: true %>
+                <div class="input-group-append">
+                  <%= f.submit "送信", class: "btn btn-success px-4" %>
+                </div>
+              </div>
+            <% end %>
+
+          <% else %>
+            <%# --- 3人未満の場合：待機画面 --- %>
+            <div class="text-center py-5">
+              <div class="spinner-border text-primary mb-3" role="status">
+                <span class="sr-only">Loading...</span>
+              </div>
+              <h4>メンバーを待っています...</h4>
+              <p class="text-muted">
+                現在 <strong><%= current_entry_count %>名</strong> が参加中。<br>
+                あと <strong><%= 3 - current_entry_count %>名</strong> 揃うと、トークが開始されます。
+              </p>
+              
+              <hr class="my-4">
+              
+              <h5 class="text-secondary mb-3">参加中のメンバー</h5>
+              <div class="d-flex justify-content-center flex-wrap gap-2">
+                <% @room.entries.each do |entry| %>
+                  <div class="m-1">
+                    <span class="badge badge-pill badge-light p-2 border shadow-sm">
+                      <i class="fas fa-user-circle text-primary"></i> <%= entry.user.name %>
+                    </span>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <%= link_to rooms_path, class: "btn btn-outline-secondary btn-sm mt-4" do %>
+            <i class="fas fa-arrow-left"></i> 一覧に戻る
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
