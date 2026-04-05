@@ -1,0 +1,68 @@
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      
+      <%# --- ヘッダー部分 --- %>
+      <div class="d-flex align-items-center mb-4 border-bottom pb-3">
+        <%= link_to user_path(@user), class: "text-dark mr-3" do %>
+          <i class="fas fa-chevron-left"></i>
+        <% end %>
+        <h3 class="mb-0 font-weight-bold">
+          <%= @user.name %> さんの<%= action_name == 'followings' ? 'フォロー中' : 'フォロワー' %>
+        </h3>
+        <span class="badge badge-pill badge-light ml-2 border text-muted">
+          <%= @users.count %>名
+        </span>
+      </div>
+
+      <%# --- ユーザーリスト --- %>
+      <% if @users.any? %>
+        <div class="list-group shadow-sm rounded-lg">
+          <% @users.each do |user| %>
+            <div class="list-group-item list-group-item-action p-3">
+              <div class="d-flex align-items-center justify-content-between">
+                
+                <%# 左側：ユーザー情報 %>
+                <div class="d-flex align-items-center">
+                  <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center mr-3" style="width: 45px; height: 45px;">
+                    <i class="fas fa-user border-0"></i>
+                  </div>
+                  <div>
+                    <%= link_to user.name, user_path(user), class: "text-dark font-weight-bold d-block" %>
+                    <small class="text-muted">@<%= user.name.parameterize(separator: '_') %></small>
+                  </div>
+                </div>
+
+                <%# 右側：アクションボタン（自分以外なら表示） %>
+                <% if user != current_user %>
+                  <div id="follow_idx_<%= user.id %>">
+                    <% if current_user.following?(user) %>
+                      <%= link_to "フォロー中", user_relationships_path(user), method: :delete, class: "btn btn-outline-secondary btn-sm rounded-pill px-3" %>
+                    <% else %>
+                      <%= link_to "フォローする", user_relationships_path(user), method: :post, class: "btn btn-success btn-sm rounded-pill px-3 shadow-sm" %>
+                    <% end %>
+                  </div>
+                <% end %>
+
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <%# 誰もいない時の表示 %>
+        <div class="text-center py-5 bg-light rounded-lg border-dashed">
+          <i class="fas fa-user-friends fa-3x text-muted mb-3 opacity-25"></i>
+          <p class="text-secondary mb-0">まだ<%= action_name == 'followings' ? 'フォローしている人' : 'フォロワー' %>はいません。</p>
+        </div>
+      <% end %>
+
+    </div>
+  </div>
+</div>
+
+<style>
+  .border-dashed { border: 2px dashed #dee2e6; }
+  .list-group-item { border-left: none; border-right: none; transition: background 0.2s; }
+  .list-group-item:first-child { border-top: none; }
+  .list-group-item:hover { background-color: #f8f9fa; }
+</style>

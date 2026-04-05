@@ -4,9 +4,19 @@ class UsersController < ApplicationController
   before_action :is_matching_login_user, only: [:edit, :update]
 
   def show
-    @user = current_user
-    # 💡 ユーザーの利便性：直近の活動がすぐわかるよう最新順に取得
+    # 💡params[:id] があればその人を、なければ自分を表示するようにすると汎用性が高まる
+    @user = params[:id] ? User.find(params[:id]) : current_user
     @posts = @user.posts.order(created_at: :desc)
+  end
+
+  def followings
+    @user = User.find(params[:id])
+    @users = @user.followings
+  end
+
+  def followers
+    @user = User.find(params[:id])
+    @users = @user.followers
   end
 
   def destroy
