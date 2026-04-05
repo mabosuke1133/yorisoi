@@ -63,8 +63,7 @@
 
   <div class="row">
   <% @groups.each do |group| %>
-    <%# 💡 修正ポイント：自分がフォローしているownerのグループ、または自分がownerのグループのみ表示 %>
-    <% if current_user.following?(group.owner) || group.owner == current_user || admin_signed_in? %>
+    <% if admin_signed_in? || (user_signed_in? && (current_user.following?(group.owner) || group.owner == current_user)) %>
       <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100 shadow-sm border-0 rounded-xl overflow-hidden hover-card transition">
           
