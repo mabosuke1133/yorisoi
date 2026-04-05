@@ -91,6 +91,12 @@
                 </li>
 
                 <li class="nav-item">
+                  <%= link_to users_path, class: "nav-link" do %>
+                    <i class="fas fa-search"></i> 仲間を探す
+                  <% end %>
+                </li>
+
+                <li class="nav-item">
                   <%= link_to 'マイページ', user_path(current_user), class: 'nav-link' %>
                 </li>
 

@@ -28,9 +28,10 @@ Rails.application.routes.draw do
   # =============================================================
   
   # ユーザー関連
-  get '/users' => redirect('/users/sign_up') # 直接一覧へのアクセスをリダイレクト
-  resources :users, only: [:show, :destroy] do
+  resources :users, only: [:index, :show, :destroy] do
+    # relationshipsを「resource（単数形）」でネスト（現状維持でOK）
     resource :relationships, only: [:create, :destroy]
+  
     member do
       get :followings, :followers
     end
@@ -83,14 +84,5 @@ Rails.application.routes.draw do
         patch :complete
       end
     end
-  end
-
-  resources :rooms, only: [:index, :show, :new, :create] do
-    member do
-      post :join
-    end
-
-    # ここから追記：ルームに紐づくメッセージ作成のルート
-    resources :messages, only: [:create]
   end
 end

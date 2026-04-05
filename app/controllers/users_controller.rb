@@ -16,4 +16,9 @@ class UsersController < ApplicationController
     flash[:notice] = "退会が完了しました。"
     redirect_to new_user_registration_path
   end
+
+  def index
+    # 自分以外のユーザーを全て取得
+    @users = User.where.not(id: current_user.id)
+  end
 end

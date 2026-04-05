@@ -15,7 +15,7 @@
             <i class="fas fa-house-user text-success mr-2"></i><%= @group.name %>
           </h3>
           <p class="text-muted small mb-0">
-            <i class="fas fa-users text-muted mr-1"></i> メンバー: <%= @group.users.count + 1 %>名
+            <i class="fas fa-users text-muted mr-1"></i> メンバー: <%= @approved_total %>名
           </p>
         </div>
         <div class="text-right">
@@ -29,100 +29,137 @@
         </div>
       </div>
 
+      <%# 💡 [判定用] メンバー（オーナー、承認済みメンバー、管理者）かどうか %>
+      <% is_member = (user_signed_in? && (@group.owner == current_user || @group.users.include?(current_user))) || admin_signed_in? %>
+
       <%# --- 2. チーム掲示板エリア（メッセージ一覧） --- %>
       <div class="chat-board bg-light p-4 rounded-xl shadow-inner mb-4" style="height: 600px; overflow-y: auto; border: 1px solid #e9ecef;">
-        <% if @group.group_messages.any? %>
-          <% @group.group_messages.each do |message| %>
-            <% is_mine = (user_signed_in? && message.user == current_user) || (admin_signed_in? && message.admin_id == current_admin&.id) %>
-            
-              <div class="small text-muted mt-1" style="font-size: 0.7rem;">
-                <% if message.admin_id.present? %>
-                  <%# 💡 「管理者」を「メンター」や「相談担当」に！バッジで特別感を出す %>
-                  <span class="badge badge-info shadow-sm py-1 px-2" style="font-size: 0.6rem; vertical-align: middle;">メンター</span>
-                  <span class="ml-1 font-weight-bold" style="color: #17a2b8;">よりそい担当</span>
-                <% else %>
-                  <%# 💡 ユーザー側は「さん」付けで柔らかく %>
-                  <%= is_mine ? "あなた" : "#{message.user&.name}さん" %>
-                <% end %>
-              </div>
+        <% if is_member %>
+          <%# ⭕ メンバーのみ過去ログを表示 %>
+          <% if @group.group_messages.any? %>
+            <% @group.group_messages.each do |message| %>
+              <% is_mine = (user_signed_in? && message.user == current_user) || (admin_signed_in? && message.admin_id == current_admin&.id) %>
               
-              <%# メッセージ本体 %>
-              <div class="p-3 shadow-sm position-relative" style="max-width: 75%; background-color: white; border-radius: <%= is_mine ? '20px 0px 20px 20px' : '0px 20px 20px 20px' %> !important; border: 1px solid #dee2e6;">
-                <div class="card-text text-dark" style="line-height: 1.6;">
-                  <%= simple_format(message.body) %>
+              <div class="mb-3 <%= is_mine ? 'text-right' : 'text-left' %>">
+                <div class="small text-muted mt-1" style="font-size: 0.7rem;">
+                  <% if message.admin_id.present? %>
+                    <span class="badge badge-info shadow-sm py-1 px-2" style="font-size: 0.6rem; vertical-align: middle;">メンター</span>
+                    <span class="ml-1 font-weight-bold" style="color: #17a2b8;">よりそい担当</span>
+                  <% else %>
+                    <%= is_mine ? "あなた" : "#{message.user&.name}さん" %>
+                  <% end %>
                 </div>
-                <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
-                  <span class="small text-muted" style="font-size: 0.65rem;">
-                    <%= message.created_at.strftime('%m/%d %H:%M') %>
-                  </span>
+                
+                <div class="p-3 shadow-sm d-inline-block text-left" style="max-width: 75%; background-color: white; border-radius: <%= is_mine ? '20px 0px 20px 20px' : '0px 20px 20px 20px' %> !important; border: 1px solid #dee2e6;">
+                  <div class="card-text text-dark" style="line-height: 1.6;">
+                    <%= simple_format(message.body) %>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                    <span class="small text-muted" style="font-size: 0.65rem;">
+                      <%= message.created_at.strftime('%m/%d %H:%M') %>
+                    </span>
+                  </div>
                 </div>
               </div>
+            <% end %>
+          <% else %>
+            <div class="text-center py-5 my-5">
+              <div class="mb-3">
+                <i class="fas fa-comments fa-4x text-muted opacity-25"></i>
+              </div>
+              <h5 class="text-secondary">まだ寄り添いメッセージがありません</h5>
             </div>
           <% end %>
         <% else %>
+          <%# 🔒 メンバー外へのロック表示 %>
           <div class="text-center py-5 my-5">
-            <div class="mb-3">
-              <i class="fas fa-comments fa-4x text-muted opacity-25"></i>
+            <div class="mb-4">
+              <i class="fas fa-lock fa-4x text-muted opacity-50"></i>
             </div>
-            <h5 class="text-secondary">まだ寄り添いメッセージがありません</h5>
+            <h5 class="text-dark font-weight-bold">このチームのやり取りは非公開です</h5>
+            <p class="text-muted small">
+              メンバーとして承認されると、今までのやり取りが見られるようになります。<br>
+              まずは下のボタンから参加申請を送ってみましょう。
+            </p>
           </div>
         <% end %>
       </div>
 
-      <%# --- 3. 投稿フォームエリア --- %>
-      <%# 💡 [修正] 3人以上かつ有効（@is_chat_available）な場合のみ、フォームを表示する %>
-      <% if @is_chat_available %>
-        <%# かつ、個別相談の場合は完了していないことが条件 %>
-        <% if @issue.nil? || !@issue.completed? %>
-          <div class="card border-0 shadow-lg" style="border-radius: 20px;">
-            <div class="card-body p-4 bg-white" style="border-radius: 20px;">
-              <%= form_with model: [@group, GroupMessage.new], local: true do |f| %>
-                
-                <% if admin_signed_in? %>
-                  <%= f.hidden_field :admin_id, value: current_admin.id %>
-                <% end %>
-
-                <div class="form-group mb-3">
-                  <label class="small font-weight-bold text-muted mb-2">
-                    <i class="fas fa-pen-nib mr-1"></i> 今のきもちをチームに届ける
-                  </label>
-                  <%= f.text_area :body, class: "form-control border-light bg-light p-3", rows: 3, placeholder: "ここに入力...", style: "resize: none; border-radius: 15px;" %>
-                </div>
-                
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="text-muted small">
-                    <i class="fas fa-lock-open mr-1"></i> このチームのメンバーだけに公開されます
+      <%# --- 3. 投稿フォーム or 参加申請エリア --- %>
+      <% if is_member %>
+        
+        <% if @is_chat_available %>
+          <%# 🔓 条件クリア：チャット可能 %>
+          <% if @issue.nil? || !@issue.completed? %>
+            <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+              <div class="card-body p-4 bg-white" style="border-radius: 20px;">
+                <%= form_with model: [@group, @group_message], local: true do |f| %>
+                  <% if admin_signed_in? %>
+                    <%= f.hidden_field :admin_id, value: current_admin.id %>
+                  <% end %>
+                  <div class="form-group mb-3">
+                    <label class="small font-weight-bold text-muted mb-2">
+                      <i class="fas fa-pen-nib mr-1"></i> 今のきもちをチームに届ける
+                    </label>
+                    <%= f.text_area :body, class: "form-control border-light bg-light p-3", rows: 3, placeholder: "ここに入力...", style: "resize: none; border-radius: 15px;" %>
                   </div>
-                  <%= f.submit "メッセージを送る", class: "btn btn-success rounded-pill px-5 py-2 font-weight-bold shadow-sm" %>
-                </div>
-              <% end %>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">
+                      <i class="fas fa-lock-open mr-1"></i> このチームのメンバーだけに公開されます
+                    </div>
+                    <%= f.submit "メッセージを送る", class: "btn btn-success rounded-pill px-5 py-2 font-weight-bold shadow-sm" %>
+                  </div>
+                <% end %>
+              </div>
             </div>
+          <% end %>
+        
+        <% elsif !@issue&.completed? %>
+          <%# ⏳ 3人未満：準備中 %>
+          <div class="alert alert-info text-center shadow-sm py-4 rounded-xl border-0" style="background-color: #e3f2fd; color: #0d47a1;">
+            <p class="mb-0 font-weight-bold">
+              <i class="fas fa-users-cog mr-2"></i> 
+              現在チームを準備中です。あと <strong><%= 3 - @approved_total %>名</strong> の承認でチャットが開始されます。
+            </p>
+            <small class="d-block mt-2 opacity-75">※密室状態を防ぐため、3名以上の参加が必要です。</small>
           </div>
         <% end %>
 
-      <%# 💡 [追加] メンバーが足りない（3人未満）場合の案内 %>
-      <% elsif @group.is_active && @group.approved_member_count < 3 %>
-        <div class="alert alert-info text-center shadow-sm py-4 rounded-xl border-0" style="background-color: #e3f2fd; color: #0d47a1;">
-          <p class="mb-0 font-weight-bold">
-            <i class="fas fa-users-cog mr-2"></i> 
-            現在チームを準備中です。あと <strong><%= 3 - @group.approved_member_count %>名</strong> の承認でチャットが開始されます。
-          </p>
-          <small class="d-block mt-2 opacity-75">※密室状態を防ぐため、3名以上の参加が必要です。</small>
-        </div>
+        <% if @issue&.completed? %>
+          <div class="alert alert-secondary text-center shadow-sm py-4 rounded-xl mt-3">
+            <p class="mb-0 font-weight-bold text-secondary">
+              <i class="fas fa-archive mr-2"></i> このルームの寄り添い対応は終了し、閲覧用として保存されました。
+            </p>
+          </div>
+        <% end %>
 
-      <%# 💡 [既存] 個別相談が完了している場合の表示 %>
-      <% elsif @issue&.completed? %>
-        <div class="alert alert-secondary text-center shadow-sm py-4 rounded-xl">
-          <p class="mb-0 font-weight-bold text-secondary">
-            <i class="fas fa-archive mr-2"></i> このルームの寄り添い対応は終了し、閲覧用として保存されました。
-          </p>
+      <% else %>
+        <%# 📩 メンバー外：参加申請ボタン %>
+        <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+          <div class="card-body p-4 p-md-5 text-center bg-white" style="border-radius: 20px;">
+            <h5 class="font-weight-bold mb-3">このチームに参加しますか？</h5>
+            <p class="text-muted mb-4 small">
+              参加申請を送ると、オーナーが確認後に承認を行います。<br>
+              承認されるとチャットへの参加と過去ログの閲覧が可能になります。
+            </p>
+            
+            <% if @group.permits.exists?(user_id: current_user.id) %>
+              <div class="btn btn-secondary rounded-pill px-5 py-3 font-weight-bold shadow-sm disabled">
+                <i class="fas fa-hourglass-start mr-2"></i> 申請済み（オーナーの承認待ち）
+              </div>
+            <% else %>
+              <%= link_to group_permits_path(@group), method: :post, class: "btn btn-success rounded-pill px-5 py-3 font-weight-bold shadow-sm transition hover-lift" do %>
+                <i class="fas fa-hand-holding-heart mr-2"></i> このチームに参加申請を送る
+              <% end %>
+            <% end %>
+          </div>
         </div>
       <% end %>
 
     </div>
   </div>
 
-  <%# --- 管理者向け「完了」操作（言葉を寄り添い風に） --- %>
+  <%# --- 管理者向け「完了」操作 --- %>
   <% if admin_signed_in? && @issue && !@issue.completed? %>
     <div class="row justify-content-center mt-5">
       <div class="col-md-10 text-center">
@@ -157,4 +194,9 @@
     background-color: #ced4da;
     border-radius: 10px;
   }
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(40, 167, 69, 0.2) !important;
+  }
+  .transition { transition: all 0.2s ease; }
 </style>

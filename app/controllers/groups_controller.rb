@@ -4,17 +4,15 @@ class GroupsController < ApplicationController
 
   def index
     if admin_signed_in?
-      # 管理者は全ルーム見える
       @groups = Group.all
     elsif user_signed_in?
-      # 1. 「自分がオーナー」＋「自分が参加中」のIDを合体させて、重複を消す
+      # 💡 修正：一旦すべてのグループを取得する（Viewのif文でフィルタリングするため）
+      @groups = Group.all.order(created_at: :desc)
+      
+      # 💡 「あなたが参加しているチーム」セクションを表示するために、
+      # 自分が参加中（or オーナー）のグループだけを別途用意しておく
       my_ids = (current_user.owned_groups.pluck(:id) + current_user.participating_groups.pluck(:id)).uniq
-    
-      # 2. そのIDに一致するグループを「自分の全チーム」として取得
-      @groups = Group.where(id: my_ids)
-    
-      # Viewで「参加しているチーム」セクションに使うための変数（中身は@groupsと同じ）
-      @my_all_groups = @groups
+      @my_all_groups = Group.where(id: my_ids)
     else
       @groups = Group.none
     end
@@ -57,23 +55,32 @@ class GroupsController < ApplicationController
   def show
     @group = Group.find(params[:id])
 
-    # 💡 [修正ポイント] 
-    # 個別相談モード（is_consultation）の場合だけ Issue を取得する。
-    # それ以外（普通のチーム）は、Issue の状態に一切左右されないように nil にする。
+    # 1. 門番：入れるかどうかを判定
+    can_view = admin_signed_in? || 
+               (user_signed_in? && (
+                 @group.owner == current_user || 
+                 @group.users.include?(current_user) || 
+                 current_user.following?(@group.owner)
+               ))
+
+    unless can_view
+      redirect_to groups_path, alert: "このルームへのアクセス権限がありません。"
+      return
+    end
+
+    # 2. 通過した人だけ、中身のデータを準備する
     if @group.is_consultation == true
       @issue = Issue.where(group_id: @group.id).order(created_at: :desc).first
     else
       @issue = nil
     end
 
-    # 💡 [新ルール] 
-    # 3人以上かつ有効かどうかを判定し、ビューで使いやすいように変数に入れておく
-    @is_chat_available = @group.chat_available?
-
-    # 閲覧制限
-    unless admin_signed_in? || @group.owner == current_user || @group.users.include?(current_user)
-      redirect_to groups_path, alert: "このルームへのアクセス権限がありません。"
-    end
+    # --- 💡 ここが修正ポイント：3人判定のロジックを確実にする ---
+    # オーナー(1) + 承認済みメンバー(users.count) の合計を出す
+    @approved_total = @group.users.count + 1
+    # 合計が3人以上ならチャット解禁
+    @is_chat_available = @approved_total >= 3
+    # ------------------------------------------------------
 
     @group_message = GroupMessage.new
   end
