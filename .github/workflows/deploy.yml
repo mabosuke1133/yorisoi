@@ -1,43 +1,25 @@
-name: Deploy to EC2
+name: Rails CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.REMOTE_HOST }}
-          username: ${{ secrets.REMOTE_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            echo "--- Starting Deploy Script ---"
-            # 1. 本番サーバーの正しいディレクトリへ移動
-            cd /home/ubuntu/yorisoi || { echo "Directory not found"; exit 1; }
-            echo "Successfully moved to: $(pwd)"
-            
-            # 2. Gitの設定と最新化
-            git config --global --add safe.directory /home/ubuntu/environment/yorisoi
-            git fetch origin
-            git reset --hard origin/main
-            
-            # 3. Ruby環境 (rbenv) のロード
-            export PATH="$HOME/.rbenv/bin:$HOME/.rbenv/shims:$PATH"
-            eval "$(rbenv init -)"
-            
-            # 4. Railsの更新作業（本番用）
-            bundle install --deployment --without development test
-            RAILS_ENV=production bundle exec rails db:migrate
-            RAILS_ENV=production bundle exec rails assets:precompile
-            
-            # 5. Pumaの再起動
-            sudo systemctl restart puma
+    - uses: actions/checkout@v2
+    - name: Deploy 
+      env:
+        PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        USER_NAME: ${{ secrets.REMOTE_USER }}
+        HOST_NAME: ${{ secrets.REMOTE_HOST }}
+      run: |
+        echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+        ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOST_NAME} 'bash -lc "cd yorisoi &&
+        git pull origin main &&
+        bundle install &&
+        bundle exec rails assets:precompile RAILS_ENV=production &&
+        bundle exec rails db:migrate RAILS_ENV=production &&
+        if [[ -e tmp/pids/puma.pid ]];then sudo kill $(cat tmp/pids/puma.pid); fi &&
+        rails s -e production"'
