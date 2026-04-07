@@ -1,14 +1,54 @@
-<h1>管理者用：ユーザー詳細</h1>
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white py-3">
+          <h1 class="h4 mb-0"><i class="fas fa-user-shield me-2"></i>管理者用：ユーザー詳細</h1>
+        </div>
+        
+        <div class="card-body p-4">
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <label class="text-muted small fw-bold text-uppercase">氏名</label>
+              <p class="fs-5 border-bottom pb-2"><%= @user.name %></p>
+            </div>
+            <div class="col-md-6">
+              <label class="text-muted small fw-bold text-uppercase">メールアドレス</label>
+              <p class="fs-5 border-bottom pb-2"><%= @user.email %></p>
+            </div>
+          </div>
 
-<p>氏名：<%= @user.name %></p>
-<p>メールアドレス：<%= @user.email %></p>
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <label class="text-muted small fw-bold text-uppercase">アカウント登録日</label>
+              <p class="fs-6 text-dark pb-2">
+                <i class="far fa-calendar-alt me-1 text-secondary"></i>
+                <%= @user.created_at.strftime('%Y/%m/%d %H:%M') %>
+              </p>
+            </div>
+            <div class="col-md-6">
+              <label class="text-muted small fw-bold text-uppercase">累計投稿数</label>
+              <p class="fs-6 text-dark pb-2">
+                <i class="fas fa-pen-nib me-1 text-secondary"></i>
+                <span class="badge border border-success text-success rounded-pill px-3"><%= @user.posts.count %> 件</span>
+              </p>
+            </div>
+          </div>
 
-<hr>
+          <div class="mt-5 d-flex justify-content-between align-items-center">
+            <%= link_to admin_users_path, class: "text-decoration-none text-secondary hover-link" do %>
+              <i class="fas fa-arrow-left me-1"></i> 一覧に戻る
+            <% end %>
 
-<%# 管理者が退会処理を行えるボタン %>
-<%= link_to "このユーザーを退会させる", admin_user_path(@user), method: :delete, data: { confirm: "本当にこのユーザーを退会させますか？" }, class: "btn btn-danger", style: "color: red;" %>
-
-<hr>
-<%= link_to "一覧に戻る", admin_users_path %>
-
-<%= render "relationships/btn", user: @user %>
+            <%= link_to admin_user_path(@user), 
+                method: :delete, 
+                data: { confirm: "【警告】本当にこのユーザーを退会させますか？この操作は取り消せません。" }, 
+                class: "btn btn-outline-danger px-4" do %>
+              <i class="fas fa-user-times me-1"></i> このユーザーを退会させる
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
