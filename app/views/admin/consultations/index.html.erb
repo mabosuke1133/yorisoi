@@ -1,41 +1,57 @@
-<div class="container">
-  <h2 class="mb-4">個別相談一覧</h2>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="h4 fw-bold"><i class="fas fa-comments text-primary me-2"></i>個別相談一覧</h2>
+    <span class="badge rounded-pill bg-primary text-white px-3 py-2 shadow-sm">
+      <i class="fas fa-list-ul me-1"></i> 総相談件数: <%= @consultations.count %> 件
+    </span>
+  </div>
 
-  <table class="table table-hover bg-white shadow-sm">
-    <thead class="thead-light">
-      <tr>
-        <th>作成日時</th>
-        <th>相談者</th>
-        <th>タイトル</th>
-        <th>ステータス</th>
-        <th>アクション</th>
-      </tr>
-    </thead>
-    <tbody>
-      <%# 💡 ここを @issues から @consultations に変える %>
-      <% @consultations.each do |consultation| %>
+  <div class="card shadow-sm border-0">
+    <table class="table table-hover align-middle mb-0 bg-white">
+      <thead class="bg-light">
         <tr>
-          <td><%= consultation.created_at.strftime('%Y/%m/%d %H:%M') %></td>
-          <td><%= consultation.user.name %></td>
-          <td><%= consultation.title %></td>
-          <td>
-            <%# 💡 status の判定を Consultation モデルの enum に合わせる %>
-            <% if consultation.pending? %>
-              <span class="badge badge-danger">未対応</span>
-            <% elsif consultation.processing? %>
-              <span class="badge badge-warning">対応中</span>
-            <% elsif consultation.completed? %>
-              <span class="badge badge-success">完了</span>
-            <% end %>
-          </td>
-          <td>
-            <% if consultation.pending? %>
-              <%# ステータス更新ボタン %>
-              <%= button_to '対応を開始', admin_consultation_path(consultation), method: :patch, class: "btn btn-primary btn-sm" %>
-            <% end %>
-          </td>
+          <th style="width: 180px;">作成日時</th>
+          <th style="width: 150px;">相談者</th>
+          <th>相談タイトル</th>
+          <th style="width: 120px;" class="text-center">ステータス</th>
+          <th style="width: 200px;" class="text-center">アクション</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% @consultations.each do |consultation| %>
+          <tr>
+            <td class="small text-muted"><%= consultation.created_at.strftime('%Y/%m/%d %H:%M') %></td>
+            <td class="fw-bold"><%= consultation.user.name %></td>
+            <td>
+              <%# 💡 タイトルをクリックで詳細（チャットルーム）へ %>
+              <%= link_to consultation.title, admin_consultation_path(consultation), class: "text-decoration-none text-dark fw-bold" %>
+            </td>
+            <td class="text-center">
+              <% if consultation.pending? %>
+                <span class="badge rounded-pill bg-danger">未対応</span>
+              <% elsif consultation.processing? %>
+                <span class="badge rounded-pill bg-warning text-dark">対応中</span>
+              <% elsif consultation.completed? %>
+                <span class="badge rounded-pill bg-success">完了</span>
+              <% end %>
+            </td>
+            <td class="text-center">
+              <div class="d-flex justify-content-center gap-2">
+                <%# 💡 詳細・チャットへ行くボタン %>
+                <%= link_to admin_consultation_path(consultation), class: "btn btn-sm btn-outline-primary shadow-sm" do %>
+                  <i class="fas fa-door-open me-1"></i>詳細・返信
+                <% end %>
+
+                <% if consultation.pending? %>
+                  <%= button_to admin_consultation_path(consultation), method: :patch, class: "btn btn-sm btn-primary shadow-sm", params: { consultation: { status: :processing } } do %>
+                    対応開始
+                  <% end %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
 </div>
