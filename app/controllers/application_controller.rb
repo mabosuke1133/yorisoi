@@ -33,7 +33,7 @@ class ApplicationController < ActionController::Base
     # ユーザー(User)側の登録
     if resource_name == :user
       devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
-      devise_parameter_sanitizer.permit(:account_update, keys: [:name])
+      devise_parameter_sanitizer.permit(:account_update, keys: [:name,:introduction])
     end
   end
 end

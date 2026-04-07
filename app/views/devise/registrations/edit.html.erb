@@ -10,7 +10,7 @@
           <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
             <%= render "devise/shared/error_messages", resource: resource %>
 
-            <%# 名前（もしUserモデルに追加していれば） %>
+            <%# 名前 %>
             <div class="form-group mb-4">
               <%= f.label :name, class: "font-weight-bold" do %>
                 <i class="fas fa-id-card text-muted mr-1"></i> お名前
@@ -24,6 +24,15 @@
                 <i class="fas fa-envelope text-muted mr-1"></i> メールアドレス
               <% end %>
               <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control form-control-lg" %>
+            </div>
+
+            <%# 自己紹介 %>
+            <div class="form-group mb-4">
+              <%= f.label :introduction, class: "font-weight-bold" do %>
+                <i class="fas fa-pen-nib text-muted mr-1"></i> 自己紹介（160文字以内）
+              <% end %>
+              <small class="text-muted d-block mb-2">趣味や今の状況を書いて、仲間を見つけやすくしましょう！</small>
+              <%= f.text_area :introduction, class: "form-control form-control-lg", rows: 4, placeholder: "例：休日はバイクでツーリングに行っています！" %>
             </div>
 
             <%# パスワード変更（任意） %>
@@ -57,7 +66,7 @@
         </div>
       </div>
 
-      <%# 退会セクション（少し控えめに配置） %>
+      <%# 退会セクション %>
       <div class="mt-5 pt-4 border-top text-center">
         <h3 class="h6 text-muted mb-3">アカウントの管理</h3>
         <%= button_to "アカウントを削除する", registration_path(resource_name), 

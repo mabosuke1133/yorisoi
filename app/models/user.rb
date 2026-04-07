@@ -17,6 +17,8 @@ class User < ApplicationRecord
   has_many :entries, dependent: :destroy
   has_many :rooms, through: :entries
 
+  validates :introduction, length: { maximum: 160 }
+
   # 検索用メソッド
   def self.looks(search, word)
     if search == "perfect_match"
