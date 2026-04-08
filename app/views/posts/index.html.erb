@@ -28,24 +28,24 @@
             <div class="card-body p-4">
               <div class="d-flex align-items-start">
                 
-                <%# 左側：レベルに応じたアイコンバッジ %>
+                <%# 左側：アイコンバッジ %>
                 <div class="mr-3 text-center" style="width: 60px;">
                   <% case post.priority %>
-                  <% when "soliloquy", 1 # 独り言 %>
-                    <div class="icon-circle bg-light-success text-success mb-1" title="独り言">
+                  <% when "soliloquy", 1 %>
+                    <div class="icon-circle bg-light-success text-success mb-1">
                       <i class="fas fa-comment-dots"></i>
                     </div>
-                    <span class="badge badge-pill badge-success-light">独り言</span>
-                  <% when "sos", 3 # SOS %>
-                    <div class="icon-circle bg-light-danger text-danger mb-1" title="SOS">
+                    <span class="badge badge-pill badge-success-light small">独り言</span>
+                  <% when "sos", 3 %>
+                    <div class="icon-circle bg-light-danger text-danger mb-1">
                       <i class="fas fa-exclamation-circle"></i>
                     </div>
-                    <span class="badge badge-pill badge-danger-light">SOS</span>
-                  <% else # 聞いて %>
-                    <div class="icon-circle bg-light-warning text-warning mb-1" title="聞いて">
+                    <span class="badge badge-pill badge-danger-light small">SOS</span>
+                  <% else %>
+                    <div class="icon-circle bg-light-warning text-warning mb-1">
                       <i class="fas fa-bullhorn"></i>
                     </div>
-                    <span class="badge badge-pill badge-warning-light">聞いて</span>
+                    <span class="badge badge-pill badge-warning-light small">聞いて</span>
                   <% end %>
                 </div>
 
@@ -56,15 +56,23 @@
                     <small class="text-muted"><%= time_ago_in_words(post.created_at) %>前</small>
                   </div>
                   
-                  <div class="post-content text-secondary mb-3" style="line-height: 1.6; white-space: pre-wrap;">
-                    <%= post.body %>
+                  <%# 💡 修正ポイント：タイトルと内容を分離 %>
+                  <div class="post-preview mb-3">
+                    <%# 1. タイトルを表示 %>
+                    <h5 class="h6 font-weight-bold text-dark mb-1">
+                      <%= post.title %>
+                    </h5>
+                    
+                    <%# 2. 本文（内容）を短くして表示 %>
+                    <p class="text-secondary small mb-0" style="line-height: 1.5;">
+                      <%= truncate(post.body, length: 60) %>
+                    </p>
                   </div>
 
                   <%# 下部：アクションエリア %>
                   <div class="d-flex justify-content-between align-items-center pt-3 border-top">
                     <div class="reaction-buttons">
                       <% if user_signed_in? %>
-                        <%# --- 1. 一般ユーザー：寄り添い判定を行う --- %>
                         <% if current_user.already_favorited?(post) %>
                           <%= link_to post_favorites_path(post), method: :delete, class: "btn btn-sm text-danger border-0 rounded-pill px-3 bg-light" do %>
                             <i class="fas fa-heart mr-1"></i> 寄り添い中 <%= post.favorites.count %>
@@ -74,15 +82,11 @@
                             <i class="far fa-heart mr-1"></i> 寄り添う <%= post.favorites.count %>
                           <% end %>
                         <% end %>
-
                       <% elsif admin_signed_in? %>
-                        <%# --- 2. 管理者：表示のみ（NilClassエラー回避） --- %>
                         <span class="btn btn-sm text-muted border-0 rounded-pill px-3 bg-light disabled">
                           <i class="fas fa-heart mr-1"></i> <%= post.favorites.count %>
                         </span>
-
                       <% else %>
-                        <%# --- 3. 未ログイン：ログイン画面へ誘導 --- %>
                         <%= link_to new_user_session_path, class: "btn btn-sm text-muted border-0 rounded-pill px-3 bg-light" do %>
                           <i class="far fa-heart mr-1"></i> 寄り添う <%= post.favorites.count %>
                         <% end %>
@@ -105,7 +109,6 @@
         <div class="text-center py-5 bg-white rounded-xl shadow-sm border">
           <i class="fas fa-leaf fa-3x text-muted opacity-25 mb-3"></i>
           <h5 class="text-secondary">まだ投稿がありません</h5>
-          <p class="text-muted small">最初の一言を投稿してみませんか？</p>
         </div>
       <% end %>
 
@@ -115,33 +118,14 @@
 
 <style>
   .rounded-xl { border-radius: 1.25rem; }
-  .hover-up:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
-  }
+  .hover-up:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important; }
   .transition { transition: all 0.3s ease; }
-  
-  .icon-circle {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    margin: 0 auto;
-  }
-
+  .icon-circle { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; margin: 0 auto; }
   .bg-light-success { background-color: #e8f5e9; }
   .bg-light-warning { background-color: #fff3e0; }
   .bg-light-danger  { background-color: #ffebee; }
-  
   .badge-success-light { background-color: #c8e6c9; color: #2e7d32; }
   .badge-warning-light { background-color: #ffe0b2; color: #ef6c00; }
   .badge-danger-light  { background-color: #ffcdd2; color: #c62828; }
-
-  .post-content {
-    font-size: 1rem;
-    word-break: break-all;
-  }
+  .post-preview h5 { line-height: 1.4; word-break: break-all; }
 </style>
