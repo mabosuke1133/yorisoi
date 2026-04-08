@@ -70,13 +70,17 @@
               <% elsif user_signed_in? %>
                 <%# --- 一般ユーザーメニュー --- %>
                 <li class="nav-item">
-                  <% current_consultation = current_user.consultations.last %>
+                  <%# 完了(completed)していない最新の相談を取得 %>
+                  <% current_consultation = current_user.consultations.where.not(status: :completed).last %>
+                  
                   <% if current_consultation %>
-                    <%= link_to consultation_path(current_consultation), class: "btn btn-outline-primary btn-sm rounded-pill px-3 mr-3" do %>
+                    <%# 未完了の相談がある場合はルームを表示 %>
+                    <%= link_to consultation_path(current_consultation), class: "btn btn-outline-primary btn-sm rounded-pill px-3 mr-3 shadow-sm" do %>
                       <i class="fas fa-comment-dots"></i> 相談ルーム
                     <% end %>
                   <% else %>
-                    <%= link_to consultations_path, data: { confirm: "メンターに個別相談を依頼しますか？" }, class: "btn btn-danger btn-sm rounded-pill px-3 shadow-sm mr-3" do %>
+                    <%# 相談がない、または全て完了している場合は依頼ボタンを表示 %>
+                    <%= link_to consultations_path, method: :post, data: { confirm: "メンターに個別相談を依頼しますか？" }, class: "btn btn-danger btn-sm rounded-pill px-3 shadow-sm mr-3 font-weight-bold" do %>
                       <i class="fas fa-exclamation-circle"></i> メンターに相談する
                     <% end %>
                   <% end %>
@@ -123,7 +127,7 @@
         </div>
       </nav>
 
-      <%# フラッシュメッセージ省略（既存のまま） %>
+      <%# フラッシュメッセージ %>
       <div class="container">
         <% flash.each do |key, value| %>
           <% alert_class = key == 'notice' ? 'success' : 'danger' %>
