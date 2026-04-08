@@ -20,6 +20,4 @@ jobs:
         git pull origin main &&
         bundle install &&
         bundle exec rails assets:precompile RAILS_ENV=production &&
-        bundle exec rails db:migrate RAILS_ENV=production &&
-        if [[ -e tmp/pids/puma.pid ]];then sudo kill $(cat tmp/pids/puma.pid); fi &&
-        rails s -e production"'
+        bundle exec rails db:migrate RAILS_ENV=production"'
