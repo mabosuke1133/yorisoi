@@ -18,6 +18,7 @@ class User < ApplicationRecord
   has_many :rooms, through: :entries
 
   validates :introduction, length: { maximum: 160 }
+  validates :name, presence: true
 
   # 検索用メソッド
   def self.looks(search, word)

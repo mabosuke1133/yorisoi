@@ -30,6 +30,7 @@ class ConsultationsController < ApplicationController
   private
 
   def consultation_params
-    params.fetch(:consultation, {}).permit(:title)
+    # 💡 :body を追加し、require に変更します
+    params.require(:consultation).permit(:title, :body)
   end
 end

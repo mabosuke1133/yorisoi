@@ -33,11 +33,7 @@ class PostsController < ApplicationController
   end
 
   def create
-    # 💡 データの不一致を防ぐため、ここで数値を強制的に整える
-    fix_params = post_params
-    fix_params[:priority] = fix_params[:priority].to_i if fix_params[:priority].present?
-    
-    @post = Post.new(fix_params)
+    @post = Post.new(post_params)
     @post.user_id = current_user.id if user_signed_in?
     
     if @post.save
