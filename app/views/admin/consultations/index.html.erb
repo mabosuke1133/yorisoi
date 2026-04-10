@@ -7,16 +7,14 @@
   </div>
 
   <div class="card shadow-sm border-0 overflow-hidden">
-    <%# 💡 table-responsive を追加（スマホ対策） %>
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0 bg-white">
         <thead class="bg-light text-nowrap">
           <tr>
             <th style="width: 170px;">作成日時</th>
             <th style="width: 140px;">相談者</th>
-            <th>相談タイトル</th>
+            <th>相談内容</th> <%# 💡 カラム名を「内容」に変更 %>
             <th style="width: 100px;" class="text-center">状態</th>
-            <% # 💡 幅を 220px に少し広げました %>
             <th style="width: 220px;" class="text-center">操作</th>
           </tr>
         </thead>
@@ -25,9 +23,18 @@
             <tr>
               <td class="small text-muted"><%= consultation.created_at.strftime('%Y/%m/%d %H:%M') %></td>
               <td class="fw-bold"><%= consultation.user.name %></td>
+              
+              <%# --- 相談タイトルと本文の抜粋 --- %>
               <td>
-                <%= link_to consultation.title, admin_consultation_path(consultation), class: "text-decoration-none text-dark fw-bold" %>
+                <div>
+                  <%= link_to consultation.title, admin_consultation_path(consultation), class: "text-decoration-none text-dark fw-bold" %>
+                </div>
+                <%# 💡 2行以上は「...」で省略されるスタイルを適用 %>
+                <div class="small text-muted mt-1" style="max-width: 500px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;">
+                  <%= consultation.body %>
+                </div>
               </td>
+
               <td class="text-center">
                 <% if consultation.pending? %>
                   <span class="badge rounded-pill bg-danger">未対応</span>
@@ -37,17 +44,16 @@
                   <span class="badge rounded-pill bg-success">完了</span>
                 <% end %>
               </td>
+
               <td class="text-center">
-                <% # 💡 flex-nowrap で絶対に折り返さない設定 %>
                 <div class="d-flex justify-content-center align-items-center flex-nowrap">
                   
-                  <%# --- 詳細・返信ボタン（mr-2で隙間を作る） --- %>
+                  <%# --- 詳細・返信ボタン --- %>
                   <%= link_to admin_consultation_path(consultation), class: "btn btn-sm btn-outline-primary shadow-sm mr-2" do %>
                     <i class="fas fa-door-open"></i> 詳細
                   <% end %>
 
                   <% if consultation.pending? %>
-                    <%# 💡 form_class: "d-inline" これが横並びの決め手です %>
                     <%= button_to admin_consultation_path(consultation), 
                                   method: :patch, 
                                   class: "btn btn-sm btn-primary shadow-sm", 

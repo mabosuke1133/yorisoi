@@ -18,11 +18,19 @@
         <div class="card-body p-4">
           <h6 class="font-weight-bold mb-3"><i class="fas fa-pen-nib mr-2"></i> 新しく相談を依頼する</h6>
           <%= form_with model: @consultation, local: true do |f| %>
+            <%# タイトル %>
             <div class="form-group mb-3">
-              <%= f.text_field :title, class: "form-control border-0 p-3", placeholder: "相談のタイトル（例：今後のキャリアについて、体調の相談など）", style: "border-radius: 12px;" %>
+              <%= f.text_field :title, class: "form-control border-0 p-3", placeholder: "相談のタイトル（例：今後のキャリアについてなど）", style: "border-radius: 12px;" %>
             </div>
+
+            <%# 本文欄 %>
+            <div class="form-group mb-3">
+              <%= f.text_area :body, class: "form-control ...", placeholder: "具体的な相談内容を入力してください", rows: 5, required: true %>
+            </div>
+
             <div class="text-right">
-              <%= f.submit "相談を申請する", class: "btn btn-danger rounded-pill px-5 shadow-sm font-weight-bold", data: { confirm: "メンターに面談依頼を送信しますか？" } %>
+              <%# ここで最後に「本当に送信しますか？」と確認を出すのが丁寧 %>
+              <%= f.submit "相談を申請する", class: "btn btn-danger ...", data: { confirm: "メンターに面談依頼を送信しますか？" } %>
             </div>
           <% end %>
         </div>

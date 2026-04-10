@@ -34,8 +34,18 @@
                 </li>
 
                 <li class="nav-item">
-                  <%= link_to admin_consultations_path, class: 'nav-link' do %>
-                    <i class="fas fa-comment-dots text-primary"></i> 個別相談一覧
+                  <%= link_to admin_consultations_path, class: 'nav-link d-flex align-items-center' do %>
+                    <div class="position-relative d-inline-block">
+                      <i class="fas fa-comment-dots text-primary"></i>
+                      <%# --- 未対応がある場合のみ、アイコンの右肩に赤いバッジを表示 --- %>
+                      <% if @pending_consultations_count.to_i > 0 %>
+                        <span class="position-absolute badge rounded-pill bg-danger text-white" 
+                               style="font-size: 0.6rem; padding: 0.25em 0.5em; top: -8px; right: -10px;">
+                          <%= @pending_consultations_count %>
+                        </span>
+                      <% end %>
+                    </div>
+                    <span class="ml-2">個別相談一覧</span>
                   <% end %>
                 </li>
 
@@ -80,7 +90,7 @@
                     <% end %>
                   <% else %>
                     <%# 相談がない、または全て完了している場合は依頼ボタンを表示 %>
-                    <%= link_to consultations_path, method: :post, data: { confirm: "メンターに個別相談を依頼しますか？" }, class: "btn btn-danger btn-sm rounded-pill px-3 shadow-sm mr-3 font-weight-bold" do %>
+                    <%= link_to consultations_path, class: "btn btn-danger btn-sm rounded-pill px-3 shadow-sm mr-3 font-weight-bold" do %>
                       <i class="fas fa-exclamation-circle"></i> メンターに相談する
                     <% end %>
                   <% end %>

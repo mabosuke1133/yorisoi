@@ -7,19 +7,22 @@
         <div>
           <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-transparent p-0 mb-1">
-              <li class="breadcrumb-item"><%= link_to 'トップ', root_path, class: "text-success" %></li>
+              <li class="breadcrumb-item"><%= link_to 'トップ', root_path, class: "text-success text-decoration-none" %></li>
               <li class="breadcrumb-item active" aria-current="page">個別相談ルーム</li>
             </ol>
           </nav>
           <h3 class="font-weight-bold text-dark mb-1">
-            <i class="fas fa-comment-medical text-success mr-2"></i><%= @consultation.title %>
+            <i class="fas fa-comment-dots text-success mr-2"></i><%= @consultation.title %>
           </h3>
+          <p class="text-muted small mb-0">
+            <i class="far fa-clock mr-1"></i>相談開始: <%= @consultation.created_at.strftime('%Y/%m/%d %H:%M') %>
+          </p>
         </div>
         <div class="text-right">
           <% if @consultation.pending? %>
-            <span class="badge badge-warning px-3 py-2 rounded-pill shadow-sm">受付中（メンター確認中）</span>
+            <span class="badge badge-warning px-3 py-2 rounded-pill shadow-sm"><i class="fas fa-hourglass-half mr-1"></i> 受付中</span>
           <% elsif @consultation.processing? %>
-            <span class="badge badge-success px-3 py-2 rounded-pill shadow-sm">対応中</span>
+            <span class="badge badge-success px-3 py-2 rounded-pill shadow-sm"><i class="fas fa-check mr-1"></i> 対応中</span>
           <% else %>
             <span class="badge badge-secondary px-3 py-2 rounded-pill shadow-sm">対応完了</span>
           <% end %>
@@ -27,42 +30,58 @@
       </div>
 
       <%# --- 2. メッセージ一覧エリア（チャット形式） --- %>
-      <div class="chat-container mb-4 shadow-sm" style="border-radius: 20px; border: 1px solid #eee; min-height: 500px;">
-        <% if @messages.any? %>
-          <div class="p-3">
+      <div class="chat-container mb-4 shadow-sm bg-white" style="border-radius: 20px; border: 1px solid #eee; min-height: 500px;">
+        <div class="p-4">
+          
+          <%# ★【重要】ユーザーが最初に送った相談内容を「最初の吹き出し」として表示 --- %>
+          <div class="message-bubble current-user mb-4">
+            <div class="message-content">
+              <div class="message-name font-weight-bold small mb-1">あなたの相談内容</div>
+              <div class="d-flex align-items-end flex-row-reverse">
+                <div class="message-text shadow-sm p-3 rounded" style="background-color: #e2f3e5; border-left: 4px solid #28a745;">
+                  <div class="font-weight-bold mb-2"><%= @consultation.title %></div>
+                  <%= simple_format(@consultation.body, class: "mb-0") %>
+                </div>
+                <span class="message-time mx-2 text-muted small">
+                  <%= @consultation.created_at.strftime('%H:%M') %>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4" data-content="ここから対話" style="height: 1px; background-color: #eee; position: relative;">
+
+          <% if @messages.any? %>
             <% @messages.each do |message| %>
-              <%# 自分が送ったメッセージ（admin_idが空）かどうかを判定 %>
               <% is_mine = message.admin_id.blank? %>
               
-              <div class="message-bubble <%= is_mine ? 'current-user' : 'other-user' %>">
+              <div class="message-bubble <%= is_mine ? 'current-user' : 'other-user' %> mb-3">
                 <div class="message-content">
-                  <%# 相手（メンター）の発言時のみラベルを表示 %>
                   <% unless is_mine %>
-                    <div class="message-name font-weight-bold text-secondary">メンター</div>
+                    <div class="message-name font-weight-bold text-secondary mb-1">
+                      <i class="fas fa-user-tie mr-1"></i> メンター
+                    </div>
                   <% end %>
 
                   <div class="d-flex align-items-end <%= is_mine ? 'flex-row-reverse' : 'flex-row' %>">
-                    <%# 吹き出し本体 %>
-                    <div class="message-text shadow-sm">
-                      <%= simple_format(message.body) %>
+                    <div class="message-text shadow-sm p-3 rounded <%= is_mine ? 'bg-success text-white' : 'bg-white border' %>" style="max-width: 80%;">
+                      <%= simple_format(message.body, class: "mb-0") %>
                     </div>
-                    
-                    <%# 送信時刻 %>
-                    <span class="message-time">
+                    <span class="message-time mx-2 text-muted small">
                       <%= message.created_at.strftime('%H:%M') %>
                     </span>
                   </div>
                 </div>
               </div>
             <% end %>
-          </div>
-        <% else %>
-          <div class="text-center py-5 my-5">
-            <i class="fas fa-hourglass-start fa-4x text-muted opacity-25 mb-4"></i>
-            <h5 class="text-secondary">メンターからの返信をお待ちください</h5>
-            <p class="text-muted small">内容を確認次第、こちらでチャットが開始されます。</p>
-          </div>
-        <% end %>
+          <% else %>
+            <div class="text-center py-5">
+              <i class="fas fa-comment-slash fa-3x text-muted opacity-25 mb-3"></i>
+              <h6 class="text-secondary">メンターが内容を確認中です</h6>
+              <p class="text-muted small">返信まで今しばらくお待ちください。</p>
+            </div>
+          <% end %>
+        </div>
       </div>
 
       <%# --- 3. 投稿フォーム（対応中のみ表示） --- %>
@@ -72,20 +91,22 @@
             <%= form_with model: [@consultation, @message], local: true do |f| %>
               <div class="form-group mb-3">
                 <%= f.text_area :body, 
-                                class: "form-control border-light bg-light p-3", 
+                                class: "form-control border-0 bg-light p-3", 
                                 rows: 3, 
-                                placeholder: "メッセージを入力してください...", 
+                                placeholder: "相談内容の補足や返信を入力...", 
                                 style: "resize: none; border-radius: 15px;" %>
               </div>
-              <div class="text-right">
-                <%= f.submit "送信する", class: "btn btn-success rounded-pill px-5 py-2 font-weight-bold shadow-sm" %>
+              <div class="text-right d-flex justify-content-between align-items-center">
+                <p class="small text-muted mb-0"><i class="fas fa-info-circle"></i> メンターに通知されます</p>
+                <%= f.submit "メッセージを送信", class: "btn btn-success rounded-pill px-5 py-2 font-weight-bold shadow-sm" %>
               </div>
             <% end %>
           </div>
         </div>
       <% elsif @consultation.pending? %>
-        <div class="alert alert-warning text-center py-4 rounded-xl border-0 shadow-sm">
-          <i class="fas fa-info-circle mr-2"></i> 現在、メンターが内容を確認しています。少々お待ちください。
+        <div class="alert alert-light text-center py-4 rounded-xl border shadow-sm" style="border-radius: 15px;">
+          <div class="spinner-grow spinner-grow-sm text-success mr-2" role="status"></div>
+          <span class="text-secondary font-weight-bold">メンターが内容を確認しています。返信があるまでフォームは閉じられています。</span>
         </div>
       <% end %>
 

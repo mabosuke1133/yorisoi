@@ -9,18 +9,18 @@
   <%# --- 1. ヘッダーエリア：相談情報とステータス操作 --- %>
   <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
     <div>
-      <h4 class="font-weight-bold text-dark">
+      <h4 class="font-weight-bold text-dark mb-1">
         <i class="fas fa-user-circle text-secondary"></i> <%= @consultation.user.name %> さんの相談
       </h4>
-      <p class="text-muted mb-0">
+      <div class="d-flex align-items-center text-muted small">
         <span class="badge badge-light border text-secondary mr-2">件名</span>
-        <%= @consultation.title %>
-      </p>
+        <span class="font-weight-bold text-dark mr-3"><%= @consultation.title %></span>
+        <i class="far fa-clock mr-1"></i> <%= @consultation.created_at.strftime('%Y/%m/%d %H:%M') %> 受付
+      </div>
     </div>
     
     <div class="d-flex align-items-center">
       <% if @consultation.pending? %>
-        <%# 未対応時：対応開始ボタン %>
         <%= button_to admin_consultation_path(@consultation, consultation: { status: :processing }), 
                       method: :patch, 
                       class: "btn btn-success rounded-pill px-4 shadow-sm font-weight-bold" do %>
@@ -28,11 +28,10 @@
         <% end %>
 
       <% elsif @consultation.processing? %>
-        <%# 対応中：完了ボタン ＋ ステータス表示 %>
         <%= button_to admin_consultation_path(@consultation, consultation: { status: :completed }), 
                       method: :patch, 
-                      data: { confirm: "この相談を完了（解決済み）として閉じますか？" },
-                      class: "btn btn-outline-dark rounded-pill px-4 shadow-sm font-weight-bold mr-3" do %>
+                      class: "btn btn-outline-dark rounded-pill px-4 shadow-sm font-weight-bold mr-3",
+                      data: { confirm: "この相談を完了（解決済み）として閉じますか？" } do %>
           <i class="fas fa-check-circle"></i> 相談を完了する
         <% end %>
         
@@ -41,7 +40,6 @@
         </span>
 
       <% else %>
-        <%# 完了時：バッジ表示 %>
         <span class="badge badge-success p-2 px-3 rounded-pill shadow-sm">
           <i class="fas fa-check"></i> 完了済み
         </span>
@@ -50,27 +48,44 @@
   </div>
 
   <%# --- 2. メッセージ一覧エリア：チャット形式 --- %>
-  <div class="chat-container mb-4 shadow-sm" style="border-radius: 20px; border: 1px solid #eee; min-height: 500px;">
-    <% if @consultation.pending? %>
-      <div class="text-center py-5 my-5">
-        <i class="fas fa-lock fa-4x text-muted mb-4 opacity-25"></i>
-        <h5 class="text-secondary">チャットはまだ利用できません</h5>
-        <p class="text-muted">上の「対応を開始する」ボタンを押すと、相談者とメッセージのやり取りが可能になります。</p>
+  <div class="chat-container mb-4 shadow-sm bg-white" style="border-radius: 20px; border: 1px solid #eee; min-height: 500px;">
+    <div class="p-4">
+      
+      <%# ★【最重要追加】最初の相談内容を表示 --- %>
+      <div class="message-bubble other-user mb-4">
+        <div class="message-content">
+          <div class="message-name font-weight-bold text-primary small mb-1">
+            <i class="fas fa-info-circle"></i> 最初の相談内容
+          </div>
+          <div class="d-flex align-items-end flex-row">
+            <div class="message-text shadow-sm p-3 rounded bg-light border-primary" style="max-width: 85%; border-left: 4px solid;">
+              <div class="font-weight-bold mb-2 text-dark"><%= @consultation.title %></div>
+              <%= simple_format(@consultation.body, class: "mb-0") %>
+            </div>
+            <span class="message-time mx-2 text-muted small">
+              <%= @consultation.created_at.strftime('%H:%M') %>
+            </span>
+          </div>
+        </div>
       </div>
-    <% else %>
-      <div class="p-3">
+
+      <hr class="my-4" data-content="ここからチャット履歴" style="height: 1px; background-color: #eee; position: relative;">
+
+      <% if @consultation.pending? %>
+        <div class="text-center py-5 my-5">
+          <i class="fas fa-lock fa-4x text-muted mb-4 opacity-25"></i>
+          <h5 class="text-secondary">チャットはまだ利用できません</h5>
+          <p class="text-muted small">上の「対応を開始する」ボタンを押すと、返信が可能になります。</p>
+        </div>
+      <% else %>
         <% @messages.each do |message| %>
           <% is_admin_msg = message.admin_id.present? %>
           
-          <div class="message-bubble <%= is_admin_msg ? 'current-user' : 'other-user' %>">
+          <div class="message-bubble <%= is_admin_msg ? 'current-user' : 'other-user' %> mb-3">
             <div class="message-content">
-              <% unless is_admin_msg %>
-                <div class="message-name font-weight-bold small mb-1"><%= @consultation.user.name %> さん</div>
-              <% end %>
-
               <div class="d-flex align-items-end <%= is_admin_msg ? 'flex-row-reverse' : 'flex-row' %>">
-                <div class="message-text shadow-sm p-3 rounded" style="max-width: 80%;">
-                  <%= simple_format(message.body) %>
+                <div class="message-text shadow-sm p-3 rounded <%= is_admin_msg ? 'bg-primary text-white' : 'bg-white text-dark border' %>" style="max-width: 80%;">
+                  <%= simple_format(message.body, class: "mb-0") %>
                 </div>
                 <span class="message-time mx-2 text-muted small">
                   <%= message.created_at.strftime('%H:%M') %>
@@ -79,8 +94,8 @@
             </div>
           </div>
         <% end %>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
   </div>
 
   <%# --- 3. 投稿フォーム：対応中のみ表示 --- %>
@@ -90,7 +105,7 @@
         <%= form_with model: [:admin, @consultation, @message], local: true do |f| %>
           <div class="form-group mb-3">
             <%= f.text_area :body, 
-                            class: "form-control border-light bg-light p-3", 
+                            class: "form-control border-0 bg-light p-3", 
                             rows: 3, 
                             placeholder: "相談者への返信を入力してください...", 
                             style: "resize: none; border-radius: 15px;" %>
@@ -105,7 +120,7 @@
 
   <%# 戻るリンク（下部） %>
   <div class="mt-4">
-    <%= link_to admin_consultations_path, class: "text-muted" do %>
+    <%= link_to admin_consultations_path, class: "text-muted small text-decoration-none" do %>
       <i class="fas fa-chevron-left"></i> 一覧に戻る
     <% end %>
   </div>
