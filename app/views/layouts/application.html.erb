@@ -37,11 +37,12 @@
                   <%= link_to admin_consultations_path, class: 'nav-link d-flex align-items-center' do %>
                     <div class="position-relative d-inline-block">
                       <i class="fas fa-comment-dots text-primary"></i>
-                      <%# --- 未対応がある場合のみ、アイコンの右肩に赤いバッジを表示 --- %>
-                      <% if @pending_consultations_count.to_i > 0 %>
+                      <%# --- 【修正点】モデルから直接未対応件数を取得 --- %>
+                      <% pending_count = Consultation.where(status: :pending).count %>
+                      <% if pending_count > 0 %>
                         <span class="position-absolute badge rounded-pill bg-danger text-white" 
                                style="font-size: 0.6rem; padding: 0.25em 0.5em; top: -8px; right: -10px;">
-                          <%= @pending_consultations_count %>
+                          <%= pending_count %>
                         </span>
                       <% end %>
                     </div>
