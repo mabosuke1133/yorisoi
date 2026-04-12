@@ -28,9 +28,16 @@
           </div>
 
           <% if @user == current_user %>
+            <%# --- プロフィール編集ボタン --- %>
             <%= link_to edit_user_registration_path, class: "btn btn-outline-success btn-block btn-sm rounded-pill mt-3" do %>
               <i class="fas fa-user-edit mr-1"></i> プロフィールを編集
             <% end %>
+
+            <%# --- いいね（寄り添い）一覧ボタン --- %>
+            <%= link_to favorites_path, class: "btn btn-success btn-block btn-sm rounded-pill mt-2 shadow-sm" do %>
+              <i class="fas fa-heart mr-1"></i> 寄り添った投稿一覧
+            <% end %>
+
             <div class="mt-4 p-2 bg-light rounded small text-left text-muted">
               <i class="fas fa-envelope mr-1"></i> <%= @user.email %>
             </div>
@@ -47,10 +54,10 @@
       <% end %>
     </div>
 
-    <%# --- 右側：自己紹介 ＆ 投稿一覧 --- %>
+    <%# --- 右側：自己紹介 & 投稿一覧 --- %>
     <div class="col-lg-8">
       
-      <%# --- 【新設】自己紹介セクション --- %>
+      <%# --- 自己紹介セクション --- %>
       <div class="card shadow-sm border-0 rounded-lg mb-4">
         <div class="card-header bg-white py-3 border-bottom text-success">
           <h5 class="mb-0 font-weight-bold">
@@ -60,7 +67,6 @@
         <div class="card-body p-4">
           <div class="p-3 rounded" style="background-color: #f9fbf9; border-left: 5px solid #28a745;">
             <% if @user.introduction.present? %>
-              <%# line-heightで読みやすく、pre-wrapで改行を維持 %>
               <p class="mb-0 text-dark" style="line-height: 1.8; white-space: pre-wrap;"><%= @user.introduction %></p>
             <% else %>
               <p class="mb-0 text-muted italic">まだ自己紹介が登録されていません。</p>
