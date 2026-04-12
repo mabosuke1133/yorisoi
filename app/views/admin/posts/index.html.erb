@@ -1,66 +1,76 @@
-<div class="container-fluid mt-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h3"><i class="fas fa-clipboard-list me-2"></i>投稿管理一覧</h1>
-    <span class="badge bg-dark">全 <%= @posts.count %> 件</span>
+<div class="container-fluid mt-4 pb-5">
+  <%# --- 1. ヘッダー：視認性とコントラストを改善 --- %>
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+    <h1 class="h3 font-weight-bold text-dark mb-0">
+      <i class="fas fa-clipboard-list mr-2 text-success"></i>投稿管理一覧
+    </h1>
+    <span class="badge badge-dark shadow-sm px-3 py-2">
+      <i class="fas fa-database mr-1"></i>全 <%= @posts.count %> 件
+    </span>
   </div>
 
-  <div class="card shadow-sm border-0">
+  <%# --- 2. テーブルカード --- %>
+  <div class="card shadow-sm border-0 rounded-lg">
     <div class="table-responsive">
       <table class="table table-hover align-middle mb-0">
-        <thead class="bg-light">
-          <tr>
-            <th style="width: 80px;">ID</th>
-            <th style="width: 150px;">投稿者</th>
-            <th>内容（冒頭）</th>
-            <th style="width: 120px;">感情タイプ</th>
-            <th style="width: 180px;">投稿日時</th>
-            <th style="width: 150px;" class="text-center">操作</th>
+        <thead class="thead-light">
+          <tr class="text-dark">
+            <th style="width: 80px;" class="py-3">ID</th>
+            <th style="width: 150px;" class="py-3">投稿者</th>
+            <th class="py-3">内容（冒頭）</th>
+            <th style="width: 130px;" class="py-3 text-center">感情タイプ</th>
+            <th style="width: 180px;" class="py-3 text-center">投稿日時</th>
+            <th style="width: 120px;" class="py-3 text-center">操作</th>
           </tr>
         </thead>
         <tbody>
           <% @posts.each do |post| %>
             <tr>
-              <td class="text-muted">#<%= post.id %></td>
+              <td class="text-muted font-italic">#<%= post.id %></td>
               <td>
                 <% if post.user.present? %>
-                  <%= link_to post.user.name, admin_user_path(post.user), class: "text-decoration-none fw-bold" %>
+                  <%= link_to admin_user_path(post.user), class: "text-decoration-none font-weight-bold text-primary" do %>
+                    <i class="far fa-user-circle mr-1"></i><%= post.user.name %>
+                  <% end %>
                 <% else %>
-                  <span class="text-muted">退会済みユーザー</span>
+                  <span class="text-muted small">
+                    <i class="fas fa-user-slash mr-1"></i>退会済み
+                  </span>
                 <% end %>
               </td>
               <td>
-                <span class="text-truncate d-inline-block" style="max-width: 300px;">
-                  <%= post.body.truncate(40) %>
-                </span>
+                <div class="text-dark small" style="max-width: 350px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  <%= post.body %>
+                </div>
               </td>
-              <td>
+              <td class="text-center">
                 <% if post.priority.present? %>
                   <% 
-                    badge_class = case post.priority
-                                  when 'sos'       then 'bg-danger'
-                                  when 'hearing'   then 'bg-success text-white'
-                                  when 'soliloquy' then 'bg-info text-white'
-                                  else 'bg-secondary'
+                    # バッジの色を広場のデザインに寄せて調整
+                    badge_style = case post.priority
+                                  when 'sos' then 'badge-danger'
+                                  when 'hearing' then 'badge-warning text-white' # 「聞いて」は警告色
+                                  when 'soliloquy' then 'badge-success'          # 「独り言」は成功色
+                                  else 'badge-secondary'
                                   end
                   %>
-                  <span class="badge <%= badge_class %> px-3 rounded-pill">
-                    <%# 💡 Rails標準の翻訳機能(tメソッド)を直接使う %>
+                  <span class="badge badge-pill <%= badge_style %> px-3 py-1 shadow-sm">
                     <%= t("enums.post.priority.#{post.priority}") %>
                   </span>
                 <% else %>
-                  <span class="badge bg-secondary px-3 rounded-pill">未設定</span>
+                  <span class="badge badge-pill badge-light border px-3 py-1">未設定</span>
                 <% end %>
               </td>
-              <td class="small text-muted">
-                <%= post.created_at.strftime('%Y/%m/%d %H:%M') %>
+              <td class="small text-muted text-center">
+                <i class="far fa-clock mr-1"></i><%= post.created_at.strftime('%Y/%m/%d %H:%M') %>
               </td>
               <td class="text-center">
-                <div class="btn-group">
-                  <%= link_to post_path(post), class: "btn btn-sm btn-outline-secondary", title: "表示確認" do %>
-                    <i class="fas fa-eye"></i>
+                <div class="btn-group shadow-sm rounded-pill overflow-hidden">
+                  <%= link_to post_path(post), class: "btn btn-sm btn-light border-right", title: "表示確認" do %>
+                    <i class="fas fa-eye text-secondary"></i>
                   <% end %>
-                  <%= link_to admin_post_path(post), method: :delete, data: { confirm: "この投稿を強制削除しますか？" }, class: "btn btn-sm btn-outline-danger", title: "削除" do %>
-                    <i class="fas fa-trash"></i>
+                  <%= link_to admin_post_path(post), method: :delete, data: { confirm: "この投稿を強制削除しますか？" }, class: "btn btn-sm btn-light", title: "削除" do %>
+                    <i class="fas fa-trash text-danger"></i>
                   <% end %>
                 </div>
               </td>
@@ -71,3 +81,13 @@
     </div>
   </div>
 </div>
+
+<style>
+  /* 管理画面用微調整 */
+  .rounded-lg { border-radius: 0.75rem; }
+  .align-middle { vertical-align: middle !important; }
+  .table thead th { border-top: none; font-size: 0.85rem; }
+  /* ボタングループの境界線を整える */
+  .btn-group .btn { border: none; }
+  .btn-group .btn:hover { background-color: #f8f9fa; }
+</style>
