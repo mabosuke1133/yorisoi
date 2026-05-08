@@ -29,4 +29,4 @@ https://docs.google.com/spreadsheets/d/12n80XsrnJhpvKTimKcv2V9ESerQgk0oIZZxGh43C
 - JSライブラリ:jQuery
 - IDE:Visual Studio Code (VScode)
 
-## 使用素材
+![インフラ構成図](doc/AWS構成図.png)
