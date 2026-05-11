@@ -9,6 +9,8 @@ ja:
       user:
         name: "名前" # 💡 user側にも一応追加しておくと安心
         email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認用）"
         # ...
       admin: # 💡 admin用の設定を追加
         name: "管理者名"
