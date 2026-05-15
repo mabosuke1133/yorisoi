@@ -7,7 +7,7 @@ ja:
     attributes:
       # ...既存の post 設定...
       user:
-        name: "名前" # 💡 user側にも一応追加しておくと安心
+        name: "名前" 
         email: "メールアドレス"
         password: "パスワード"
         password_confirmation: "パスワード（確認用）"
