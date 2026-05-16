@@ -82,4 +82,17 @@ class User < ApplicationRecord
   def already_favorited?(post)
     self.favorites.exists?(post_id: post.id)
   end
+
+  # =================================================================
+  # 💡 採用担当者用：かんたんログイン（ゲストユーザー作成メソッド）
+  # =================================================================
+
+  # ① 一般スタッフ用のゲスト
+  def self.guest
+    find_or_create_by!(email: 'guest@example.com') do |user|
+      user.password = SecureRandom.urlsafe_base64
+      user.name = "ゲストユーザー"
+      user.introduction = "ゲストユーザーです。悩みの投稿やSOSの発信を体験できます。"
+    end
+  end
 end
