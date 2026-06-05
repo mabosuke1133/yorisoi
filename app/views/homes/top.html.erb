@@ -1,3 +1,37 @@
+<%# --- 💡 [追記] 一般スタッフ（User）でログインした時の案内 --- %>
+<% if user_signed_in? && current_user&.email == 'guest@example.com' %>
+  <div class="alert alert-info shadow-sm mb-4 p-4 text-left animate-fade-in mx-auto" style="border-left: 5px solid #17a2b8; border-radius: 1rem; background-color: #e3f2fd; max-width: 800px;">
+    <h4 class="h5 font-weight-bold text-info mb-2">
+      <i class="fas fa-info-circle mr-1"></i> 採用担当者様へ（一般スタッフ視点チュートリアル）
+    </h4>
+    <p class="small text-secondary mb-3">
+      スタッフから管理者へ、個別に面談を申し込む一連の流れをご体験いただけます。
+    </p>
+    <ol class="small text-secondary pl-3 mb-0" style="line-height: 1.6;">
+      <li class="mb-1">画面上部（ヘッダー）にある<strong>「赤いボタン（面談希望ボタン）」</strong>を押します。</li>
+      <li class="mb-1">これで管理者に対して「面談希望」の通知と意思表示が送られます。</li>
+      <li>💡 <strong>さらに踏み込んだ体験：</strong>ボタンを押した後、一度ログアウトして「管理者としてログイン」し直す（またはシークレットウインドウ等で別ブラウザを開く）と、この面談希望に対して管理者が相談部屋を作成するデモが体験できます！</li>
+    </ol>
+  </div>
+<% end %>
+
+<%# --- 💡 [追記] 管理者（Admin）でログインした時の案内 --- %>
+<% if admin_signed_in? && current_admin&.email == 'guest_admin@example.com' %>
+  <div class="alert alert-danger shadow-sm mb-4 p-4 text-left animate-fade-in mx-auto" style="border-left: 5px solid #dc3545; border-radius: 1rem; background-color: #fdf2f2; max-width: 800px;">
+    <h4 class="h5 font-weight-bold text-danger mb-2">
+      <i class="fas fa-user-shield mr-1"></i> 採用担当者様へ（管理者視点チュートリアル）
+    </h4>
+    <p class="small text-secondary mb-3">
+      スタッフからの面談希望を受け取り、サポートを開始する管理画面です。
+    </p>
+    <ol class="small text-secondary pl-3 mb-0" style="line-height: 1.6;">
+      <li class="mb-1">一般スタッフがヘッダーの赤いボタンから「面談希望」を出していると、管理側の画面にそのリクエストが表示されます。</li>
+      <li class="mb-1">対象のスタッフに対して <strong>「相談部屋（Message Room）を作成する」</strong> を実行してみてください。</li>
+      <li>部屋が作成されると、個別チャット（メッセージ機能）を使ってリアルタイムにスタッフの相談に乗ることができます。</li>
+    </ol>
+  </div>
+<% end %>
+
 <div class="container my-5 text-center px-4">
   <%# --- 1. ヒーローセクション --- %>
   <div class="py-5 mb-5 animate-fade-in">
@@ -12,6 +46,11 @@
         <%= link_to new_post_path, class: "btn btn-success btn-lg rounded-pill px-5 py-3 shadow-sm hover-up" do %>
           <i class="fas fa-pen mr-2"></i> 今の気持ちを届ける
         <% end %>
+      <% elsif admin_signed_in? %>
+        <%# 管理者ログイン時は、管理画面やメイン機能への導線に合わせて適宜リンクを変更してください %>
+        <%= link_to groups_path, class: "btn btn-danger btn-lg rounded-pill px-5 py-3 shadow-sm hover-up" do %>
+          <i class="fas fa-tasks mr-2"></i> 管理画面へ移動する
+        <% end %>
       <% else %>
         <%= link_to new_user_registration_path, class: "btn btn-success btn-lg rounded-pill px-5 py-3 shadow-sm hover-up" do %>
           はじめる（新規登録）
@@ -21,7 +60,7 @@
   </div>
 
   <%# --- 💡 採用担当者様用かんたんログインエリア（未ログイン時のみ表示） --- %>
-  <% unless user_signed_in? %>
+  <% unless user_signed_in? || admin_signed_in? %>
     <div class="card shadow-sm border-primary mx-1 mb-5 rounded-xl bg-light animate-fade-in" style="border: 2px dashed #007bff;">
       <div class="card-body py-4 px-3">
         <h3 class="h5 font-weight-bold text-primary mb-2">
